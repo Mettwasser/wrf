@@ -1,8 +1,13 @@
-use {
-    super::_entities::register_sessions::{ActiveModel, Column, Entity, Model},
-    loco_rs::model::ModelResult,
+use chrono::Local;
+use loco_rs::model::ModelResult;
+use sea_orm::entity::prelude::*;
+
+use super::_entities::register_sessions::{
+    ActiveModel,
+    Column,
+    Entity,
+    Model,
 };
-use {loco_rs::model::ModelError, sea_orm::entity::prelude::*};
 pub type RegisterSessions = Entity;
 
 #[async_trait::async_trait]
@@ -25,14 +30,15 @@ impl ActiveModelBehavior for ActiveModel {
 
 impl RegisterSessions {
     pub async fn find_by_session_id(
-        session_id: &str,
+        session_id: Uuid,
         db: &DatabaseConnection,
-    ) -> ModelResult<Model> {
+    ) -> ModelResult<Option<Model>> {
         let session = RegisterSessions::find()
             .filter(Column::SessionId.eq(session_id))
+            .filter(Column::Expiry.gt(Local::now().naive_local()))
             .one(db)
             .await?;
 
-        session.ok_or_else(|| ModelError::EntityNotFound)
+        Ok(session)
     }
 }

@@ -52,6 +52,19 @@ impl AuthMailer {
     ///
     /// When email sending is failed
     pub async fn forgot_password(ctx: &AppContext, user: &users::Model) -> Result<()> {
+        let domain = ctx
+            .config
+            .settings
+            .as_ref()
+            .and_then(|settings| {
+                settings
+                    .get("frontend_url")?
+                    .as_str()
+                    // for whatever reason it's quoted
+                    .map(|s| s.replace("\"", ""))
+            })
+            .unwrap_or_else(|| ctx.config.server.full_url());
+
         Self::mail_template(
             ctx,
             &forgot,
@@ -60,7 +73,7 @@ impl AuthMailer {
                 locals: json!({
                   "name": user.name,
                   "resetToken": user.reset_token,
-                  "domain": ctx.config.server.full_url()
+                  "domain": domain
                 }),
                 ..Default::default()
             },

@@ -25,4 +25,5 @@ export default {
             themes: Object.values(themes),
         }),
     ],
+    safelist: ['animate-spin'],
 } satisfies Config;

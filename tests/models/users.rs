@@ -1,10 +1,21 @@
 use insta::assert_debug_snapshot;
-use loco_rs::{model::ModelError, testing};
-use sea_orm::{ActiveModelTrait, ActiveValue, IntoActiveModel};
+use loco_rs::{
+    model::ModelError,
+    testing,
+};
+use sea_orm::{
+    ActiveModelTrait,
+    ActiveValue,
+    IntoActiveModel,
+};
 use serial_test::serial;
 use wrf::{
     app::App,
-    models::users::{self, Model, RegisterParams},
+    models::users::{
+        self,
+        Model,
+        RegisterParams,
+    },
 };
 
 macro_rules! configure_insta {
@@ -45,6 +56,8 @@ async fn can_create_with_password() {
         email: "test@framework.com".to_string(),
         password: "1234".to_string(),
         name: "framework".to_string(),
+        #[cfg(not(debug_assertions))]
+        turnstile_response: "".to_string(),
     };
     let res = Model::create_with_password(&boot.app_context.db, &params).await;
 
@@ -69,6 +82,8 @@ async fn handle_create_with_password_with_duplicate() {
             email: "user1@example.com".to_string(),
             password: "1234".to_string(),
             name: "framework".to_string(),
+            #[cfg(not(debug_assertions))]
+            turnstile_response: "".to_string(),
         },
     )
     .await;

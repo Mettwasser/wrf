@@ -23,13 +23,28 @@ server:
   # Out of the box middleware configuration. to disable middleware you can changed the `enable` field to `false` of comment the middleware block
   middlewares: 
     static:
-      enable: true
+      enable: false
       must_exist: true
       precompressed: false
       folder:
         uri: "/"
         path: "frontend/build"
       # fallback: "frontend/build/index.html"
+    
+    # cors:
+    #   enable: true
+    #   # allow_credentials: true
+    #   allow_headers:
+    #     - content-type
+    #     - x-request-id
+    #     - x-powered-by
+    #     - content-length
+    #     - date
+    #     - connection
+    #   allow_origins:
+    #     - http://localhost:5173/
+    #     - http://localhost:5150
+
 
 # Worker Configuration
 workers:
@@ -93,3 +108,9 @@ auth:
     secret: {{ get_env(name="JWT_SECRET") }}
     # Token expiration time in seconds
     expiration: 604800 # 7 days
+    location:
+      from: Cookie
+      name: token
+
+settings:
+  frontend_url: http://localhost:5173

@@ -1,10 +1,22 @@
 use async_trait::async_trait;
 use chrono::offset::Local;
-use loco_rs::{auth::jwt, hash, prelude::*};
-use serde::{Deserialize, Serialize};
+use loco_rs::{
+    auth::jwt,
+    hash,
+    prelude::*,
+};
+use serde::{
+    Deserialize,
+    Serialize,
+};
 use uuid::Uuid;
 
-pub use super::_entities::users::{self, ActiveModel, Entity, Model};
+pub use super::_entities::users::{
+    self,
+    ActiveModel,
+    Entity,
+    Model,
+};
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct LoginParams {
@@ -13,10 +25,13 @@ pub struct LoginParams {
 }
 
 #[derive(Debug, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct RegisterParams {
     pub email: String,
     pub password: String,
     pub name: String,
+    #[cfg(not(debug_assertions))]
+    pub turnstile_response: String,
 }
 
 #[derive(Debug, Validate, Deserialize)]

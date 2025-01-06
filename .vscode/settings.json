@@ -1,19 +1,24 @@
 {
     "cSpell.words": [
+        "appstate",
         "Authenticable",
         "chrono",
         "dotenv",
+        "hcaptcha",
         "Iden",
         "insta",
         "jsonwebtoken",
         "langid",
         "loadout",
+        "nanos",
+        "reqwest",
         "rgba",
         "runed",
         "skeletonlabs",
         "tera",
         "Tera",
         "thiserror",
+        "Timelike",
         "unic",
         "Validatable",
         "VARCHAR",
@@ -172,5 +177,8 @@
         ".vscode",
         ".vscode-insiders",
         ".env"
+    ],
+    "rust-analyzer.rustfmt.extraArgs": [
+        "+nightly"
     ]
 }

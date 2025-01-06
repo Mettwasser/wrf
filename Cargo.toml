@@ -13,7 +13,7 @@ default-run = "wrf-cli"
 loco-rs = { version = "0.13.2" }
 
 [dependencies]
-loco-rs = { workspace = true  }
+loco-rs = { workspace = true }
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 tokio = { version = "1.33.0", default-features = false, features = [
@@ -39,8 +39,10 @@ fluent-templates = { version = "0.8.0", features = ["tera"] }
 unic-langid = "0.9.4"
 thiserror = "2.0.9"
 derive_more = { version = "1.0.0", features = ["full"] }
-hcaptcha = "3.0.2"
 dotenv = "0.15.0"
+reqwest = { version = "0.12.12", features = ["json"] }
+time = "0.3.37"
+tower-http = "0.6.2"
 # /view engine
 
 [[bin]]

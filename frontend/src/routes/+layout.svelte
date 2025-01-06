@@ -127,7 +127,7 @@
             </div>
         </AppBar>
     {/if}
-    <ToastProvider placement="top-end">
+    <ToastProvider placement="bottom-end">
         <div class="flex flex-1 p-4">
             {@render children()}
         </div>
