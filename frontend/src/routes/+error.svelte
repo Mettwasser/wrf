@@ -1,13 +1,5 @@
 <script lang="ts">
     import { page } from '$app/state';
-    import { NavbarDisplayOptions, navbarOpts } from '$lib/index.svelte';
-    import { onMount } from 'svelte';
-
-    onMount(() => {
-        navbarOpts.display = NavbarDisplayOptions.ThemesOnly;
-
-        return () => (navbarOpts.display = NavbarDisplayOptions.Full);
-    });
 </script>
 
 <div class="flex flex-1 flex-col items-center justify-center">

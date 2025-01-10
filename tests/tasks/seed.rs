@@ -1,11 +1,15 @@
-use loco_rs::{boot::run_task, task, testing};
+use loco_rs::{
+    boot::run_task,
+    task,
+    testing,
+};
 use serial_test::serial;
 use wrf::app::App;
 
 #[tokio::test]
 #[serial]
 async fn test_can_seed_data() {
-    let boot = testing::boot_test::<App>().await.unwrap();
+    let boot = testing::request::boot_test::<App>().await.unwrap();
 
     assert!(run_task::<App>(
         &boot.app_context,

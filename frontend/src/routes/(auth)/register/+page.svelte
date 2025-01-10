@@ -1,7 +1,7 @@
 <script lang="ts">
     import Info from 'lucide-svelte/icons/info';
     import FormInputGroup from '$lib/components/FormInputGroup.svelte';
-    import { NavbarDisplayOptions, navbarOpts, URL } from '$lib/index.svelte';
+    import { URL } from '$lib';
     import { onMount } from 'svelte';
     import { isEmailValid } from '$lib/utils/validators';
     import Loader from 'lucide-svelte/icons/loader-circle';
@@ -53,8 +53,6 @@
     }
 
     onMount(() => {
-        navbarOpts.display = NavbarDisplayOptions.ThemesOnly;
-
         if (!dev) {
             turnstile.render(captchaElement!, {
                 // cSpell:ignore 0x4AAAAAAA4kWe5bbkxGpdPA
@@ -62,8 +60,6 @@
                 callback: (r) => (turnstileResponse = r),
             });
         }
-
-        return () => (navbarOpts.display = NavbarDisplayOptions.Full);
     });
 </script>
 

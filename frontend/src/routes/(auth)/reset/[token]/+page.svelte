@@ -1,6 +1,6 @@
 <script lang="ts">
     import FormInputGroup from '$lib/components/FormInputGroup.svelte';
-    import { NavbarDisplayOptions, navbarOpts, URL } from '$lib/index.svelte';
+    import { URL } from '$lib';
     import { getContext, onMount } from 'svelte';
     import { isEmailValid } from '$lib/utils/validators';
     import Loader from 'lucide-svelte/icons/loader-circle';
@@ -34,12 +34,6 @@
         else errorText = 'Error';
         isSubmitting = false;
     }
-
-    onMount(() => {
-        navbarOpts.display = NavbarDisplayOptions.ThemesOnly;
-
-        return () => (navbarOpts.display = NavbarDisplayOptions.Full);
-    });
 </script>
 
 <form class="flex w-3/4 flex-col items-center justify-center gap-4 md:w-1/2 lg:w-[30%]" {onsubmit}>

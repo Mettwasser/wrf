@@ -1,6 +1,6 @@
-use wrf::app::App;
 use loco_rs::testing;
 use serial_test::serial;
+use wrf::app::App;
 
 macro_rules! configure_insta {
     ($($expr:expr),*) => {
@@ -15,8 +15,8 @@ macro_rules! configure_insta {
 async fn test_model() {
     configure_insta!();
 
-    let boot = testing::boot_test::<App>().await.unwrap();
-    testing::seed::<App>(&boot.app_context.db).await.unwrap();
+    let boot = testing::request::boot_test::<App>().await.unwrap();
+    testing::db::seed::<App>(&boot.app_context).await.unwrap();
 
     // query your model, e.g.:
     //

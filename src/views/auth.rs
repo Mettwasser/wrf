@@ -1,4 +1,7 @@
-use serde::{Deserialize, Serialize};
+use serde::{
+    Deserialize,
+    Serialize,
+};
 
 use crate::models::_entities::users;
 
@@ -24,6 +27,7 @@ impl LoginResponse {
 pub struct CurrentResponse {
     pub pid: String,
     pub name: String,
+    pub email: String,
 }
 
 impl CurrentResponse {
@@ -32,6 +36,7 @@ impl CurrentResponse {
         Self {
             pid: user.pid.to_string(),
             name: user.name.clone(),
+            email: user.email.clone(),
         }
     }
 }

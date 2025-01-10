@@ -1,11 +1,11 @@
-use loco_rs::testing;
+use loco_rs::prelude::request;
 use serial_test::serial;
 use wrf::app::App;
 
 #[tokio::test]
 #[serial]
 async fn can_get_register_sessions() {
-    testing::request::<App, _, _>(|request, _ctx| async move {
+    request::<App, _, _>(|request, _ctx| async move {
         let res = request.get("/api/register_sessions/").await;
         assert_eq!(res.status_code(), 200);
 
@@ -17,8 +17,8 @@ async fn can_get_register_sessions() {
 
 #[tokio::test]
 #[serial]
-async fn can_get_POST() {
-    testing::request::<App, _, _>(|request, _ctx| async move {
+async fn can_get_post() {
+    request::<App, _, _>(|request, _ctx| async move {
         let res = request.get("/register_sessions/POST").await;
         assert_eq!(res.status_code(), 200);
     })
@@ -27,8 +27,8 @@ async fn can_get_POST() {
 
 #[tokio::test]
 #[serial]
-async fn can_get_GET() {
-    testing::request::<App, _, _>(|request, _ctx| async move {
+async fn can_get_get() {
+    request::<App, _, _>(|request, _ctx| async move {
         let res = request.get("/register_sessions/GET").await;
         assert_eq!(res.status_code(), 200);
     })

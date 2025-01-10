@@ -14,7 +14,7 @@ const config = {
         }),
     },
     compilerOptions: {
-        warningFilter: (w) => w.code !== 'a11y_consider_explicit_label',
+        warningFilter: (w) => !['a11y_consider_explicit_label'].includes(w.code),
     },
 };
 

@@ -31,19 +31,26 @@ server:
         path: "frontend/build"
       # fallback: "frontend/build/index.html"
     
-    # cors:
-    #   enable: true
-    #   # allow_credentials: true
-    #   allow_headers:
-    #     - content-type
-    #     - x-request-id
-    #     - x-powered-by
-    #     - content-length
-    #     - date
-    #     - connection
-    #   allow_origins:
-    #     - http://localhost:5173/
-    #     - http://localhost:5150
+    cors:
+      enable: true
+      allow_credentials: true
+      allow_methods:
+        - GET
+        - POST
+        - PUT
+        - DELETE
+        - PATCH
+        - OPTIONS
+      allow_headers:
+        - content-type
+        - x-request-id
+        - x-powered-by
+        - content-length
+        - date
+        - connection
+      allow_origins:
+        - http://localhost:5173
+        - http://localhost:5150
 
 
 # Worker Configuration

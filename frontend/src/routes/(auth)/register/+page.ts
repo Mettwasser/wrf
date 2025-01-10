@@ -1,4 +1,4 @@
-import { dateReviver, URL } from '$lib/index.svelte';
+import { dateReviver, URL } from '$lib';
 import type { RegisterSession } from '$lib/types/register_session.js';
 import { error } from '@sveltejs/kit';
 

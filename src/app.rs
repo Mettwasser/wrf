@@ -5,10 +5,7 @@ use std::{
 };
 
 use async_trait::async_trait;
-use axum::{
-    http::HeaderValue,
-    Extension,
-};
+use axum::Extension;
 use loco_rs::{
     app::{
         AppContext,
@@ -21,6 +18,7 @@ use loco_rs::{
         BootResult,
         StartMode,
     },
+    config::Config,
     controller::AppRoutes,
     db::{
         self,
@@ -31,8 +29,6 @@ use loco_rs::{
     Result,
 };
 use migration::Migrator;
-use sea_orm::DatabaseConnection;
-use tower_http::cors::CorsLayer;
 
 use crate::{
     controllers,
@@ -63,20 +59,24 @@ impl Hooks for App {
         )
     }
 
-    async fn boot(mode: StartMode, environment: &Environment) -> Result<BootResult> {
-        create_app::<Self, Migrator>(mode, environment).await
+    async fn boot(
+        mode: StartMode,
+        environment: &Environment,
+        config: Config,
+    ) -> Result<BootResult> {
+        create_app::<Self, Migrator>(mode, environment, config).await
     }
 
     async fn initializers(_ctx: &AppContext) -> Result<Vec<Box<dyn Initializer>>> {
-        Ok(vec![Box::new(
-            initializers::view_engine::ViewEngineInitializer,
-        )])
+        Ok(vec![
+            Box::new(initializers::view_engine::ViewEngineInitializer),
+            Box::new(initializers::socket::SocketInitializer),
+        ])
     }
 
     fn routes(_ctx: &AppContext) -> AppRoutes {
         AppRoutes::with_default_routes() // controller routes below
             .add_route(controllers::register_sessions::routes())
-            .add_route(controllers::lobbies::routes())
             .add_route(controllers::auth::routes())
     }
     async fn connect_workers(_ctx: &AppContext, _queue: &Queue) -> Result<()> {
@@ -85,25 +85,29 @@ impl Hooks for App {
     fn register_tasks(_tasks: &mut Tasks) {
         // tasks-inject (do not remove)
     }
-    async fn truncate(db: &DatabaseConnection) -> Result<()> {
-        truncate_table(db, users::Entity).await?;
+    async fn truncate(ctx: &AppContext) -> Result<()> {
+        truncate_table(&ctx.db, users::Entity).await?;
         Ok(())
     }
 
-    async fn seed(db: &DatabaseConnection, base: &Path) -> Result<()> {
-        db::seed::<users::ActiveModel>(db, &base.join("users.yaml").display().to_string()).await?;
+    async fn seed(ctx: &AppContext, base: &Path) -> Result<()> {
+        db::seed::<users::ActiveModel>(&ctx.db, &base.join("users.yaml").display().to_string())
+            .await?;
         Ok(())
     }
 
-    async fn after_routes(router: axum::Router, _ctx: &AppContext) -> Result<axum::Router> {
+    async fn after_routes(
+        router: axum::routing::Router,
+        _ctx: &AppContext,
+    ) -> Result<axum::Router> {
         let appstate = AppState {
             captcha_secret: env::var("TURNSTILE_SECRET")
-                .expect("you fucked up the config")
+                .expect("you messed up the config")
                 .into(),
         };
 
-        Ok(router
-            .layer(Extension(appstate))
-            .layer(CorsLayer::very_permissive()))
+        Ok(
+            router.layer(Extension(appstate)), // .layer(CorsLayer::very_permissive())
+        )
     }
 }

@@ -310,6 +310,16 @@ async fn current(auth: auth::JWT, State(ctx): State<AppContext>) -> Result<Respo
     format::json(CurrentResponse::new(&user))
 }
 
+async fn logout() -> Result<Response> {
+    format::render()
+        .cookies(&[Cookie::build(("token", ""))
+            .path("/")
+            .http_only(true)
+            .expires(OffsetDateTime::UNIX_EPOCH)
+            .build()])?
+        .json(())
+}
+
 pub fn routes() -> Routes {
     Routes::new()
         .prefix("/api/auth")
@@ -320,4 +330,5 @@ pub fn routes() -> Routes {
         .add("/forgot", post(forgot))
         .add("/reset", post(reset))
         .add("/current", get(current))
+        .add("/logout", post(logout))
 }
