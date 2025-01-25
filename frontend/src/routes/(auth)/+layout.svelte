@@ -6,7 +6,7 @@
     let { children } = $props();
 </script>
 
-<div class="flex size-full flex-col">
+<div class="flex size-full flex-1 flex-col">
     <div class="absolute flex w-full justify-end gap-4 p-4">
         <ThemeButtons />
     </div>

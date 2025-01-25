@@ -71,11 +71,14 @@ impl Hooks for App {
         Ok(vec![
             Box::new(initializers::view_engine::ViewEngineInitializer),
             Box::new(initializers::socket::SocketInitializer),
+            Box::new(initializers::relic::RelicInitializer),
+            Box::new(initializers::delete_expired_db_entries::DeleteExpiredDbEntries),
         ])
     }
 
     fn routes(_ctx: &AppContext) -> AppRoutes {
         AppRoutes::with_default_routes() // controller routes below
+            .add_route(controllers::lobbies::routes())
             .add_route(controllers::register_sessions::routes())
             .add_route(controllers::auth::routes())
     }
@@ -85,6 +88,7 @@ impl Hooks for App {
     fn register_tasks(_tasks: &mut Tasks) {
         // tasks-inject (do not remove)
     }
+
     async fn truncate(ctx: &AppContext) -> Result<()> {
         truncate_table(&ctx.db, users::Entity).await?;
         Ok(())
@@ -93,6 +97,7 @@ impl Hooks for App {
     async fn seed(ctx: &AppContext, base: &Path) -> Result<()> {
         db::seed::<users::ActiveModel>(&ctx.db, &base.join("users.yaml").display().to_string())
             .await?;
+
         Ok(())
     }
 

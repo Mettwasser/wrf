@@ -6,30 +6,27 @@ use serde::{
     Serialize,
 };
 
-use super::sea_orm_active_enums::{
-    Regions,
-    RelicRefinement,
-};
-
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel, Eq, Serialize, Deserialize)]
-#[sea_orm(table_name = "lobbies")]
+#[sea_orm(table_name = "lobby_bans")]
 pub struct Model {
     pub created_at: DateTimeWithTimeZone,
     pub updated_at: DateTimeWithTimeZone,
-    #[sea_orm(primary_key)]
-    pub id: i32,
-    pub expiry: DateTime,
-    pub region: Regions,
-    pub refinement: RelicRefinement,
-    pub activity: String,
-    pub size: i32,
+    #[sea_orm(primary_key, auto_increment = false)]
     pub user_id: i32,
+    #[sea_orm(primary_key, auto_increment = false)]
+    pub lobbies: i32,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
 pub enum Relation {
-    #[sea_orm(has_many = "super::lobby_bans::Entity")]
-    LobbyBans,
+    #[sea_orm(
+        belongs_to = "super::lobbies::Entity",
+        from = "Column::Lobbies",
+        to = "super::lobbies::Column::Id",
+        on_update = "Cascade",
+        on_delete = "Cascade"
+    )]
+    Lobbies,
     #[sea_orm(
         belongs_to = "super::users::Entity",
         from = "Column::UserId",
@@ -37,25 +34,17 @@ pub enum Relation {
         on_update = "Cascade",
         on_delete = "Cascade"
     )]
-    User,
-    #[sea_orm(has_many = "super::users_lobbies::Entity")]
-    UsersLobbies,
+    Users,
 }
 
-impl Related<super::lobby_bans::Entity> for Entity {
+impl Related<super::lobbies::Entity> for Entity {
     fn to() -> RelationDef {
-        Relation::LobbyBans.def()
-    }
-}
-
-impl Related<super::users_lobbies::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::UsersLobbies.def()
+        Relation::Lobbies.def()
     }
 }
 
 impl Related<super::users::Entity> for Entity {
     fn to() -> RelationDef {
-        Relation::User.def()
+        Relation::Users.def()
     }
 }

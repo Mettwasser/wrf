@@ -28,18 +28,16 @@
         });
         if (resp.ok) goto('/login');
     }
-
-    console.log('Layout rendered');
 </script>
 
-<div class="flex size-full flex-col">
+<div class="flex h-auto w-full flex-col">
     <AppBar
         classes="sticky top-0 z-40"
         background="dark:bg-surface-900 bg-surface-500 backdrop-blur-lg !bg-opacity-70"
     >
         <a href="/app" class="flex h-full w-full items-center gap-4 text-center text-3xl">
             <img src={logo} class="w-20 dark:invert" alt="wrf-logo" />
-            Warframe Relic Finder
+            <p class="max-md:hidden">Warframe Relic Finder</p>
         </a>
 
         {#snippet trail()}

@@ -1,3 +1,5 @@
+use std::sync::Arc;
+
 use chrono::{
     NaiveDateTime,
     TimeZone,
@@ -20,6 +22,8 @@ pub mod models;
 pub mod tasks;
 pub mod views;
 pub mod workers;
+
+pub type Relics = Arc<Vec<String>>;
 
 fn naive_to_offset_datetime(naive_datetime: NaiveDateTime) -> OffsetDateTime {
     // Convert NaiveDateTime to DateTime<Utc>
@@ -57,6 +61,16 @@ pub fn unauthorized_v<T: Into<String>, U>(msg: T) -> Result<U> {
     ))
 }
 
+pub fn conflict_v<T: Into<String>, U>(msg: T) -> Result<U> {
+    Err(Error::CustomError(
+        StatusCode::CONFLICT,
+        ErrorDetail {
+            description: Some(msg.into()),
+            error: Some("conflict".to_owned()),
+        },
+    ))
+}
+
 pub fn internal_server_error_v<T: Into<String>, U>(msg: T) -> Result<U> {
     Err(Error::CustomError(
         StatusCode::INTERNAL_SERVER_ERROR,
@@ -86,6 +100,7 @@ pub mod prelude {
     pub use crate::{
         app::AppState,
         bad_request_v,
+        conflict_v,
         custom,
         internal_server_error_v,
         unauthorized_v,

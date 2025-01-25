@@ -148,6 +148,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "34ac096ce696dc2fcabef30516bb13c0a68a11d30131d3df6f04711467681b04"
 
 [[package]]
+name = "arbitrary"
+version = "1.4.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "dde20b3d026af13f561bdd0f15edf01fc734f0dafcedbaf42bba506a9517f223"
+dependencies = [
+ "derive_arbitrary",
+]
+
+[[package]]
 name = "arc-swap"
 version = "1.7.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1170,6 +1179,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "derive_arbitrary"
+version = "1.4.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "30542c1ad912e0e3d22a1935c290e12e8a29d704a420177a31faad4a601a0800"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 2.0.96",
+]
+
+[[package]]
 name = "derive_more"
 version = "0.99.18"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1360,9 +1380,9 @@ dependencies = [
 
 [[package]]
 name = "engineioxide"
-version = "0.15.1"
+version = "0.16.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ec84aea019c24ae0cae29a6306b1b9b6bd91a4c950542d804b742435ed797f0c"
+checksum = "9495a5afd2a06aec4dec260d33f625a21059a0e42b73a8f137001e8f3d70f260"
 dependencies = [
  "base64 0.22.1",
  "bytes",
@@ -1378,7 +1398,7 @@ dependencies = [
  "serde",
  "serde_json",
  "smallvec",
- "thiserror 1.0.69",
+ "thiserror 2.0.10",
  "tokio",
  "tokio-tungstenite",
  "tower-layer",
@@ -4691,9 +4711,9 @@ dependencies = [
 
 [[package]]
 name = "socketioxide"
-version = "0.15.1"
+version = "0.16.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4a9ce59f845cfea2fe24cc7adbd512268893ee07bde899ae6477569dbc42dff3"
+checksum = "965be62e59b52b31acda2937f700615c3bf63bb57846ab8658af0d5f558e4308"
 dependencies = [
  "bytes",
  "engineioxide",
@@ -4709,7 +4729,7 @@ dependencies = [
  "socketioxide-core",
  "socketioxide-parser-common",
  "state",
- "thiserror 1.0.69",
+ "thiserror 2.0.10",
  "tokio",
  "tower-layer",
  "tower-service",
@@ -4717,21 +4737,24 @@ dependencies = [
 
 [[package]]
 name = "socketioxide-core"
-version = "0.15.1"
+version = "0.16.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "82826d9a1efb2b201e7d12d231f98870f768d98d02452eb642bca0587a8d51f0"
+checksum = "1875d5efa916739f9231fe6d8e7b0d50e989d12d1efc1012d41719556452cc47"
 dependencies = [
+ "arbitrary",
  "bytes",
  "engineioxide",
+ "futures-core",
  "serde",
- "thiserror 1.0.69",
+ "smallvec",
+ "thiserror 2.0.10",
 ]
 
 [[package]]
 name = "socketioxide-parser-common"
-version = "0.15.1"
+version = "0.16.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e9a20b64f78a6d093d73d4d166b5bfc8b5096069865c59cee67b3aafac77eaac"
+checksum = "63831e161c97d45ae4ccf3f39a0cfd22e04e778f4fa88f289cc14404e734a9a1"
 dependencies = [
  "bytes",
  "itoa",
@@ -5379,9 +5402,9 @@ dependencies = [
 
 [[package]]
 name = "tokio-tungstenite"
-version = "0.24.0"
+version = "0.26.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "edc5f74e248dc973e0dbb7b74c7e0d6fcc301c694ff50049504004ef4d0cdcd9"
+checksum = "be4bf6fecd69fcdede0ec680aaf474cdab988f9de6bc73d3758f0160e3b7025a"
 dependencies = [
  "futures-util",
  "log",
@@ -5598,9 +5621,9 @@ checksum = "e421abadd41a4225275504ea4d6566923418b7f05506fbc9c0fe86ba7396114b"
 
 [[package]]
 name = "tungstenite"
-version = "0.24.0"
+version = "0.26.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "18e5b8366ee7a95b16d32197d0b2604b43a0be89dc5fac9f8e96ccafbaedda8a"
+checksum = "413083a99c579593656008130e29255e54dcaae495be556cc26888f211648c24"
 dependencies = [
  "byteorder",
  "bytes",
@@ -5610,7 +5633,7 @@ dependencies = [
  "log",
  "rand",
  "sha1",
- "thiserror 1.0.69",
+ "thiserror 2.0.10",
  "utf-8",
 ]
 
@@ -6370,9 +6393,11 @@ dependencies = [
  "serde_json",
  "serial_test",
  "socketioxide",
+ "socketioxide-core",
  "thiserror 2.0.10",
  "time",
  "tokio",
+ "tower 0.5.2",
  "tower-http",
  "tracing",
  "tracing-subscriber",

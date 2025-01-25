@@ -3,6 +3,7 @@
         "appstate",
         "Authenticable",
         "chrono",
+        "copium",
         "dotenv",
         "hcaptcha",
         "Iden",
@@ -10,6 +11,7 @@
         "jsonwebtoken",
         "langid",
         "loadout",
+        "Meso",
         "nanos",
         "redactions",
         "reqwest",
@@ -157,7 +159,8 @@
     ],
     "tailwindCSS.experimental.classRegex": [
         ".*?[bB]ase=[\"']([^\"']*)[\"']",
-        ".*?[bB]ackground=[\"']([^\"']*)[\"']"
+        ".*?[bB]ackground=[\"']([^\"']*)[\"']",
+        ".*?[cC]lasses=[\"']([^\"']*)[\"']"
     ],
     "[yaml]": {
         "editor.insertSpaces": true,
@@ -172,7 +175,8 @@
         "editor.formatOnSave": false
     },
     "files.associations": {
-        "*.t": "html"
+        "*.t": "html",
+        "*.css": "tailwindcss"
     },
     "cSpell.ignorePaths": [
         "package-lock.json",
@@ -186,5 +190,5 @@
     ],
     "rust-analyzer.rustfmt.extraArgs": [
         "+nightly"
-    ]
+    ],
 }

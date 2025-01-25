@@ -11,6 +11,7 @@ use serde::{
 };
 use uuid::Uuid;
 
+use super::_entities::links;
 pub use super::_entities::users::{
     self,
     ActiveModel,
@@ -236,6 +237,18 @@ impl super::_entities::users::Model {
     /// when could not convert user claims to jwt token
     pub fn generate_jwt(&self, secret: &str, expiration: &u64) -> ModelResult<String> {
         Ok(jwt::JWT::new(secret).generate_token(expiration, self.pid.to_string(), None)?)
+    }
+
+    pub async fn is_banned_from(
+        &self,
+        lobby_id: i32,
+        db: &DatabaseConnection,
+    ) -> ModelResult<bool> {
+        let lobby_ban = super::_entities::lobby_bans::Entity::find_by_id((self.id, lobby_id))
+            .one(db)
+            .await?;
+
+        Ok(lobby_ban.is_some())
     }
 }
 

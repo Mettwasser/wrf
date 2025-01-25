@@ -23,9 +23,13 @@
     <div class="input-group-cell">
         <Palette size={18} />
     </div>
-    <select class="capitalize" bind:value={theme.current.name} onchange={switchTheme}>
+    <select
+        class="select !outline-surface-950 capitalize"
+        bind:value={theme.current.name}
+        onchange={switchTheme}
+    >
         {#each THEMES as theme}
-            <option value={theme.name} class="capitalize">{theme.name}</option>
+            <option value={theme.name} class="!border-none capitalize">{theme.name}</option>
         {/each}
     </select>
 </div>

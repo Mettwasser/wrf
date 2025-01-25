@@ -10,6 +10,7 @@
     updateThemeInHtml(theme.current as any);
 </script>
 
-<div class="flex size-full">
+<!-- Height is set to auto to resolve a weird issue with the navbar being not fixed after scrolling for a while -->
+<div class="flex flex-1">
     {@render children()}
 </div>
