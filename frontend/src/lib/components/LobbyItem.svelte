@@ -11,7 +11,10 @@
 >
     <div class="flex flex-1 justify-between gap-4">
         <div class="flex flex-col gap-2">
-            <h3 class="h3">{lobby.activity}</h3>
+            <div class="flex gap-2">
+                <h3 class="h3">{lobby.activity}</h3>
+                <p>[{lobby.region}]</p>
+            </div>
             <p>{lobby.refinement}</p>
         </div>
         <div class="text-center">

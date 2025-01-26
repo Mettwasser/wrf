@@ -47,6 +47,7 @@ pub fn bad_request_v<T: Into<String>, U>(msg: T) -> Result<U> {
         ErrorDetail {
             description: Some(msg.into()),
             error: Some("bad_request".to_owned()),
+            errors: None,
         },
     ))
 }
@@ -57,6 +58,7 @@ pub fn unauthorized_v<T: Into<String>, U>(msg: T) -> Result<U> {
         ErrorDetail {
             description: Some(msg.into()),
             error: Some("unauthorized".to_owned()),
+            errors: None,
         },
     ))
 }
@@ -67,6 +69,7 @@ pub fn conflict_v<T: Into<String>, U>(msg: T) -> Result<U> {
         ErrorDetail {
             description: Some(msg.into()),
             error: Some("conflict".to_owned()),
+            errors: None,
         },
     ))
 }
@@ -77,6 +80,7 @@ pub fn internal_server_error_v<T: Into<String>, U>(msg: T) -> Result<U> {
         ErrorDetail {
             description: Some(msg.into()),
             error: Some("internal_server_error".to_owned()),
+            errors: None,
         },
     ))
 }
@@ -92,6 +96,7 @@ pub fn custom<T: Into<String>, U>(code: StatusCode, msg: T) -> Result<U> {
                     .to_lowercase()
                     .replace(" ", "_"),
             ),
+            errors: None,
         },
     ))
 }

@@ -3,7 +3,7 @@ export type Lobby = {
     updatedAt: string; // ISO 8601 format for DateTime with TimeZone
     id: number; // Primary key
     expiry: string; // ISO 8601 format for DateTime
-    region: Regions;
+    region: Region;
     refinement: RelicRefinement;
     activity: string;
     size: number;
@@ -11,10 +11,10 @@ export type Lobby = {
 };
 
 // Enum for Regions
-export type Regions = 'AS' | 'EER' | 'EU' | 'NA' | 'OC' | 'SA';
+export type Region = 'AS' | 'EER' | 'EU' | 'NA' | 'OC' | 'SA';
 
 // Enum for RelicRefinement
-export type RelicRefinement = 'Intact' | 'Flawless' | 'Radiant';
+export type RelicRefinement = 'Intact' | 'Exceptional' | 'Flawless' | 'Radiant';
 
 export const mock: Lobby[] = JSON.parse(`[
   {

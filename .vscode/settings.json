@@ -160,7 +160,9 @@
     "tailwindCSS.experimental.classRegex": [
         ".*?[bB]ase=[\"']([^\"']*)[\"']",
         ".*?[bB]ackground=[\"']([^\"']*)[\"']",
-        ".*?[cC]lasses=[\"']([^\"']*)[\"']"
+        ".*?[cC]lasses=[\"']([^\"']*)[\"']",
+        ".*?[bB]g=[\"']([^\"']*)[\"']",
+        ".*?[cC]olor=[\"']([^\"']*)[\"']",
     ],
     "[yaml]": {
         "editor.insertSpaces": true,

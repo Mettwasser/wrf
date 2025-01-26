@@ -1,6 +1,6 @@
 <script lang="ts">
     import '../app.css';
-    import { updateDarkModeInHtml } from '$lib/utils/darkMode';
+    import { updateDarkModeInHtml } from '$lib/utils/dark_mode';
     import { darkModeState, theme } from '$lib';
     import { updateThemeInHtml } from '$lib/utils/theme';
 

@@ -1,7 +1,7 @@
 <script lang="ts">
     import Info from 'lucide-svelte/icons/info';
     import FormInputGroup from '$lib/components/FormInputGroup.svelte';
-    import { URL } from '$lib';
+    import { fetch, URL } from '$lib';
     import { onMount } from 'svelte';
     import { isEmailValid } from '$lib/utils/validators';
     import Loader from 'lucide-svelte/icons/loader-circle';
@@ -45,7 +45,6 @@
             headers: {
                 'Content-Type': 'application/json',
             },
-            credentials: 'include',
         });
         if (resp.ok) errorText = 'SUCCESS!';
         else errorText = await resp.text();

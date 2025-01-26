@@ -10,7 +10,7 @@ default-run = "wrf-cli"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [workspace.dependencies]
-loco-rs = { version = "0.14.0" }
+loco-rs = { version = "0.14.1" }
 
 [dependencies]
 loco-rs = { workspace = true }

@@ -8,7 +8,6 @@ use std::{
 
 use async_trait::async_trait;
 use axum::{
-    extract::FromRequestParts,
     Extension,
     Router as AxumRouter,
 };
@@ -33,6 +32,8 @@ use socketioxide_core::adapter::{
 use tower::ServiceBuilder;
 use tower_http::cors::CorsLayer;
 use tracing::info;
+
+use crate::models::users;
 
 #[derive(Clone)]
 struct SocketState {
@@ -97,8 +98,13 @@ fn on_unsubscribe(socket: SocketRef, Data(data): Data<SubscriptionType>) {
 }
 
 async fn on_connect(socket: SocketRef, State(state): State<SocketState>) {
-    let mut req_parts = socket.req_parts().clone();
-    let res = auth::JWT::from_request_parts(&mut req_parts, &state.ctx).await;
+    let res = auth::extract_jwt_from_request_parts(socket.req_parts(), &state.ctx);
+    if res.is_err() {
+        socket.disconnect().ok();
+        return;
+    };
+
+    let res = users::Model::find_by_pid(&state.ctx.db, &res.unwrap().claims.pid).await;
     if res.is_err() {
         socket.disconnect().ok();
         return;

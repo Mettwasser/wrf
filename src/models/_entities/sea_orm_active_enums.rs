@@ -27,6 +27,8 @@ pub enum Regions {
 pub enum RelicRefinement {
     #[sea_orm(string_value = "Intact")]
     Intact,
+    #[sea_orm(string_value = "Exceptional")]
+    Exceptional,
     #[sea_orm(string_value = "Flawless")]
     Flawless,
     #[sea_orm(string_value = "Radiant")]

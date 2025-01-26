@@ -8,7 +8,7 @@
     import type { AccountRoute } from '$lib/types/account_routes';
     import ThemeButtons from '$lib/components/ThemeButtons.svelte';
     import { goto } from '$app/navigation';
-    import { URL } from '$lib';
+    import { fetch, URL } from '$lib';
 
     let { children } = $props();
 
@@ -24,7 +24,6 @@
     async function logout() {
         let resp = await fetch(`${URL}/api/auth/logout`, {
             method: 'POST',
-            credentials: 'include',
         });
         if (resp.ok) goto('/login');
     }

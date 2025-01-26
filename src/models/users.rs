@@ -11,7 +11,6 @@ use serde::{
 };
 use uuid::Uuid;
 
-use super::_entities::links;
 pub use super::_entities::users::{
     self,
     ActiveModel,

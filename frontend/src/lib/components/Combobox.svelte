@@ -142,7 +142,7 @@
         <div
             {...api.getPositionerProps()}
             transition:fade={{ duration: 100 }}
-            class="{positionerBase} {positionerZIndex} {positionerClasses}"
+            class="{positionerBase} {positionerZIndex} {positionerClasses} !z-50"
         >
             {#if options.length > 0}
                 <!-- Content (list) -->

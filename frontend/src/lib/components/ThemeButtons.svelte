@@ -3,7 +3,7 @@
 
     import Palette from 'lucide-svelte/icons/palette';
     import { THEMES, updateThemeInHtml } from '$lib/utils/theme';
-    import { updateDarkModeInHtml, type DarkModeState } from '$lib/utils/darkMode';
+    import { updateDarkModeInHtml, type DarkModeState } from '$lib/utils/dark_mode';
     import type { ChangeEventHandler } from 'svelte/elements';
     import { darkModeState, theme } from '$lib';
 

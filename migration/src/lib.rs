@@ -12,6 +12,7 @@ mod m20250101_194917_register_sessions;
 mod m20250105_194858_add_lobbies_size;
 mod m20250111_143735_add_user_ref_to_lobbies;
 mod m20250111_152320_lobby_bans;
+mod m20250126_115216_exceptional_refinement;
 pub struct Migrator;
 
 #[async_trait::async_trait]
@@ -27,6 +28,7 @@ impl MigratorTrait for Migrator {
             Box::new(m20250105_194858_add_lobbies_size::Migration),
             Box::new(m20250111_143735_add_user_ref_to_lobbies::Migration),
             Box::new(m20250111_152320_lobby_bans::Migration),
+            Box::new(m20250126_115216_exceptional_refinement::Migration),
             // inject-above (do not remove this comment)
         ]
     }

@@ -1,6 +1,6 @@
 <script lang="ts">
     import FormInputGroup from '$lib/components/FormInputGroup.svelte';
-    import { URL } from '$lib';
+    import { fetch, URL } from '$lib';
     import { onMount } from 'svelte';
     import { isEmailValid } from '$lib/utils/validators';
     import Loader from 'lucide-svelte/icons/loader-circle';
@@ -29,7 +29,6 @@
             headers: {
                 'Content-Type': 'application/json',
             },
-            credentials: 'include',
         });
         if (resp.ok) goto('/app');
         else if (resp.status == 400 || resp.status == 401)

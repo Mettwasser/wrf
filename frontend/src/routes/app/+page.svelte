@@ -1,4 +1,5 @@
 <script lang="ts">
+    import Combobox from '$lib/components/Combobox.svelte';
     import LobbyCreateButton from '$lib/components/LobbyCreateButton.svelte';
     import LobbyItem from '$lib/components/LobbyItem.svelte';
     import { mock as originalMock } from '$lib/types/lobby';
@@ -7,6 +8,7 @@
 
     let { data } = $props();
 
+    // TODO: replace mock with actual data
     const mock = $state(originalMock);
 
     let relics = [...data.relics];

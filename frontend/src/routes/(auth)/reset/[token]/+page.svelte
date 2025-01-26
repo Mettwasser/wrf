@@ -1,6 +1,6 @@
 <script lang="ts">
     import FormInputGroup from '$lib/components/FormInputGroup.svelte';
-    import { URL } from '$lib';
+    import { fetch, URL } from '$lib';
     import { getContext, onMount } from 'svelte';
     import { isEmailValid } from '$lib/utils/validators';
     import Loader from 'lucide-svelte/icons/loader-circle';
@@ -28,7 +28,6 @@
             headers: {
                 'Content-Type': 'application/json',
             },
-            credentials: 'include',
         });
         if (resp.ok) goto('/login');
         else errorText = 'Error';
