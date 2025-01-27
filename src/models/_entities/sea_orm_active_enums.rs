@@ -8,7 +8,7 @@ use serde::{
 
 #[derive(Debug, Clone, PartialEq, Eq, EnumIter, DeriveActiveEnum, Serialize, Deserialize)]
 #[sea_orm(rs_type = "String", db_type = "Enum", enum_name = "regions")]
-pub enum Regions {
+pub enum Region {
     #[sea_orm(string_value = "AS")]
     AS,
     #[sea_orm(string_value = "EER")]

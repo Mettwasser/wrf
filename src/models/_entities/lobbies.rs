@@ -7,7 +7,7 @@ use serde::{
 };
 
 use super::sea_orm_active_enums::{
-    Regions,
+    Region,
     RelicRefinement,
 };
 
@@ -19,7 +19,7 @@ pub struct Model {
     #[sea_orm(primary_key)]
     pub id: i32,
     pub expiry: DateTime,
-    pub region: Regions,
+    pub region: Region,
     pub refinement: RelicRefinement,
     pub activity: String,
     pub size: i32,

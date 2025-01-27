@@ -1,4 +1,7 @@
-use std::sync::Arc;
+use std::{
+    collections::HashMap,
+    sync::Arc,
+};
 
 use chrono::{
     NaiveDateTime,
@@ -23,7 +26,7 @@ pub mod tasks;
 pub mod views;
 pub mod workers;
 
-pub type Relics = Arc<Vec<String>>;
+pub type Relics = Arc<HashMap<String, String>>;
 
 fn naive_to_offset_datetime(naive_datetime: NaiveDateTime) -> OffsetDateTime {
     // Convert NaiveDateTime to DateTime<Utc>

@@ -9,7 +9,7 @@
         errorCollection: ErrorCollection;
     };
 
-    let { title, children, errorId, errorCollection = $bindable() }: Props = $props();
+    let { title, children, errorId, errorCollection }: Props = $props();
 
     let error = $derived(errorCollection.getError(errorId));
 </script>
@@ -18,6 +18,6 @@
     <span class="label-text">{title}</span>
     {@render children()}
     {#if error}
-        <p class="text-error-300-700 text-sm">{error.errorText}</p>
+        <p class="text-error-300-700 text-xs">{error}</p>
     {/if}
 </label>

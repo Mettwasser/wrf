@@ -2,7 +2,6 @@
 
 import { dev } from '$app/environment';
 import { PersistedState } from 'runed';
-import type { User } from './types/user';
 import type { Theme } from '@skeletonlabs/skeleton/themes';
 import * as themes from '@skeletonlabs/skeleton/themes';
 import type { DarkModeState } from './utils/dark_mode';
@@ -15,7 +14,11 @@ export const theme = new PersistedState<Theme>('theme', themes.cerberus);
 export const darkModeState = new PersistedState<DarkModeState>('darkModeState', 'dark');
 
 export async function fetch(...args: Parameters<typeof window.fetch>) {
-    args[1] = { ...args[1], credentials: 'include' };
+    args[1] = {
+        ...args[1],
+        credentials: 'include',
+        headers: { ...args[1]?.headers, 'Content-Type': 'application/json' },
+    };
     return window.fetch(...args);
 }
 

@@ -9,7 +9,8 @@
     let { data } = $props();
 
     // TODO: replace mock with actual data
-    const mock = $state(originalMock);
+    const recentLobbies = $state(originalMock);
+    const ownedLobbyAndUser = $derived(recentLobbies.find((d) => d.lobby.userId === data.user.id));
 
     let relics = [...data.relics];
 
@@ -20,7 +21,7 @@
         io.emit(ClientEvent.Subscribe, subscribeData);
 
         io.on(ServerEvent.CreateLobby, (lobby) => {
-            mock.unshift(lobby);
+            recentLobbies.unshift(lobby);
         });
 
         return () => {
@@ -37,8 +38,11 @@
         </div>
     </div>
     <ul class="flex w-full flex-col flex-wrap items-center justify-center gap-8 lg:flex-row">
-        {#each mock as lobby}
-            <LobbyItem {lobby} />
+        {#if ownedLobbyAndUser}
+            <LobbyItem lobbyAndUser={ownedLobbyAndUser} ownedByMe={true} />
+        {/if}
+        {#each recentLobbies.filter((d) => d.lobby.userId !== data.user.id) as lobbyAndUser}
+            <LobbyItem {lobbyAndUser} />
         {/each}
     </ul>
 </div>

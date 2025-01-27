@@ -1,7 +1,7 @@
 import { goto } from '$app/navigation';
 import { URL } from '$lib';
 import type { Relic } from '$lib/types/relic.js';
-import type { User } from '$lib/types/user';
+import type { CurrentUser } from '$lib/types/user';
 
 async function fetchAuth(fetch: typeof window.fetch) {
     const response = await fetch(`${URL}/api/auth/current`, {
@@ -12,7 +12,7 @@ async function fetchAuth(fetch: typeof window.fetch) {
 
     let json = await response.text();
 
-    return JSON.parse(json) as User;
+    return JSON.parse(json) as CurrentUser;
 }
 
 type InitialRelicData = {

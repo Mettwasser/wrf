@@ -28,6 +28,7 @@ pub struct CurrentResponse {
     pub pid: String,
     pub name: String,
     pub email: String,
+    pub id: i32,
 }
 
 impl CurrentResponse {
@@ -37,6 +38,20 @@ impl CurrentResponse {
             pid: user.pid.to_string(),
             name: user.name.clone(),
             email: user.email.clone(),
+            id: user.id,
         }
+    }
+}
+
+#[derive(Debug, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct UserResponse {
+    pub id: i32,
+    pub name: String,
+}
+
+impl UserResponse {
+    pub fn new(users::Model { id, name, .. }: users::Model) -> Self {
+        Self { id, name }
     }
 }
