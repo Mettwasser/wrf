@@ -24,13 +24,10 @@ server:
   middlewares: 
     static:
       enable: false
-      must_exist: true
-      precompressed: false
-      folder:
-        uri: "/"
-        path: "frontend/build"
-      # fallback: "frontend/build/index.html"
     
+    fallback:
+      enable: false
+
     cors:
       enable: true
       allow_credentials: true

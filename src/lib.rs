@@ -1,5 +1,8 @@
 use std::{
-    collections::HashMap,
+    collections::{
+        HashMap,
+        HashSet,
+    },
     sync::Arc,
 };
 
@@ -26,7 +29,7 @@ pub mod tasks;
 pub mod views;
 pub mod workers;
 
-pub type Relics = Arc<HashMap<String, String>>;
+pub type Relics = Arc<HashSet<String>>;
 
 fn naive_to_offset_datetime(naive_datetime: NaiveDateTime) -> OffsetDateTime {
     // Convert NaiveDateTime to DateTime<Utc>

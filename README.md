@@ -1,58 +1,21 @@
-# Welcome to Loco :train:
+# What dis?
 
-[Loco](https://loco.rs) is a web and API framework running on Rust.
-
-This is the **SaaS starter** which includes a `User` model and authentication based on JWT.
-It also include configuration sections that help you pick either a frontend or a server-side template set up for your fullstack server.
+This is/was a project to help find groups for Relics in Warframe. A matchmaker, if you will.
 
 
-## Quick Start
+## "Cancelled" - why?
 
-```sh
-cargo loco start
-```
+The reason is simple: with a recent update to Warframe 1999, DE decided to remove the `/profile` endpoint.
 
-```sh
-$ cargo loco start
-Finished dev [unoptimized + debuginfo] target(s) in 21.63s
-    Running `target/debug/myapp start`
+As my whole auth-flow depended on this it's easy to say I lost motivation. I might pick up the project in the near future again however.
 
-    :
-    :
-    :
+## Images
+### A set of images of how the app looks like
 
-controller/app_routes.rs:203: [Middleware] Adding log trace id
+![Register](assets/register.png)
 
-                      ▄     ▀
-                                 ▀  ▄
-                  ▄       ▀     ▄  ▄ ▄▀
-                                    ▄ ▀▄▄
-                        ▄     ▀    ▀  ▀▄▀█▄
-                                          ▀█▄
-▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄   ▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄ ▀▀█
- ██████  █████   ███ █████   ███ █████   ███ ▀█
- ██████  █████   ███ █████   ▀▀▀ █████   ███ ▄█▄
- ██████  █████   ███ █████       █████   ███ ████▄
- ██████  █████   ███ █████   ▄▄▄ █████   ███ █████
- ██████  █████   ███  ████   ███ █████   ███ ████▀
-   ▀▀▀██▄ ▀▀▀▀▀▀▀▀▀▀  ▀▀▀▀▀▀▀▀▀▀  ▀▀▀▀▀▀▀▀▀▀ ██▀
-       ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀
-                https://loco.rs
+![Login](assets/login.png)
 
-environment: development
-   database: automigrate
-     logger: debug
-compilation: debug
-      modes: server
+![Home](assets/home.png)
 
-listening on http://localhost:5150
-```
-
-## Full Stack Serving
-
-You can check your [configuration](config/development.yaml) to pick either frontend setup or server-side rendered template, and activate the relevant configuration sections.
-
-
-## Getting help
-
-Check out [a quick tour](https://loco.rs/docs/getting-started/tour/) or [the complete guide](https://loco.rs/docs/getting-started/guide/).
+![Lobby Creation](assets/lobby_creation.png)

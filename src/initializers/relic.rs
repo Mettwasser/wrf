@@ -1,5 +1,8 @@
 use std::{
-    collections::HashMap,
+    collections::{
+        HashMap,
+        HashSet,
+    },
     sync::Arc,
 };
 
@@ -59,9 +62,11 @@ impl Initializer for RelicInitializer {
             .map_err(|err| loco_rs::Error::Any(err.into()))?;
 
         let relics = relic_items
-            .into_iter()
-            .map(|(k, v)| (k, v.to_string()))
-            .collect::<HashMap<String, String>>();
+            .into_values()
+            .map(|v| v.to_string())
+            .collect::<HashSet<String>>();
+
+        tracing::info!(?relics);
 
         Ok(router.layer(Extension(Arc::new(relics))))
     }

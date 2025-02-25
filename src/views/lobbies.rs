@@ -1,5 +1,9 @@
 use loco_rs::prelude::*;
-use sea_orm::prelude::DateTimeWithTimeZone;
+use sea_orm::{
+    prelude::DateTimeWithTimeZone,
+    EntityName,
+    FromQueryResult,
+};
 use serde::Serialize;
 
 use super::auth::UserResponse;
@@ -10,6 +14,7 @@ use crate::models::{
             Region,
             RelicRefinement,
         },
+        users_lobbies,
     },
     users,
 };
@@ -68,5 +73,28 @@ impl LobbyAndUserResponse {
             lobby: LobbyResponse::new(lobby),
             user: UserResponse::new(user),
         }
+    }
+}
+
+#[derive(Debug, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct RecentLobby {
+    lobby: LobbyResponse,
+    host: UserResponse,
+    players: i32,
+}
+
+impl FromQueryResult for RecentLobby {
+    fn from_query_result(res: &sea_orm::QueryResult, _pre: &str) -> Result<Self, sea_orm::DbErr> {
+        let lobby = lobbies::Model::from_query_result(res, lobbies::Entity.table_name())?.into();
+        let host = users::Model::from_query_result(res, users::Entity.table_name())?;
+        let joined_players =
+            users_lobbies::Model::from_query_result(res, users_lobbies::Entity.table_name())?;
+
+        Ok(Self {
+            lobby: LobbyResponse::new(lobby),
+            host: UserResponse::new(host),
+            players: 1,
+        })
     }
 }

@@ -7,7 +7,14 @@ use chrono::{
     Local,
 };
 use loco_rs::prelude::*;
-use sea_orm::QueryOrder;
+use migration::Alias;
+use sea_orm::{
+    JoinType,
+    QueryOrder,
+    QuerySelect,
+    QueryTrait,
+    RelationTrait,
+};
 use serde::Deserialize;
 use socketioxide::SocketIo;
 
@@ -19,6 +26,7 @@ use crate::{
     models::{
         _entities::{
             lobbies::{
+                self,
                 ActiveModel,
                 Column,
                 Entity,
@@ -28,11 +36,16 @@ use crate::{
                 Region,
                 RelicRefinement,
             },
+            users_lobbies,
         },
         users,
+        Prefixer,
     },
     prelude::*,
-    views::lobbies::LobbyAndUserResponse,
+    views::lobbies::{
+        LobbyAndUserResponse,
+        RecentLobby,
+    },
     Relics,
 };
 
@@ -54,7 +67,7 @@ pub async fn create(
 ) -> Result<Response> {
     let user = users::Model::find_by_pid(&ctx.db, &auth.claims.pid).await?;
 
-    if !(*relics).contains_key(&params.activity) {
+    if !(*relics).contains(&params.activity) {
         return bad_request_v("Invalid relic!");
     }
 
@@ -134,11 +147,30 @@ pub async fn create_mock(Extension(io): Extension<SocketIo>) -> Result<Response>
     format::empty()
 }
 
+pub async fn recent(auth: auth::JWT, State(ctx): State<AppContext>) -> Result<Response> {
+    let _user = users::Model::find_by_pid(&ctx.db, &auth.claims.pid).await?;
+
+    let select = lobbies::Entity::find()
+        .limit(20)
+        .order_by_desc(lobbies::Column::Expiry);
+
+    let result = Prefixer::new(select)
+        .add_columns(lobbies::Entity)
+        .add_columns(users::Entity)
+        .add_columns(users_lobbies::Entity)
+        .selector
+        .join(JoinType::LeftJoin, lobbies::Relation::User.def())
+        .join(JoinType::LeftJoin, lobbies::Relation::UsersLobbies.def())
+        .into_model::<RecentLobby>()
+        .all(&ctx.db)
+        .await?;
+
+    format::empty()
+}
+
 pub fn routes() -> Routes {
     Routes::new()
         .prefix("api/lobbies/")
         .add("/", post(create))
         .add("/mock", post(create_mock))
 }
-
-// next up: check if the
