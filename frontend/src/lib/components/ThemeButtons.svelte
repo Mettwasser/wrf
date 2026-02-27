@@ -19,12 +19,12 @@
     };
 </script>
 
-<div class="input-group hover:preset-tonal xsm:flex hidden grid-cols-[auto_1fr]">
+<div class="input-group hidden grid-cols-[auto_1fr] hover:preset-tonal xsm:flex">
     <div class="input-group-cell">
         <Palette size={18} />
     </div>
     <select
-        class="select !outline-surface-950 capitalize"
+        class="select capitalize !outline-surface-950"
         bind:value={theme.current.name}
         onchange={switchTheme}
     >
@@ -34,8 +34,8 @@
     </select>
 </div>
 
-<div class="flex items-center justify-center">
+<!-- <div class="flex items-center justify-center">
     <button type="button" onclick={toggleDarkMode} class="hover:preset-tonal rounded-full p-2">
         <SunMoon size={30} />
     </button>
-</div>
+</div> -->

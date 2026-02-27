@@ -6,6 +6,7 @@
         "codegen",
         "copium",
         "dotenv",
+        "everytime",
         "hcaptcha",
         "Iden",
         "insta",
@@ -24,6 +25,7 @@
         "serde",
         "skeletonlabs",
         "socketioxide",
+        "spacetimedb",
         "sqlx",
         "tera",
         "Tera",
@@ -35,7 +37,7 @@
         "Warframe"
     ],
     "editor.quickSuggestions": {
-        "strings": true,
+        "strings": true
     },
     "tailwindCSS.classAttributes": [
         "class",
@@ -157,14 +159,14 @@
         "triggerBase",
         "arrowBackground",
         "contentBase",
-        "base",
+        "base"
     ],
     "tailwindCSS.experimental.classRegex": [
         ".*?[bB]ase=[\"']([^\"']*)[\"']",
         ".*?[bB]ackground=[\"']([^\"']*)[\"']",
         ".*?[cC]lasses=[\"']([^\"']*)[\"']",
         ".*?[bB]g=[\"']([^\"']*)[\"']",
-        ".*?[cC]olor=[\"']([^\"']*)[\"']",
+        ".*?[cC]olor=[\"']([^\"']*)[\"']"
     ],
     "[yaml]": {
         "editor.insertSpaces": true,
@@ -192,7 +194,5 @@
         ".vscode-insiders",
         ".env"
     ],
-    "rust-analyzer.rustfmt.extraArgs": [
-        "+nightly"
-    ],
+    "rust-analyzer.rustfmt.extraArgs": ["+nightly"]
 }

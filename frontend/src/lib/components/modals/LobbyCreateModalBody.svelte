@@ -7,7 +7,7 @@
 
     import FormGroup from '../FormGroup.svelte';
     import { ErrorCollection, refreshError } from '$lib/utils/error_collection.svelte';
-    import { fetch, makeToComboboxData, URL } from '$lib';
+    import { makeToComboboxData } from '$lib';
     import { getContext } from 'svelte';
     import Loader from 'lucide-svelte/icons/loader-circle';
 

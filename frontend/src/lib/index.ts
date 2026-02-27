@@ -5,22 +5,14 @@ import { PersistedState } from 'runed';
 import type { Theme } from '@skeletonlabs/skeleton/themes';
 import * as themes from '@skeletonlabs/skeleton/themes';
 import type { DarkModeState } from './utils/dark_mode';
-import type { Snippet } from 'svelte';
+import { getContext, type Snippet } from 'svelte';
 import * as combobox from '@zag-js/combobox';
-
-export const URL = dev ? 'http://localhost:5150' : 'TODO';
+import { useSpacetimeDB } from 'spacetimedb/svelte';
+import { DbConnection } from './module_bindings';
+import type { Identity } from 'spacetimedb';
 
 export const theme = new PersistedState<Theme>('theme', themes.cerberus);
 export const darkModeState = new PersistedState<DarkModeState>('darkModeState', 'dark');
-
-export async function fetch(...args: Parameters<typeof window.fetch>) {
-    args[1] = {
-        ...args[1],
-        credentials: 'include',
-        headers: { ...args[1]?.headers, 'Content-Type': 'application/json' },
-    };
-    return window.fetch(...args);
-}
 
 export function makeToComboboxData(collection: string[]): ComboboxData[] {
     return collection.map((item) => {
@@ -28,14 +20,16 @@ export function makeToComboboxData(collection: string[]): ComboboxData[] {
     });
 }
 
-export const dateReviver = (k: any, v: any) => {
-    if (typeof v === 'string') {
-        let d = new Date(v);
-        if (Number.isNaN(d.getTime())) return v;
-        return d;
-    }
-    return v;
-};
+export function conn(): DbConnection {
+    // @ts-ignore
+    return getContext('conn').current;
+}
+
+export function identity(): Identity {
+    // @ts-ignore
+    return getContext('ident').current;
+}
+
 export const useId = (() => {
     let id = 0;
     return () => Math.random().toString(36).substring(2) + id++;

@@ -1,19 +1,6 @@
 import { goto } from '$app/navigation';
-import { URL } from '$lib';
 import type { Relic } from '$lib/types/relic.js';
 import type { CurrentUser } from '$lib/types/user';
-
-async function fetchAuth(fetch: typeof window.fetch) {
-    const response = await fetch(`${URL}/api/auth/current`, {
-        credentials: 'include',
-    });
-
-    if (response.status === 401) goto('/login');
-
-    let json = await response.text();
-
-    return JSON.parse(json) as CurrentUser;
-}
 
 type InitialRelicData = {
     [key: string]: Relic;
@@ -40,7 +27,7 @@ async function fetchRelics(fetch: typeof window.fetch) {
 }
 
 export const load = async ({ fetch }) => {
-    const [user, relics] = await Promise.all([fetchAuth(fetch), fetchRelics(fetch)]);
+    const relics = await fetchRelics(fetch);
 
-    return { user, relics };
+    return { relics };
 };

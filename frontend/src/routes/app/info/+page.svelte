@@ -1,26 +1,19 @@
 <script lang="ts">
-    import { Mail, Pen } from 'lucide-svelte';
+    import { conn, identity } from '$lib';
+    import { CheckCircle, User, X } from 'lucide-svelte';
+    import Section from './Section.svelte';
 
-    let { data } = $props();
+    let me = conn().db.user.id.find(identity());
 </script>
 
-<div class="flex flex-1 items-center justify-center gap-32">
-    <div class="flex w-1/3 flex-col">
-        <h1 class="h1">Username</h1>
-        <div class="input-group hover:preset-tonal xsm:flex hidden w-full grid-cols-[auto_1fr]">
-            <div class="input-group-cell">
-                <Pen size={18} />
-            </div>
-            <input type="text" class="input text-center" value={data.user.name} />
-        </div>
-    </div>
-    <div class="flex w-1/3 flex-col">
-        <h1 class="h1">Email</h1>
-        <div class="input-group hover:preset-tonal xsm:flex hidden w-full grid-cols-[auto_1fr]">
-            <div class="input-group-cell">
-                <Mail size={18} />
-            </div>
-            <input type="text" class="input text-center" value={data.user.email} />
-        </div>
-    </div>
+<div class="flex flex-1 flex-col items-center justify-center gap-32">
+    <Section title="Username" value={me?.username} Icon={User} />
+
+    <Section title="Verification">
+        {#if me?.verified}
+            <X class="size-10 text-error-500" />
+        {:else}
+            <CheckCircle class="size-10 text-success-500" />
+        {/if}
+    </Section>
 </div>
