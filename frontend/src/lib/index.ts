@@ -8,7 +8,7 @@ import { createToaster } from '@skeletonlabs/skeleton-svelte';
 export const theme = new PersistedState<string>('theme', 'cerberus');
 
 export const toaster = createToaster({
-    placement: 'bottom-end',
+    placement: 'bottom',
     overlap: true,
 });
 

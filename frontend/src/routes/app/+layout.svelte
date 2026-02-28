@@ -26,6 +26,21 @@
     });
 
     let { children } = $props();
+
+    const getToastColors = (type: string | undefined) => {
+        switch (type) {
+            case 'success':
+                return 'preset-filled-success-300-700';
+            case 'error':
+                return 'preset-filled-error-300-700';
+            case 'warning':
+                return 'preset-filled-warning-300-700';
+            case 'info':
+                return 'preset-filled-surface-200-800';
+            default:
+                return 'preset-filled-primary-300-700';
+        }
+    };
 </script>
 
 {#if token}
@@ -36,9 +51,10 @@
             <div class="flex flex-1 p-4">
                 {@render children()}
             </div>
+
             <Toast.Group {toaster}>
                 {#snippet children(toast)}
-                    <Toast {toast}>
+                    <Toast {toast} class="text-white {getToastColors(toast.type)}">
                         <Toast.Title>{toast.title}</Toast.Title>
                         <Toast.Description>{toast.description}</Toast.Description>
                     </Toast>

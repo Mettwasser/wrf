@@ -24,3 +24,9 @@ export const UserVerification = __t.object("UserVerification", {
 });
 export type UserVerification = __Infer<typeof UserVerification>;
 
+export const VerifyTimer = __t.object("VerifyTimer", {
+  scheduledId: __t.u64(),
+  scheduledAt: __t.scheduleAt(),
+});
+export type VerifyTimer = __Infer<typeof VerifyTimer>;
+

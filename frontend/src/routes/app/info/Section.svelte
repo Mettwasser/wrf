@@ -23,7 +23,7 @@
     let { title, Icon, value = $bindable(), children }: Props = $props();
 </script>
 
-<div class="flex w-1/3 flex-col gap-2">
+<div class="flex w-1/3 flex-col gap-6">
     <h1 class="h1">{title}</h1>
     {#if children}
         {@render children()}

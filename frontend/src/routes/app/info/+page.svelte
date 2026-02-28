@@ -3,6 +3,7 @@
         BadgeCheck,
         Check,
         ChevronDownIcon,
+        Clipboard,
         Hash,
         LoaderCircle,
         Pen,
@@ -16,6 +17,7 @@
     import type { UserVerification } from '$lib/module_bindings/types';
     import { Accordion } from '@skeletonlabs/skeleton-svelte';
     import { slide } from 'svelte/transition';
+    import { toaster } from '$lib';
 
     const [meTable] = useTable(tables.me);
     let me = $derived($meTable[0] ?? null);
@@ -126,9 +128,22 @@
                                 disabled
                             />
                         </div>
-                        <button class="btn-icon preset-filled-error-300-700 w-full">
-                            <X class="size-6" />
-                        </button>
+
+                        <div class="flex w-20 gap-2">
+                            <button
+                                class="btn-icon preset-filled-surface-900-100 w-full"
+                                onclick={() => {
+                                    navigator.clipboard.writeText(verificationData?.code ?? '');
+                                    toaster.create({
+                                        title: 'Copied!',
+                                        type: 'success',
+                                    });
+                                }}
+                                title="Copy to clipboard"
+                            >
+                                <Clipboard class="size-6" />
+                            </button>
+                        </div>
                     </div>
                 </div>
 
@@ -214,9 +229,15 @@
                                             and follow the instructions to obtain your Warframe User
                                             ID.
                                         </li>
+
                                         <li>
                                             Edit the <strong>Warframe User ID</strong>
                                             field and paste your obtained ID in there.
+                                        </li>
+                                        <li>
+                                            Copy your unique <strong>Code</strong>
+                                            from the field above, open Warframe, and change your current
+                                            loadout name to this exact code.
                                         </li>
                                         <li>
                                             Wait. The system verifies usernames every 10 minutes.

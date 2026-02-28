@@ -1,7 +1,7 @@
 <script lang="ts">
-    import { AppBar, Navigation, Popover } from '@skeletonlabs/skeleton-svelte';
+    import { AppBar, Popover } from '@skeletonlabs/skeleton-svelte';
     import ThemeButtons from './ThemeButtons.svelte';
-    import { Info, User } from 'lucide-svelte';
+    import { Info, LogOut, User } from 'lucide-svelte';
     import { SignOutButton } from 'svelte-clerk';
     import { page } from '$app/state';
     import logo from '$lib/assets/wrf-logo.png';
@@ -38,22 +38,40 @@
                     <User size={28} />
                 </Popover.Trigger>
                 <Popover.Positioner>
-                    <Popover.Content class="card bg-surface-200-800 p-2">
-                        {#each accountNavbarRoutes as { href, Icon, id, label }}
-                            <a
-                                {href}
-                                class="hover:preset-tonal flex items-center gap-2 rounded-sm p-3 {page
-                                    .url.pathname === href
-                                    ? 'preset-tonal'
-                                    : ''}"
-                            >
-                                <Icon />
-                                {label}
-                            </a>
-                        {/each}
-                        <SignOutButton
-                            class="bg-error-200-800 hover:preset-tonal-error mt-4 flex w-full items-center gap-2 rounded-sm p-3"
-                        />
+                    <Popover.Content class="card bg-surface-200-800 w-80 p-2">
+                        <div class="flex flex-col gap-2">
+                            {#each accountNavbarRoutes as { href, Icon, id, label }}
+                                <a
+                                    {id}
+                                    {href}
+                                    class="hover:preset-tonal flex items-center gap-2 rounded-sm p-3 text-white! {page
+                                        .url.pathname === href
+                                        ? 'preset-tonal'
+                                        : ''}"
+                                >
+                                    <Icon />
+                                    {label}
+                                </a>
+                            {/each}
+                            <SignOutButton asChild>
+                                {#snippet children({ signOut })}
+                                    <button
+                                        onclick={signOut}
+                                        class="text-error-500 hover:bg-error-500/40 flex w-full items-center gap-2 rounded-sm p-3 hover:text-white"
+                                        id="logoutbtn"
+                                    >
+                                        <LogOut />
+                                        <span>Sign Out</span>
+                                    </button>
+                                {/snippet}
+                            </SignOutButton>
+                        </div>
+
+                        <Popover.Arrow
+                            class="[--arrow-background:var(--color-surface-200-800)] [--arrow-size:--spacing(2)]"
+                        >
+                            <Popover.ArrowTip />
+                        </Popover.Arrow>
                     </Popover.Content>
                 </Popover.Positioner>
             </Popover>

@@ -41,10 +41,12 @@ fn generate_random_code(rng: &StdbRng) -> String {
 
 #[spacetimedb::reducer(init)]
 pub fn init(ctx: &ReducerContext) -> Result<(), String> {
+    log::info!("Initializing...");
     ctx.db.verify_timer().try_insert(VerifyTimer {
         scheduled_id: 0,
         scheduled_at: ScheduleAt::Interval(TimeDuration::from_duration(Duration::from_mins(10))),
     })?;
+    log::info!("Initialization done!");
 
     Ok(())
 }
