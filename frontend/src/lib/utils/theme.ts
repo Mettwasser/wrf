@@ -1,12 +1,26 @@
-import * as themes from '@skeletonlabs/skeleton/themes';
-import { getWithFallback } from './localstorage';
+export const THEMES = [
+    'mona',
+    'vox',
+    'catppuccin',
+    'crimson',
+    'legacy',
+    'pine',
+    'terminus',
+    'wintry',
+    'cerberus',
+    'fennec',
+    'mint',
+    'nosh',
+    'sahara',
+    'concord',
+    'hamlindigo',
+    'modern',
+    'nouveau',
+    'rocket',
+    'seafoam',
+];
 
-type Theme = typeof themes.vintage;
-
-export const THEMES: Theme[] = Object.values(themes);
-
-export function updateThemeInHtml(theme: Theme) {
-    const body = document.querySelector('body')!;
-
-    body.dataset.theme = theme.name;
+export function updateThemeInHtml(theme: string) {
+    const body = document.querySelector('html')!;
+    body.dataset.theme = theme;
 }

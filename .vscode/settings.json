@@ -27,6 +27,8 @@
         "socketioxide",
         "spacetimedb",
         "sqlx",
+        "srgb",
+        "Stdb",
         "tera",
         "Tera",
         "thiserror",

@@ -1,9 +1,10 @@
 <script lang="ts">
-    import { ToastProvider } from '@skeletonlabs/skeleton-svelte';
+    import { Toast } from '@skeletonlabs/skeleton-svelte';
     import { goto } from '$app/navigation';
     import { useClerkContext } from 'svelte-clerk';
     import SpacetimeProvider from '$lib/components/SpacetimeProvider.svelte';
     import Navbar from '$lib/components/Navbar.svelte';
+    import { toaster } from '$lib';
 
     const clerkCtx = useClerkContext();
     let token = $state<string | null>(null);
@@ -32,11 +33,17 @@
         <div class="flex h-auto w-full flex-col">
             <Navbar />
 
-            <ToastProvider placement="bottom-end">
-                <div class="flex flex-1 p-4">
-                    {@render children()}
-                </div>
-            </ToastProvider>
+            <div class="flex flex-1 p-4">
+                {@render children()}
+            </div>
+            <Toast.Group {toaster}>
+                {#snippet children(toast)}
+                    <Toast {toast}>
+                        <Toast.Title>{toast.title}</Toast.Title>
+                        <Toast.Description>{toast.description}</Toast.Description>
+                    </Toast>
+                {/snippet}
+            </Toast.Group>
         </div>
     </SpacetimeProvider>
 {:else}

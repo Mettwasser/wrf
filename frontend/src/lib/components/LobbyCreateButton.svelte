@@ -1,7 +1,6 @@
 <script lang="ts">
-    import { Modal, Slider } from '@skeletonlabs/skeleton-svelte';
+    import { Dialog, Portal, Slider } from '@skeletonlabs/skeleton-svelte';
     import type { Relic } from '$lib/types/relic';
-    import Combobox from './Combobox.svelte';
     import type { LobbyAndUser } from '$lib/types/lobby';
     import FormGroup from './FormGroup.svelte';
     import LobbyCreateModal from './modals/LobbyCreateModalBody.svelte';
@@ -14,22 +13,18 @@
     let { relics, onLobbyCreate }: Props = $props();
 
     let showModal = $state(false);
-    const close = () => (showModal = false);
 </script>
 
-<Modal
-    bind:open={showModal}
-    triggerBase="btn preset-filled-success-200-800 h-full"
-    contentBase="card bg-surface-100-900 p-8 space-y-4 shadow-xl max-w-screen-sm "
-    backdropClasses="backdrop-blur-sm !z-30"
-    positionerZIndex="!z-40"
-    preventScroll={false}
->
-    {#snippet trigger()}
-        Create Lobby
-    {/snippet}
-
-    {#snippet content()}
-        <LobbyCreateModal {relics} {onLobbyCreate} bind:open={showModal} />
-    {/snippet}
-</Modal>
+<Dialog open={showModal} onOpenChange={(e) => (showModal = e.open)}>
+    <Dialog.Trigger class="btn preset-filled-success-200-800 h-full">Create Lobby</Dialog.Trigger>
+    <Portal>
+        <Dialog.Backdrop class="bg-surface-50-950/50 fixed inset-0 z-50" />
+        <Dialog.Positioner class="fixed inset-0 z-50 flex items-center justify-center">
+            <Dialog.Content
+                class="card bg-surface-100-900 max-w-screen-sm space-y-4 p-8 shadow-xl "
+            >
+                <LobbyCreateModal {relics} {onLobbyCreate} bind:open={showModal} />
+            </Dialog.Content>
+        </Dialog.Positioner>
+    </Portal>
+</Dialog>

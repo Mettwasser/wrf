@@ -1,8 +1,8 @@
 <script lang="ts">
     import { setContext, type Snippet } from 'svelte';
     import { createSpacetimeDBProvider } from 'spacetimedb/svelte';
-    import { DbConnection, type ErrorContext } from '$lib/module_bindings';
-    import type { Identity } from 'spacetimedb';
+    import { DbConnection, tables, type ErrorContext } from '$lib/module_bindings';
+    import { table, type Identity } from 'spacetimedb';
 
     let { token, children }: { token: string; children: Snippet } = $props();
 

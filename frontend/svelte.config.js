@@ -12,7 +12,8 @@ const config = {
         adapter: adapter(),
     },
     compilerOptions: {
-        warningFilter: (w) => !['a11y_consider_explicit_label'].includes(w.code),
+        warningFilter: (w) =>
+            !['a11y_consider_explicit_label', 'state_referenced_locally'].includes(w.code),
     },
 };
 

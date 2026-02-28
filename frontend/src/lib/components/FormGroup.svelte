@@ -5,19 +5,21 @@
     type Props = {
         title: string;
         children: Snippet;
-        errorId: number;
+        errorIds: number[];
         errorCollection: ErrorCollection;
     };
 
-    let { title, children, errorId, errorCollection }: Props = $props();
+    let { title, children, errorIds, errorCollection }: Props = $props();
 
-    let error = $derived(errorCollection.getError(errorId));
+    let errors = $derived(
+        errorIds.map((num) => errorCollection.getError(num)).filter((item) => item !== undefined)
+    );
 </script>
 
 <label class="label">
     <span class="label-text">{title}</span>
     {@render children()}
-    {#if error}
+    {#each errors as error}
         <p class="text-error-300-700 text-xs">{error}</p>
-    {/if}
+    {/each}
 </label>

@@ -6,5 +6,9 @@
 import { type Infer as __Infer } from "spacetimedb";
 
 // Import all reducer arg schemas
+import SetUsernameReducer from "../set_username_reducer";
+import SetWarframeIdReducer from "../set_warframe_id_reducer";
 
+export type SetUsernameParams = __Infer<typeof SetUsernameReducer>;
+export type SetWarframeIdParams = __Infer<typeof SetWarframeIdReducer>;
 

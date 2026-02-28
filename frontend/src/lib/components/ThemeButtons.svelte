@@ -1,41 +1,22 @@
 <script lang="ts">
-    import SunMoon from 'lucide-svelte/icons/sun-moon';
-
     import Palette from 'lucide-svelte/icons/palette';
     import { THEMES, updateThemeInHtml } from '$lib/utils/theme';
-    import { updateDarkModeInHtml, type DarkModeState } from '$lib/utils/dark_mode';
     import type { ChangeEventHandler } from 'svelte/elements';
-    import { darkModeState, theme } from '$lib';
-
-    function toggleDarkMode() {
-        if (darkModeState.current === 'dark') darkModeState.current = 'light';
-        else darkModeState.current = 'dark';
-        updateDarkModeInHtml(darkModeState.current);
-    }
+    import { theme } from '$lib';
 
     const switchTheme: ChangeEventHandler<HTMLSelectElement> = (e) => {
-        theme.current = THEMES.find((theme) => theme.name === e.currentTarget!.value)!;
-        updateThemeInHtml(theme.current as any);
+        theme.current = e.currentTarget!.value;
+        updateThemeInHtml(theme.current);
     };
 </script>
 
-<div class="input-group hidden grid-cols-[auto_1fr] hover:preset-tonal xsm:flex">
-    <div class="input-group-cell">
+<div class="input-group hover:preset-tonal grid-cols-[auto_1fr_auto]">
+    <div class="ig-cell">
         <Palette size={18} />
     </div>
-    <select
-        class="select capitalize !outline-surface-950"
-        bind:value={theme.current.name}
-        onchange={switchTheme}
-    >
-        {#each THEMES as theme}
-            <option value={theme.name} class="!border-none capitalize">{theme.name}</option>
+    <select class="ig-select capitalize ring-0" bind:value={theme.current} onchange={switchTheme}>
+        {#each THEMES as t}
+            <option value={t} class="border-none! capitalize">{t}</option>
         {/each}
     </select>
 </div>
-
-<!-- <div class="flex items-center justify-center">
-    <button type="button" onclick={toggleDarkMode} class="hover:preset-tonal rounded-full p-2">
-        <SunMoon size={30} />
-    </button>
-</div> -->

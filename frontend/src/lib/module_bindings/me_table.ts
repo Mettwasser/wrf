@@ -10,17 +10,8 @@ import {
   type Infer as __Infer,
 } from "spacetimedb";
 
-export const User = __t.object("User", {
+export default __t.row({
   id: __t.identity(),
   username: __t.string(),
   verified: __t.bool(),
 });
-export type User = __Infer<typeof User>;
-
-export const UserVerification = __t.object("UserVerification", {
-  id: __t.identity(),
-  code: __t.string(),
-  warframeId: __t.option(__t.string()),
-});
-export type UserVerification = __Infer<typeof UserVerification>;
-

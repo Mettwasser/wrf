@@ -1,5 +1,4 @@
 <script lang="ts">
-    import Combobox from '$lib/components/Combobox.svelte';
     import LobbyCreateButton from '$lib/components/LobbyCreateButton.svelte';
     import LobbyItem from '$lib/components/LobbyItem.svelte';
     import { mock as originalMock } from '$lib/types/lobby';

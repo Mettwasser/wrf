@@ -42,20 +42,20 @@
         {:else}
             <Tooltip
                 positioning={{ placement: 'top' }}
-                triggerBase="underline"
-                contentBase="card preset-filled-surface-300-700 p-4"
                 openDelay={200}
             >
-                {#snippet trigger()}
+                <Tooltip.Trigger class="underline">
                     <button type="button" class="btn preset-filled-primary-200-800" disabled>
                         Join
                     </button>
-                {/snippet}
-                {#snippet content()}
-                    <p class="dark:text-surface-contrast-700 text-surface-contrast-300">
-                        You can't join your own Lobby!
-                    </p>
-                {/snippet}
+                </Tooltip.Trigger>
+                <Tooltip.Positioner>
+                    <Tooltip.Content class="card preset-filled-surface-300-700 p-4">
+                        <p class="dark:text-surface-contrast-700 text-surface-contrast-300">
+                            You can't join your own Lobby!
+                        </p>
+                    </Tooltip.Content>
+                </Tooltip.Positioner>
             </Tooltip>
         {/if}
     </div>

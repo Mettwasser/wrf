@@ -18,47 +18,45 @@
 </script>
 
 <AppBar
-    classes="sticky top-0 z-40"
-    background="dark:bg-surface-900 bg-surface-500 backdrop-blur-lg !bg-opacity-70"
+    class="dark:bg-surface-900 bg-surface-500 bg-opacity-70! sticky top-0 z-40 backdrop-blur-lg"
 >
-    <a href="/app" class="flex h-full w-full items-center gap-4 text-center text-3xl">
-        <img src={logo} class="w-20 dark:invert" alt="wrf-logo" />
-        <p class="text-white max-md:hidden">Warframe Relic Finder</p>
-    </a>
+    <AppBar.Toolbar class="grid-cols-[auto_1fr_auto]">
+        <AppBar.Lead>
+            <a href="/app" class="flex h-full w-full items-center gap-4 text-center text-3xl">
+                <img src={logo} class="w-20 dark:invert" alt="wrf-logo" />
+            </a>
+        </AppBar.Lead>
+        <AppBar.Headline>
+            <a href="/app" class="h4 text-white! max-md:hidden">Warframe Relic Finder</a>
+        </AppBar.Headline>
 
-    {#snippet trail()}
-        <ThemeButtons />
+        <AppBar.Trail>
+            <ThemeButtons />
 
-        <Popover
-            positionerZIndex="!z-50"
-            arrow
-            contentBase="card bg-surface-200-800 p-2"
-            triggerBase="hover:preset-tonal rounded-full p-2 "
-            base="flex justify-center items-center"
-            arrowBackground="!bg-surface-200 dark:!bg-surface-800"
-        >
-            {#snippet trigger()}
-                <User size={28} />
-            {/snippet}
-            {#snippet content()}
-                <Navigation.Rail expanded background="bg-transparent">
-                    {#snippet tiles()}
+            <Popover positioning={{ placement: 'bottom-end' }}>
+                <Popover.Trigger class="hover:preset-tonal cursor-pointer rounded-full p-2">
+                    <User size={28} />
+                </Popover.Trigger>
+                <Popover.Positioner>
+                    <Popover.Content class="card bg-surface-200-800 p-2">
                         {#each accountNavbarRoutes as { href, Icon, id, label }}
-                            <Navigation.Tile
-                                {id}
-                                labelExpanded={label}
+                            <a
                                 {href}
-                                selected={page.url.pathname === href}
+                                class="hover:preset-tonal flex items-center gap-2 rounded-sm p-3 {page
+                                    .url.pathname === href
+                                    ? 'preset-tonal'
+                                    : ''}"
                             >
                                 <Icon />
-                            </Navigation.Tile>
+                                {label}
+                            </a>
                         {/each}
                         <SignOutButton
-                            class=" w-full gap-4 rounded-container px-4 py-3 text-center bg-error-200-800 hover:preset-tonal-error"
+                            class="bg-error-200-800 hover:preset-tonal-error mt-4 flex w-full items-center gap-2 rounded-sm p-3"
                         />
-                    {/snippet}
-                </Navigation.Rail>
-            {/snippet}
-        </Popover>
-    {/snippet}
+                    </Popover.Content>
+                </Popover.Positioner>
+            </Popover>
+        </AppBar.Trail>
+    </AppBar.Toolbar>
 </AppBar>
