@@ -88,7 +88,7 @@ pub fn verify(ctx: &mut ProcedureContext, _timer: VerifyTimer) -> Result<(), Str
     log::info!("Verifying {} players", verifications.len());
 
     for verification in verifications {
-        ctx.sleep_until(ctx.timestamp + TimeDuration::from_duration(Duration::from_secs(10)));
+        ctx.sleep_until(ctx.timestamp + TimeDuration::from_duration(Duration::from_secs(3)));
         let resp = match ctx
             .http
             .get(format!(

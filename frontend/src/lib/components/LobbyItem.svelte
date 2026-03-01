@@ -1,5 +1,5 @@
 <script lang="ts">
-    import type { Lobby, LobbyAndUser } from '$lib/types/lobby';
+    import type { LobbyAndUser } from '$lib/types/lobby_and_user';
     import { Tooltip } from '@skeletonlabs/skeleton-svelte';
     interface Props {
         lobbyAndUser: LobbyAndUser;
@@ -9,7 +9,7 @@
 </script>
 
 <div
-    class="card flex w-2/3 flex-col gap-6 bg-opacity-10 p-4 lg:w-1/3
+    class="card bg-opacity-10 flex w-2/3 flex-col gap-6 p-4 lg:w-1/3
     {ownedByMe
         ? 'preset-outlined-success-500 bg-success-500'
         : 'preset-outlined-surface-500 bg-surface-500'}
@@ -32,18 +32,15 @@
         </div>
         <div class="text-center">
             <p class="opacity-25">Host:</p>
-            {lobbyAndUser.user.name}
+            {lobbyAndUser.user.username}
         </div>
     </div>
     <div class="flex flex-1 justify-between gap-4">
-        <span class="text-lg">1/{lobbyAndUser.lobby.size}</span>
+        <span class="text-lg">{lobbyAndUser.lobby.amountPlayers}/{lobbyAndUser.lobby.space}</span>
         {#if !ownedByMe}
             <button type="button" class="btn preset-filled-primary-200-800">Join</button>
         {:else}
-            <Tooltip
-                positioning={{ placement: 'top' }}
-                openDelay={200}
-            >
+            <Tooltip positioning={{ placement: 'top' }} openDelay={200}>
                 <Tooltip.Trigger class="underline">
                     <button type="button" class="btn preset-filled-primary-200-800" disabled>
                         Join

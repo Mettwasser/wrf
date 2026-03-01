@@ -5,6 +5,7 @@
         ChevronDownIcon,
         Clipboard,
         Hash,
+        IdCard,
         LoaderCircle,
         Pen,
         User,
@@ -17,7 +18,9 @@
     import type { UserVerification } from '$lib/module_bindings/types';
     import { Accordion } from '@skeletonlabs/skeleton-svelte';
     import { slide } from 'svelte/transition';
-    import { toaster } from '$lib';
+    import { identity as getIdentity, toaster } from '$lib';
+
+    const identity = getIdentity();
 
     const [meTable] = useTable(tables.me);
     let me = $derived($meTable[0] ?? null);
@@ -31,7 +34,7 @@
             .catch(console.error)
             .finally(username.toggleEditing);
 
-    let verificationData = $state<UserVerification | null>(null);
+    let verificationData = $state<UserVerification | null | undefined>(undefined);
 
     const setWarframeId = useReducer(reducers.setWarframeId);
 
@@ -106,6 +109,36 @@
                 <p class="text-error-300-700 text-xs">{username.errorText}</p>
             {/if}
         </div>
+
+        <div class="flex gap-2">
+            <div class="input-group hover:preset-tonal w-full grid-cols-[auto_1fr]">
+                <div class="ig-cell">
+                    <IdCard />
+                </div>
+                <input
+                    type="text"
+                    class="ig-input text-xs"
+                    value={identity.toHexString()}
+                    disabled
+                />
+            </div>
+
+            <div class="flex w-20 gap-2">
+                <button
+                    class="btn-icon preset-filled-surface-900-100 w-full"
+                    onclick={() => {
+                        navigator.clipboard.writeText(identity.toHexString());
+                        toaster.create({
+                            title: 'Copied!',
+                            type: 'success',
+                        });
+                    }}
+                    title="Copy to clipboard"
+                >
+                    <Clipboard class="size-6" />
+                </button>
+            </div>
+        </div>
     </Section>
 
     <Section title="Verification">
@@ -114,7 +147,11 @@
                 <BadgeCheck class="text-success-500 size-10" />
                 <span class="text-success-500 font-bold">Verified</span>
             </div>
-        {:else}
+        {:else if verificationData === null}
+            <div class="flex items-center gap-2">
+                <span class="font-bold">Please enter a username first.</span>
+            </div>
+        {:else if verificationData !== undefined && verificationData !== null}
             <div class="flex w-full flex-col gap-4">
                 <div>
                     <span class="label-text">Code</span>

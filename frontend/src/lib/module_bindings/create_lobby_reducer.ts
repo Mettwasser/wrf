@@ -10,9 +10,22 @@ import {
   type Infer as __Infer,
 } from "spacetimedb";
 
-export default __t.row({
-  id: __t.identity().primaryKey(),
-  username: __t.string(),
-  verified: __t.bool(),
-  isAdmin: __t.bool().name("is_admin"),
-});
+import {
+  Region,
+  RelicRefinement,
+  RotationType,
+} from "./types";
+
+export default {
+  space: __t.u8(),
+  get region() {
+    return Region;
+  },
+  get refinement() {
+    return RelicRefinement;
+  },
+  get rotationType() {
+    return RotationType;
+  },
+  activity: __t.string(),
+};

@@ -1,9 +1,8 @@
 <script lang="ts">
-    import { Dialog, Portal, Slider } from '@skeletonlabs/skeleton-svelte';
+    import { Dialog, Portal } from '@skeletonlabs/skeleton-svelte';
     import type { Relic } from '$lib/types/relic';
-    import type { LobbyAndUser } from '$lib/types/lobby';
-    import FormGroup from './FormGroup.svelte';
     import LobbyCreateModal from './modals/LobbyCreateModalBody.svelte';
+    import type { LobbyAndUser } from '$lib/types/lobby_and_user';
 
     interface Props {
         relics: Relic[];

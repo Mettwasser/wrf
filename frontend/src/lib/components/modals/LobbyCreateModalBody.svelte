@@ -1,5 +1,4 @@
 <script lang="ts">
-    import { REGIONS, type LobbyAndUser } from '$lib/types/lobby';
     import type { Relic } from '$lib/types/relic';
     import { Slider } from '@skeletonlabs/skeleton-svelte';
     import Info from 'lucide-svelte/icons/info';
@@ -8,6 +7,8 @@
     import { ErrorCollection, refreshError } from '$lib/utils/error_collection.svelte';
     import { makeToComboboxData } from '$lib';
     import Combobox from '../Combobox.svelte';
+    import type { LobbyAndUser } from '$lib/types/lobby_and_user';
+    import { Region } from '$lib/module_bindings/types';
 
     interface Props {
         relics: Relic[];
@@ -24,6 +25,7 @@
     let activity = $state(['']);
     let refinement = $state(['']);
     let region = $state(['']);
+    let twoATwoB = $state(false);
 
     let errorCollection = new ErrorCollection();
 
@@ -76,15 +78,23 @@
         </FormGroup>
         <FormGroup title="Region" errorIds={[regionEmptyId]} {errorCollection}>
             <Combobox
-                data={makeToComboboxData(Object.keys(REGIONS))}
+                data={makeToComboboxData(Object.keys(Region))}
                 bind:value={region}
                 placeholder="Region..."
             />
         </FormGroup>
+
+        <div class="flex items-center space-x-2">
+            <input
+                class="checkbox border-0! ring-0! outline-0!"
+                type="checkbox"
+                bind:checked={twoATwoB}
+            />
+            <p>2A2B</p>
+        </div>
+
         <div class="label">
-            <span class="label-text flex items-center gap-1">
-                Lobby Size <Info class="size-4" />
-            </span>
+            <span class="label-text flex items-center gap-1">Lobby Size</span>
             <Slider
                 min={2}
                 max={4}

@@ -11,8 +11,6 @@ import {
 } from "spacetimedb";
 
 export default __t.row({
-  id: __t.identity().primaryKey(),
-  username: __t.string(),
-  verified: __t.bool(),
-  isAdmin: __t.bool().name("is_admin"),
+  host: __t.identity().primaryKey(),
+  user: __t.identity(),
 });

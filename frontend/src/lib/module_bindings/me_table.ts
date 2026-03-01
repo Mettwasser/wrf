@@ -14,4 +14,5 @@ export default __t.row({
   id: __t.identity(),
   username: __t.string(),
   verified: __t.bool(),
+  isAdmin: __t.bool().name("is_admin"),
 });

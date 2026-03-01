@@ -22,6 +22,7 @@
         "rstest",
         "runed",
         "rustls",
+        "Semijoin",
         "serde",
         "skeletonlabs",
         "socketioxide",

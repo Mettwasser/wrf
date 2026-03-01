@@ -10,10 +10,79 @@ import {
   type Infer as __Infer,
 } from "spacetimedb";
 
+export const Lobby = __t.object("Lobby", {
+  host: __t.identity(),
+  created: __t.timestamp(),
+  space: __t.u8(),
+  get region() {
+    return Region;
+  },
+  get refinement() {
+    return RelicRefinement;
+  },
+  activity: __t.string(),
+  get rotationType() {
+    return RotationType;
+  },
+  amountPlayers: __t.u8(),
+});
+export type Lobby = __Infer<typeof Lobby>;
+
+export const LobbyBan = __t.object("LobbyBan", {
+  host: __t.identity(),
+  user: __t.identity(),
+});
+export type LobbyBan = __Infer<typeof LobbyBan>;
+
+export const LobbyJoin = __t.object("LobbyJoin", {
+  host: __t.identity(),
+  user: __t.identity(),
+});
+export type LobbyJoin = __Infer<typeof LobbyJoin>;
+
+// The tagged union or sum type for the algebraic type `Region`.
+export const Region = __t.enum("Region", {
+  As: __t.unit(),
+  Eer: __t.unit(),
+  Eu: __t.unit(),
+  Na: __t.unit(),
+  Oc: __t.unit(),
+  Sa: __t.unit(),
+});
+export type Region = __Infer<typeof Region>;
+
+export const Relic = __t.object("Relic", {
+  relic: __t.string(),
+});
+export type Relic = __Infer<typeof Relic>;
+
+// The tagged union or sum type for the algebraic type `RelicRefinement`.
+export const RelicRefinement = __t.enum("RelicRefinement", {
+  Intact: __t.unit(),
+  Exceptional: __t.unit(),
+  Flawless: __t.unit(),
+  Radiant: __t.unit(),
+});
+export type RelicRefinement = __Infer<typeof RelicRefinement>;
+
+export const RelicTimer = __t.object("RelicTimer", {
+  scheduledId: __t.u64(),
+  scheduledAt: __t.scheduleAt(),
+});
+export type RelicTimer = __Infer<typeof RelicTimer>;
+
+// The tagged union or sum type for the algebraic type `RotationType`.
+export const RotationType = __t.enum("RotationType", {
+  TwoATwoB: __t.unit(),
+  FourA: __t.unit(),
+});
+export type RotationType = __Infer<typeof RotationType>;
+
 export const User = __t.object("User", {
   id: __t.identity(),
   username: __t.string(),
   verified: __t.bool(),
+  isAdmin: __t.bool(),
 });
 export type User = __Infer<typeof User>;
 

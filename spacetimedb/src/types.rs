@@ -17,3 +17,9 @@ pub enum RelicRefinement {
     Flawless,
     Radiant,
 }
+
+#[derive(SpacetimeType, Debug, Clone, PartialEq, Eq)]
+pub enum RotationType {
+    TwoATwoB,
+    FourA,
+}

@@ -1,6 +1,5 @@
 import { goto } from '$app/navigation';
-import type { Relic } from '$lib/types/relic.js';
-import type { CurrentUser } from '$lib/types/user';
+import type { Relic } from '$lib/types/relic';
 
 type InitialRelicData = {
     [key: string]: Relic;
