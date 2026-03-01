@@ -1,4 +1,14 @@
-export function group<T>(initialValue: () => T) {
+export type Group<T> = {
+    value: T;
+    isEditing: boolean;
+    isSaving: boolean;
+    errorText: string | undefined;
+    toggleEditing: () => void;
+    toggleSaving: () => void;
+    withSaving: (callback: () => Promise<void>) => Promise<void>;
+};
+
+export function group<T>(initialValue: () => T): Group<T> {
     let state = $state({
         value: initialValue(),
         isEditing: false,
