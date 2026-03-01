@@ -3,23 +3,21 @@
     import type { Snippet } from 'svelte';
 
     type Props = {
-        title: string;
+        title?: string;
         children: Snippet;
-        errorIds: number[];
+        errorId: number;
         errorCollection: ErrorCollection;
     };
 
-    let { title, children, errorIds, errorCollection }: Props = $props();
+    let { title, children, errorId, errorCollection }: Props = $props();
 
-    let errors = $derived(
-        errorIds.map((num) => errorCollection.getError(num)).filter((item) => item !== undefined)
-    );
+    let error = $derived(errorCollection.getError(errorId));
 </script>
 
 <label class="label">
-    <span class="label-text">{title}</span>
+    {#if title}
+        <span class="label-text">{title}</span>
+    {/if}
     {@render children()}
-    {#each errors as error}
-        <p class="text-error-300-700 text-xs">{error}</p>
-    {/each}
+    <div class="text-error-300-700 text-xs empty:hidden">{error}</div>
 </label>

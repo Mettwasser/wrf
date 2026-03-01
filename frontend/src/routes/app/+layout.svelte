@@ -55,8 +55,10 @@
             <Toast.Group {toaster}>
                 {#snippet children(toast)}
                     <Toast {toast} class="text-white {getToastColors(toast.type)}">
-                        <Toast.Title>{toast.title}</Toast.Title>
-                        <Toast.Description>{toast.description}</Toast.Description>
+                        <Toast.Message>
+                            <Toast.Title>{toast.title}</Toast.Title>
+                            <Toast.Description>{toast.description}</Toast.Description>
+                        </Toast.Message>
                     </Toast>
                 {/snippet}
             </Toast.Group>

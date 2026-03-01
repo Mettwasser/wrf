@@ -58,3 +58,13 @@ body {
 a {
     @apply text-tertiary-500;
 }
+
+*:focus-within {
+    outline: none;
+}
+
+.checkbox:focus,
+.checkbox:active,
+.checkbox:focus-visible {
+    box-shadow: none;
+}

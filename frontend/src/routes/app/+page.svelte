@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { conn as getConn } from '$lib';
+    import { identity } from '$lib';
     import LobbyCreateButton from '$lib/components/LobbyCreateButton.svelte';
     import LobbyItem from '$lib/components/LobbyItem.svelte';
     import { tables } from '$lib/module_bindings/index.js';
@@ -15,13 +15,28 @@
         tables.user.leftSemijoin(tables.lobby, (user, lobby) => lobby.host.eq(user.id))
     );
 
-    const lobbiesWithUsers: LobbyAndUser[] = $derived(
-        $lobbies.map((lobby) => {
-            return {
-                lobby,
-                user: $users.find((u) => u.id === lobby.host)!,
-            };
-        })
+    interface OptionalLobbyAndUser {
+        user: User | undefined;
+        lobby: Lobby;
+    }
+
+    const myLobby: OptionalLobbyAndUser | undefined = $derived(
+        $lobbies
+            .filter((lobby) => lobby.host.equals(identity()))
+            .map((lobby) => {
+                return { lobby, user: $users.find((u) => u.id.equals(lobby.host)) };
+            })[0]
+    );
+
+    const lobbiesWithUsers: OptionalLobbyAndUser[] = $derived(
+        $lobbies
+            .filter((lobby) => !lobby.host.equals(identity()))
+            .map((lobby) => {
+                return {
+                    lobby,
+                    user: $users.find((u) => u.id.equals(lobby.host)),
+                };
+            })
     );
 </script>
 
@@ -33,8 +48,15 @@
         </div>
     </div>
     <ul class="flex w-full flex-col flex-wrap items-center justify-center gap-8 lg:flex-row">
-        {#each lobbiesWithUsers as lobbyAndUser}
-            <LobbyItem {lobbyAndUser} />
+        {#if myLobby && myLobby.user}
+            {@const myLobbyAndUser = myLobby as LobbyAndUser}
+            <LobbyItem lobbyAndUser={myLobbyAndUser} ownedByMe />
+        {/if}
+        {#each lobbiesWithUsers as item}
+            {#if item.user}
+                {@const lobbyAndUser = item as LobbyAndUser}
+                <LobbyItem {lobbyAndUser} />
+            {/if}
         {/each}
     </ul>
 </div>

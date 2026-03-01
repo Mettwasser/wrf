@@ -42,7 +42,7 @@ pub fn refresh(ctx: &mut ProcedureContext, _timer: RelicTimer) -> Result<(), Str
     let relics = match serde_json::from_str::<HashMap<String, ExportRelic>>(&resp) {
         Ok(root) => root
             .into_values()
-            .map(|ExportRelic { category, era }| format!("{category} {era}"))
+            .map(|ExportRelic { category, era }| format!("{era} {category}"))
             .collect::<Vec<_>>(),
 
         Err(e) => {

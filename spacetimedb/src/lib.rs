@@ -85,7 +85,7 @@ pub fn init(ctx: &ReducerContext) -> Result<(), String> {
         .try_insert_or_update(RelicTimer {
             scheduled_id: 2,
             scheduled_at: ScheduleAt::Time(
-                ctx.timestamp + TimeDuration::from_duration(Duration::from_mins(1)),
+                ctx.timestamp + TimeDuration::from_duration(Duration::from_secs(30)),
             ),
         })?;
 
@@ -165,6 +165,10 @@ pub fn create_lobby(
     rotation_type: RotationType,
     activity: String,
 ) -> Result<(), String> {
+    if ctx.db.user().id().find(ctx.sender()).is_none() {
+        return Err("You haven't created a user yet!".to_owned());
+    }
+
     if ctx.db.relic().relic().find(&activity).is_none() {
         return Err("Invalid relic".to_owned());
     }

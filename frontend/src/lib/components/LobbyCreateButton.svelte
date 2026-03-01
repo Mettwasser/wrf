@@ -19,9 +19,7 @@
     <Portal>
         <Dialog.Backdrop class="bg-surface-50-950/50 fixed inset-0 z-50" />
         <Dialog.Positioner class="fixed inset-0 z-50 flex items-center justify-center">
-            <Dialog.Content
-                class="card bg-surface-100-900 max-w-screen-sm space-y-4 p-8 shadow-xl "
-            >
+            <Dialog.Content class="card bg-surface-100-900 w-lg space-y-4 p-8 shadow-xl ">
                 <LobbyCreateModal {relics} {onLobbyCreate} bind:open={showModal} />
             </Dialog.Content>
         </Dialog.Positioner>

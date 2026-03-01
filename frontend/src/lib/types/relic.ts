@@ -1,5 +1,5 @@
 export type Relic = {
-    category: String;
+    category: string;
 
     era: Era;
 };

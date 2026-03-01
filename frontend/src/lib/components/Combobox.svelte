@@ -11,9 +11,16 @@
         value: string[] | undefined;
         placeholder: string;
         limit?: number;
+        displayAsUppercase?: boolean;
     }
 
-    let { data, value = $bindable(), placeholder, limit }: Props = $props();
+    let {
+        data,
+        value = $bindable(),
+        placeholder,
+        limit,
+        displayAsUppercase = false,
+    }: Props = $props();
 
     let items = $state(data);
     const limitedItems = $derived(limit ? items.slice(0, limit) : items);
@@ -29,12 +36,9 @@
     );
 
     const onOpenChange: ComboboxRootProps['onOpenChange'] = (details) => {
-        console.log(details);
         items = data;
         if (!details.open) {
-            console.log('value: ', value);
             inputValue = value?.[0];
-            console.log('Input value after change: ', inputValue);
         }
     };
 
@@ -74,7 +78,9 @@
             <Combobox.Content class="z-50">
                 {#each limitedItems as item (item.value)}
                     <Combobox.Item {item}>
-                        <Combobox.ItemText>{item.label}</Combobox.ItemText>
+                        <Combobox.ItemText class={displayAsUppercase ? 'uppercase' : ''}>
+                            {item.label}
+                        </Combobox.ItemText>
                         <Combobox.ItemIndicator />
                     </Combobox.Item>
                 {/each}

@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Portal, Tooltip } from '@skeletonlabs/skeleton-svelte';
+    import { Portal, Tooltip, type TooltipRootProps } from '@skeletonlabs/skeleton-svelte';
     import type { Snippet } from 'svelte';
     import type { Placement } from '@floating-ui/dom';
 
@@ -7,18 +7,19 @@
         children: Snippet;
         text: Snippet | string;
         placement?: Placement | undefined;
+        options?: Omit<TooltipRootProps, 'positioning'>;
     }
 
-    let { children, text, placement }: Props = $props();
+    let { children, text, placement, options }: Props = $props();
 </script>
 
-<Tooltip positioning={{ placement: placement }}>
+<Tooltip positioning={{ placement: placement }} {...options}>
     <Tooltip.Trigger>
         {@render children()}
     </Tooltip.Trigger>
     <Portal>
-        <Tooltip.Positioner>
-            <Tooltip.Content class="card preset-filled-surface-300-700 p-4 text-center">
+        <Tooltip.Positioner class="z-50!">
+            <Tooltip.Content class="card preset-filled-surface-200-800 p-4 text-center shadow-xl">
                 {#if typeof text === 'string'}
                     {@html text}
                 {:else}
