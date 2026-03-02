@@ -17,7 +17,7 @@
 
 <div
     class="
-    card shadow-surface-100/10 preset-outlined-surface-600-400 bg-surface-200-800/40 flex w-1/3 flex-col gap-6 border-2! p-4 shadow-lg backdrop-blur-lg
+    card shadow-surface-100/10 preset-outlined-surface-600-400 bg-surface-200-800/40 flex w-1/4 flex-col gap-6 border-2! p-4 shadow-lg backdrop-blur-lg
     "
 >
     {#if ownedByMe}
