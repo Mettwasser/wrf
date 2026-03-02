@@ -110,6 +110,13 @@ pub fn identity_connected(ctx: &ReducerContext) -> Result<(), String> {
     Ok(())
 }
 
+#[spacetimedb::reducer(client_disconnected)]
+pub fn identity_disconnected(ctx: &ReducerContext) -> Result<(), String> {
+    ctx.db.lobby().host().delete(ctx.sender());
+
+    Ok(())
+}
+
 #[spacetimedb::reducer]
 pub fn set_username(ctx: &ReducerContext, name: String) -> Result<(), String> {
     ctx.db

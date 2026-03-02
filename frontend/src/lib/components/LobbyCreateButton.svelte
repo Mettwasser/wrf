@@ -6,10 +6,9 @@
 
     interface Props {
         relics: Relic[];
-        onLobbyCreate?: (lobby: LobbyAndUser) => void;
     }
 
-    let { relics, onLobbyCreate }: Props = $props();
+    let { relics }: Props = $props();
 
     let showModal = $state(false);
 </script>
@@ -20,7 +19,7 @@
         <Dialog.Backdrop class="bg-surface-50-950/50 fixed inset-0 z-50" />
         <Dialog.Positioner class="fixed inset-0 z-50 flex items-center justify-center">
             <Dialog.Content class="card bg-surface-100-900 w-lg space-y-4 p-8 shadow-xl ">
-                <LobbyCreateModal {relics} {onLobbyCreate} bind:open={showModal} />
+                <LobbyCreateModal {relics} bind:open={showModal} />
             </Dialog.Content>
         </Dialog.Positioner>
     </Portal>

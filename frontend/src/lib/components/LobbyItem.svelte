@@ -1,43 +1,54 @@
 <script lang="ts">
     import type { LobbyAndUser } from '$lib/types/lobby_and_user';
-    import { Tooltip } from '@skeletonlabs/skeleton-svelte';
     import { Check } from 'lucide-svelte';
     import VerifiedBadge from './VerifiedBadge.svelte';
+    import Tooltip from './Tooltip.svelte';
+    import { getRelicImageUrl } from '$lib/utils/relic_image';
     interface Props {
         lobbyAndUser: LobbyAndUser;
         ownedByMe?: boolean;
     }
     let { lobbyAndUser, ownedByMe = false }: Props = $props();
+
+    const relicUrl = $derived(
+        getRelicImageUrl(lobbyAndUser.lobby.activity, lobbyAndUser.lobby.refinement)
+    );
 </script>
 
 <div
-    class="card shadow-surface-100/10 flex flex-col gap-6 p-4 shadow-lg lg:w-1/3
-    {ownedByMe
-        ? 'preset-outlined-success-500 bg-success-200-800/10'
-        : 'preset-outlined-surface-600-400 bg-surface-200-800/10'}
+    class="
+    card shadow-surface-100/10 preset-outlined-surface-600-400 bg-surface-200-800/40 flex w-1/3 flex-col gap-6 border-2! p-4 shadow-lg backdrop-blur-lg
     "
 >
     {#if ownedByMe}
         <p
-            class="bg-success-300-700 text-surface-contrast-300-700 absolute -translate-y-8 rounded-lg p-1 text-sm"
+            class="bg-success-300-700 text-success-contrast-300 dark:text-surface-contrast-700 absolute -translate-y-8 rounded-lg p-1 text-xs"
         >
             Your Lobby!
         </p>
     {/if}
 
     <div class="flex flex-1 justify-between gap-4">
-        <div class="flex flex-col gap-2">
-            <div class="flex gap-2">
-                <h3 class="h3">{lobbyAndUser.lobby.activity}</h3>
-                <p class="uppercase">[{lobbyAndUser.lobby.region.tag}]</p>
+        <div class="flex flex-col gap-4">
+            <div>
+                <div class="flex gap-2">
+                    <h3 class="h3">{lobbyAndUser.lobby.activity}</h3>
+                </div>
+                <span class="text-primary-500">{lobbyAndUser.lobby.refinement.tag}</span>
             </div>
-            <p>{lobbyAndUser.lobby.refinement.tag}</p>
+            <div class="text-tertiary-300 flex items-center gap-2">
+                {lobbyAndUser.user.username}
+                <VerifiedBadge user={lobbyAndUser.user} />
+            </div>
+
+            <div>
+                <span class="uppercase">
+                    {lobbyAndUser.lobby.region.tag}
+                </span>
+            </div>
         </div>
-        <div class="flex flex-col items-center gap-2 text-center">
-            {lobbyAndUser.user.username}
-            {#if !lobbyAndUser.user.verified}
-                <VerifiedBadge />
-            {/if}
+        <div class="flex items-start text-center text-lg">
+            <img src={relicUrl} alt="Relic" class="h-30 object-contain" />
         </div>
     </div>
     <div class="flex flex-1 justify-between gap-4">
@@ -45,19 +56,14 @@
         {#if !ownedByMe}
             <button type="button" class="btn preset-filled-primary-200-800">Join</button>
         {:else}
-            <Tooltip positioning={{ placement: 'top' }} openDelay={200}>
-                <Tooltip.Trigger class="underline">
-                    <button type="button" class="btn preset-filled-primary-200-800" disabled>
-                        Join
-                    </button>
-                </Tooltip.Trigger>
-                <Tooltip.Positioner>
-                    <Tooltip.Content class="card preset-filled-surface-300-700 p-4">
-                        <p class="dark:text-surface-contrast-700 text-surface-contrast-300">
-                            You can't join your own Lobby!
-                        </p>
-                    </Tooltip.Content>
-                </Tooltip.Positioner>
+            <Tooltip>
+                <button type="button" class="btn preset-filled-primary-200-800" disabled>
+                    Join
+                </button>
+
+                {#snippet text()}
+                    <span>You can't join your own lobby!</span>
+                {/snippet}
             </Tooltip>
         {/if}
     </div>

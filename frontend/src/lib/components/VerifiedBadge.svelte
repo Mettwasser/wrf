@@ -1,10 +1,8 @@
 <script lang="ts">
-    import { Check } from 'lucide-svelte';
+    import type { User } from '$lib/module_bindings/types';
+    import { BadgeCheck } from 'lucide-svelte';
+
+    let { user }: { user: User } = $props();
 </script>
 
-<p
-    class="preset-outlined-success-300-700 card bg-success-300-700/10 flex w-18 items-center rounded-lg p-1 text-xs"
->
-    <Check class="size-4" />
-    Verified
-</p>
+<BadgeCheck class="text-success-500! inline size-5 {user.verified ? '' : 'invisible'}" />

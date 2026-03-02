@@ -14,7 +14,7 @@
 </script>
 
 <Tooltip positioning={{ placement: placement }} {...options}>
-    <Tooltip.Trigger>
+    <Tooltip.Trigger onclick={(e) => e.preventDefault()}>
         {@render children()}
     </Tooltip.Trigger>
     <Portal>
@@ -26,7 +26,7 @@
                     {@render text()}
                 {/if}
                 <Tooltip.Arrow
-                    class="[--arrow-background:var(--color-surface-300-700)] [--arrow-size:--spacing(2)]"
+                    class="[--arrow-background:var(--color-surface-200-800)] [--arrow-size:--spacing(2)]"
                 >
                     <Tooltip.ArrowTip />
                 </Tooltip.Arrow>

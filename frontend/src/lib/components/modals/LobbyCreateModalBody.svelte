@@ -1,13 +1,12 @@
 <script lang="ts">
     import type { Relic } from '$lib/types/relic';
-    import { SegmentedControl, Slider } from '@skeletonlabs/skeleton-svelte';
+    import { SegmentedControl } from '@skeletonlabs/skeleton-svelte';
     import Info from 'lucide-svelte/icons/info';
 
     import FormGroup from '../FormGroup.svelte';
     import { ErrorCollection, refreshError } from '$lib/utils/error_collection.svelte';
     import { makeToComboboxData, toaster } from '$lib';
     import Combobox from '../Combobox.svelte';
-    import type { LobbyAndUser } from '$lib/types/lobby_and_user';
     import { Region, RelicRefinement, RotationType } from '$lib/module_bindings/types';
     import Tooltip from '../Tooltip.svelte';
     import { useReducer } from 'spacetimedb/svelte';
@@ -16,11 +15,10 @@
 
     interface Props {
         relics: Relic[];
-        onLobbyCreate?: (lobby: LobbyAndUser) => void;
         open: boolean;
     }
 
-    let { relics, onLobbyCreate, open = $bindable() }: Props = $props();
+    let { relics, open = $bindable() }: Props = $props();
     const close = () => (open = false);
     const createLobby = useReducer(reducers.createLobby);
 
@@ -81,6 +79,8 @@
         } finally {
             isSubmitting = false;
         }
+
+        open = false;
     };
 </script>
 

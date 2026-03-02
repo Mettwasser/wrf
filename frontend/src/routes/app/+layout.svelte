@@ -10,11 +10,14 @@
     let token = $state<string | null>(null);
 
     $effect(() => {
+        console.log(clerkCtx.isLoaded);
+
         //  Wait for Clerk to finish initializing. Do nothing until then
         if (!clerkCtx.isLoaded) return;
 
         // Clerk is loaded. Now check if the user is actually logged in
         if (!clerkCtx.session) {
+            console.log('Session not found, routing to login');
             goto('/login');
             return;
         }
