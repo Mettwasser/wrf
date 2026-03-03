@@ -1,5 +1,13 @@
 <script lang="ts">
-    import { BadgeCheck, ChevronDownIcon, Gamepad2, Hash, IdCard, User } from 'lucide-svelte';
+    import {
+        BadgeCheck,
+        ChevronDownIcon,
+        Gamepad2,
+        Globe,
+        Hash,
+        IdCard,
+        User,
+    } from 'lucide-svelte';
     import Section from './Section.svelte';
     import { useReducer, useTable } from 'spacetimedb/svelte';
     import { reducers, tables } from '$lib/module_bindings';
@@ -7,14 +15,17 @@
     import type { UserVerification } from '$lib/module_bindings/types';
     import { Accordion } from '@skeletonlabs/skeleton-svelte';
     import { slide } from 'svelte/transition';
-    import { identity as getIdentity } from '$lib';
+    import { identity as getIdentity, preferredRegion } from '$lib';
     import { EditableInput, CopyInput } from '$lib/components';
 
     const identity = getIdentity();
 
+    // subscriptions
     const [meTable] = useTable(tables.me);
     let me = $derived($meTable[0] ?? null);
     const initialUsername = $derived(me?.username ?? '');
+
+    // username edit
     let username = group(() => initialUsername);
     const setUsername = useReducer(reducers.setUsername);
 
@@ -29,6 +40,7 @@
         username.toggleEditing();
     };
 
+    // verification
     let verificationData = $state<UserVerification | null | undefined>(undefined);
 
     const setWarframeId = useReducer(reducers.setWarframeId);
@@ -47,6 +59,18 @@
         warframeId.toggleEditing();
     };
 
+    // preferences
+    const region = group(() => preferredRegion.current);
+    const onRegionSave = () => {
+        preferredRegion.current = region.value;
+        region.toggleEditing();
+    };
+    const onRegionCancel = () => {
+        region.value = preferredRegion.current;
+        region.toggleEditing();
+    };
+
+    // hooks
     $effect(() => {
         if (me && !me.verified) {
             const [table] = useTable(tables.verification);
@@ -61,7 +85,7 @@
     });
 </script>
 
-<div class="flex flex-1 flex-col items-center justify-center gap-32">
+<div class="flex flex-1 flex-col items-center justify-center gap-24">
     <Section title="Username">
         <div class="flex flex-col gap-4">
             <EditableInput
@@ -160,5 +184,14 @@
                 <hr class="hr" />
             </div>
         {/if}
+    </Section>
+    <hr class="hr w-1/3" />
+    <Section title="Preferences">
+        <EditableInput
+            group={region}
+            icon={Globe}
+            onSave={onRegionSave}
+            onCancel={onRegionCancel}
+        />
     </Section>
 </div>

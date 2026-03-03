@@ -44,7 +44,7 @@
     <div class="flex w-2/3 flex-col">
         <div class="flex gap-4 max-sm:flex-col">
             <input type="text" class="input" placeholder="Search for a relic" />
-            <LobbyCreateButton {relics} />
+            <LobbyCreateButton {relics} hasLobbyOpen={myLobby !== undefined} />
         </div>
     </div>
     <ul class="flex w-full flex-col flex-wrap items-center justify-center gap-8 lg:flex-row">

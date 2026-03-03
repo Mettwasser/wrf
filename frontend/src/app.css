@@ -27,6 +27,18 @@
 
 @theme {
     --breakpoint-xsm: 680px;
+
+    --color-bronze: oklch(0.6 0.1 45);
+    --color-bronze-light: oklch(0.8 0.08 50);
+
+    --color-silver: oklch(0.75 0.01 250);
+    --color-silver-light: oklch(0.95 0.01 250);
+
+    --color-gold: oklch(0.84 0.16 88);
+    --color-gold-light: oklch(0.94 0.1 95);
+
+    --color-royal-purple: oklch(0.6 0.25 300);
+    --color-royal-purple-light: oklch(0.8 0.2 310);
 }
 
 html,

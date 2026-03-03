@@ -16,26 +16,44 @@
     interface Props {
         relics: Relic[];
         open: boolean;
+        title: String;
+        initialCategory?: string;
+        initialEra?: string;
+        initialRefinement?: RelicRefinement['tag'];
+        initialLobbySize?: number;
+        initial2A2B?: boolean;
+        initialRegion?: Region['tag'];
     }
 
-    let { relics, open = $bindable() }: Props = $props();
-    const close = () => (open = false);
+    let {
+        relics,
+        open = $bindable(),
+        initial2A2B = false,
+        initialCategory = '',
+        initialEra = '',
+        initialLobbySize = 4,
+        initialRefinement = 'Radiant',
+        // @ts-ignore
+        initialRegion = '',
+        title,
+    }: Props = $props();
+
     const createLobby = useReducer(reducers.createLobby);
 
-    let relicEra = $state(['']);
+    let relicEra = $state([initialEra]);
 
     let validRelicCategories = $derived(
         makeToComboboxData(
             relics.filter((relic) => relic.era === relicEra[0]).map((relic) => relic.category)
         )
     );
-    let relicCategory = $state(['']);
+    let relicCategory = $state([initialCategory]);
 
-    let lobbySize = $state(4);
-    let refinement: RelicRefinement['tag'][] = $state(['Radiant']);
+    let lobbySize = $state(initialLobbySize);
+    let refinement: RelicRefinement['tag'][] = $state([initialRefinement]);
     // @ts-ignore validated by the form
-    let region: Region['tag'][] = $state(['']);
-    let twoATwoB = $state(false);
+    let region: Region['tag'][] = $state([initialRegion]);
+    let twoATwoB = $state(initial2A2B);
 
     let errorCollection = new ErrorCollection();
 
@@ -87,7 +105,7 @@
 <div class="flex flex-col gap-8">
     <form class="flex flex-col gap-6" {onsubmit}>
         <header class="flex justify-between">
-            <h2 class="h2">Create a Lobby</h2>
+            <h2 class="h2">{title}</h2>
         </header>
 
         <div>

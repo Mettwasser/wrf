@@ -6,6 +6,7 @@ import type { Identity } from 'spacetimedb';
 import { createToaster } from '@skeletonlabs/skeleton-svelte';
 
 export const theme = new PersistedState<string>('theme', 'cerberus');
+export const preferredRegion = new PersistedState<string>('preferredRegion', '');
 
 export const toaster = createToaster({
     placement: 'bottom',

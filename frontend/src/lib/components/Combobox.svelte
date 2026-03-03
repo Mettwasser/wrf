@@ -70,7 +70,9 @@
     {inputValue}
 >
     <Combobox.Control>
-        <Combobox.Input />
+        <Combobox.Input
+            class={displayAsUppercase ? 'uppercase placeholder-shown:normal-case' : ''}
+        />
         <Combobox.Trigger />
     </Combobox.Control>
     <Portal>

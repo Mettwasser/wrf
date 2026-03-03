@@ -164,7 +164,7 @@ pub fn set_warframe_id(ctx: &ReducerContext, id: String) -> Result<(), String> {
 }
 
 #[spacetimedb::reducer]
-pub fn create_lobby(
+pub fn create_or_update_lobby(
     ctx: &ReducerContext,
     space: u8,
     region: Region,
@@ -186,7 +186,8 @@ pub fn create_lobby(
 
     ctx.db
         .lobby()
-        .try_insert(Lobby {
+        .host()
+        .try_insert_or_update(Lobby {
             host: ctx.sender(),
             created: ctx.timestamp,
             activity,
