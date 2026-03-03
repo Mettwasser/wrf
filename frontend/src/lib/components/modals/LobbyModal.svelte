@@ -39,7 +39,7 @@
     }: Props = $props();
 
     const close = () => (open = false);
-    const createLobby = useReducer(reducers.createLobby);
+    const createLobby = useReducer(reducers.createOrUpdateLobby);
 
     let relicEra = $state([initialEra]);
 
@@ -87,7 +87,7 @@
                 refinement: { tag: refinement[0] },
                 region: { tag: region[0] },
                 rotationType: twoATwoB ? RotationType.TwoATwoB : RotationType.FourA,
-                space: lobbySize,
+                lobbySize,
             });
         } catch (e) {
             toaster.create({

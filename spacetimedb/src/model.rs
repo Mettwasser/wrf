@@ -37,7 +37,7 @@ pub struct Lobby {
 
     pub created: Timestamp,
 
-    pub space: u8,
+    pub lobby_size: u8,
 
     pub region: Region,
 
@@ -53,15 +53,17 @@ pub struct Lobby {
 #[spacetimedb::table(accessor = lobby_join, public)]
 pub struct LobbyJoin {
     #[primary_key]
-    pub host: Identity,
-
     pub user: Identity,
+
+    #[index(btree)]
+    pub host: Identity,
 }
 
 #[spacetimedb::table(accessor = lobby_ban)]
 pub struct LobbyBan {
-    #[primary_key]
+    #[index(btree)]
     pub host: Identity,
 
+    #[index(btree)]
     pub user: Identity,
 }

@@ -17,7 +17,7 @@ import {
 } from "./types";
 
 export default {
-  space: __t.u8(),
+  lobbySize: __t.u8(),
   get region() {
     return Region;
   },

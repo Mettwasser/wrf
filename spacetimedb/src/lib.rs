@@ -21,6 +21,8 @@ use spacetimedb::{
 use crate::{
     model::{
         lobby,
+        lobby_ban,
+        lobby_join,
         user,
         user_verification,
         Lobby,
@@ -112,7 +114,11 @@ pub fn identity_connected(ctx: &ReducerContext) -> Result<(), String> {
 
 #[spacetimedb::reducer(client_disconnected)]
 pub fn identity_disconnected(ctx: &ReducerContext) -> Result<(), String> {
-    ctx.db.lobby().host().delete(ctx.sender());
+    let sender = ctx.sender();
+
+    ctx.db.lobby().host().delete(sender);
+    ctx.db.lobby_ban().host().delete(sender);
+    ctx.db.lobby_join().host().delete(sender);
 
     Ok(())
 }
@@ -166,7 +172,7 @@ pub fn set_warframe_id(ctx: &ReducerContext, id: String) -> Result<(), String> {
 #[spacetimedb::reducer]
 pub fn create_or_update_lobby(
     ctx: &ReducerContext,
-    space: u8,
+    lobby_size: u8,
     region: Region,
     refinement: RelicRefinement,
     rotation_type: RotationType,
@@ -180,7 +186,7 @@ pub fn create_or_update_lobby(
         return Err("Invalid relic".to_owned());
     }
 
-    if !(2..=4).contains(&space) {
+    if !(2..=4).contains(&lobby_size) {
         return Err("Invalid lobby size".to_owned());
     }
 
@@ -194,7 +200,7 @@ pub fn create_or_update_lobby(
             refinement,
             region,
             rotation_type,
-            space,
+            lobby_size,
             amount_players: 1,
         })
         .map_unique_violation(|_| "You already opened a lobby")?;

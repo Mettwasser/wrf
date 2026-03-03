@@ -11,6 +11,6 @@ import {
 } from "spacetimedb";
 
 export default __t.row({
-  host: __t.identity().primaryKey(),
-  user: __t.identity(),
+  user: __t.identity().primaryKey(),
+  host: __t.identity(),
 });

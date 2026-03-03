@@ -13,7 +13,7 @@ import {
 export const Lobby = __t.object("Lobby", {
   host: __t.identity(),
   created: __t.timestamp(),
-  space: __t.u8(),
+  lobbySize: __t.u8(),
   get region() {
     return Region;
   },
@@ -35,8 +35,8 @@ export const LobbyBan = __t.object("LobbyBan", {
 export type LobbyBan = __Infer<typeof LobbyBan>;
 
 export const LobbyJoin = __t.object("LobbyJoin", {
-  host: __t.identity(),
   user: __t.identity(),
+  host: __t.identity(),
 });
 export type LobbyJoin = __Infer<typeof LobbyJoin>;
 

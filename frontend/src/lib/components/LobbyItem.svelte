@@ -54,7 +54,7 @@
                         {@const idx = i + 1}
                         <UserIcon
                             size={18}
-                            class="{lobbyAndUser.lobby.space < idx ? 'invisible' : ''} 
+                            class="{lobbyAndUser.lobby.lobbySize < idx ? 'invisible' : ''} 
                                 {lobbyAndUser.lobby.amountPlayers >= idx
                                 ? 'text-success-500'
                                 : 'opacity-50'}"

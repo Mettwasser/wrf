@@ -34,7 +34,7 @@ import {
 } from "spacetimedb";
 
 // Import all reducer arg schemas
-import CreateLobbyReducer from "./create_lobby_reducer";
+import CreateOrUpdateLobbyReducer from "./create_or_update_lobby_reducer";
 import SetUsernameReducer from "./set_username_reducer";
 import SetWarframeIdReducer from "./set_warframe_id_reducer";
 
@@ -68,9 +68,12 @@ const tablesSchema = __schema({
       { name: 'host', algorithm: 'btree', columns: [
         'host',
       ] },
+      { name: 'user', algorithm: 'btree', columns: [
+        'user',
+      ] },
     ],
     constraints: [
-      { name: 'lobby_join_host_key', constraint: 'unique', columns: ['host'] },
+      { name: 'lobby_join_user_key', constraint: 'unique', columns: ['user'] },
     ],
   }, LobbyJoinRow),
   user: __table({
@@ -106,7 +109,7 @@ const tablesSchema = __schema({
 
 /** The schema information for all reducers in this module. This is defined the same way as the reducers would have been defined in the server, except the body of the reducer is omitted in code generation. */
 const reducersSchema = __reducers(
-  __reducerSchema("create_lobby", CreateLobbyReducer),
+  __reducerSchema("create_or_update_lobby", CreateOrUpdateLobbyReducer),
   __reducerSchema("set_username", SetUsernameReducer),
   __reducerSchema("set_warframe_id", SetWarframeIdReducer),
 );
