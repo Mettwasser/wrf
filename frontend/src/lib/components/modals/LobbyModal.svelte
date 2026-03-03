@@ -5,7 +5,7 @@
 
     import FormGroup from '../FormGroup.svelte';
     import { ErrorCollection, refreshError } from '$lib/utils/error_collection.svelte';
-    import { makeToComboboxData, toaster } from '$lib';
+    import { makeToComboboxData, preferredRegion, toaster } from '$lib';
     import Combobox from '../Combobox.svelte';
     import { Region, RelicRefinement, RotationType } from '$lib/module_bindings/types';
     import Tooltip from '../Tooltip.svelte';
@@ -34,10 +34,11 @@
         initialLobbySize = 4,
         initialRefinement = 'Radiant',
         // @ts-ignore
-        initialRegion = '',
+        initialRegion = preferredRegion.current,
         title,
     }: Props = $props();
 
+    const close = () => (open = false);
     const createLobby = useReducer(reducers.createLobby);
 
     let relicEra = $state([initialEra]);

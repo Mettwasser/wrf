@@ -4,9 +4,12 @@ import { DbConnection } from './module_bindings';
 import type { Identity } from 'spacetimedb';
 
 import { createToaster } from '@skeletonlabs/skeleton-svelte';
+import type { ComboboxData } from './types/combobox_data';
+import type { Region } from './module_bindings/types';
 
 export const theme = new PersistedState<string>('theme', 'cerberus');
-export const preferredRegion = new PersistedState<string>('preferredRegion', '');
+// @ts-ignore
+export const preferredRegion = new PersistedState<Region['tag']>('preferredRegion', '');
 
 export const toaster = createToaster({
     placement: 'bottom',

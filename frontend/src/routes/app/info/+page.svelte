@@ -12,11 +12,12 @@
     import { useReducer, useTable } from 'spacetimedb/svelte';
     import { reducers, tables } from '$lib/module_bindings';
     import { group } from '$lib/utils/group.svelte';
-    import type { UserVerification } from '$lib/module_bindings/types';
+    import { Region, type UserVerification } from '$lib/module_bindings/types';
     import { Accordion } from '@skeletonlabs/skeleton-svelte';
     import { slide } from 'svelte/transition';
-    import { identity as getIdentity, preferredRegion } from '$lib';
+    import { identity as getIdentity, makeToComboboxData, preferredRegion } from '$lib';
     import { EditableInput, CopyInput } from '$lib/components';
+    import ComboboxInput from '$lib/components/inputs/ComboboxInput.svelte';
 
     const identity = getIdentity();
 
@@ -187,7 +188,11 @@
     </Section>
     <hr class="hr w-1/3" />
     <Section title="Preferences">
-        <EditableInput
+        <ComboboxInput
+            label="Region"
+            data={makeToComboboxData(Object.keys(Region.variants))}
+            displayAsUppercase
+            placeholder="Region"
             group={region}
             icon={Globe}
             onSave={onRegionSave}

@@ -1,5 +1,6 @@
 export { default as EditableInput } from './inputs/EditableInput.svelte';
 export { default as CopyInput } from './inputs/CopyInput.svelte';
+export { default as ComboboxInput } from './inputs/ComboboxInput.svelte';
 export { default as FormGroup } from './FormGroup.svelte';
 export { default as FormInputGroup } from './FormInputGroup.svelte';
 export { default as Combobox } from './Combobox.svelte';

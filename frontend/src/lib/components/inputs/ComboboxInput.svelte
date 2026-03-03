@@ -2,6 +2,8 @@
     import { Check, LoaderCircle, Pen, X } from 'lucide-svelte';
     import type { SvelteComponent } from 'svelte';
     import type { Group } from '$lib/utils/group.svelte';
+    import Combobox from '../Combobox.svelte';
+    import type { ComboboxData } from '$lib/types/combobox_data';
 
     type Props = {
         label?: string;
@@ -10,9 +12,41 @@
         onSave: () => void;
         onCancel: () => void;
         class?: string;
+        data: ComboboxData[];
+        placeholder?: string;
+        limit?: number;
+        displayAsUppercase?: boolean;
     };
 
-    let { label, group, icon: Icon, onSave, onCancel, class: className }: Props = $props();
+    let {
+        label,
+        group,
+        icon: Icon,
+        onSave,
+        onCancel,
+        class: className,
+        data,
+        placeholder = '',
+        limit,
+        displayAsUppercase,
+    }: Props = $props();
+
+    let comboboxValue = $state([group.value]);
+
+    $effect(() => {
+        if (group.isEditing) {
+            const val = comboboxValue?.[0] ?? '';
+            if (group.value !== val) {
+                group.value = val;
+            }
+        }
+    });
+
+    $effect(() => {
+        if (!group.isEditing) {
+            comboboxValue = [group.value];
+        }
+    });
 </script>
 
 <div class="flex flex-col gap-1 {className}">
@@ -20,16 +54,20 @@
         <span class="label-text">{label}</span>
     {/if}
     <div class="flex gap-2">
-        <div class="input-group hover:preset-tonal w-full grid-cols-[auto_1fr]">
+        <div
+            class="input-group hover:preset-tonal w-full grid-cols-[auto_1fr] [&_input]:ring-0 [&_input]:focus:outline-none"
+        >
             {#if Icon}
                 <div class="ig-cell">
                     <Icon />
                 </div>
             {/if}
-            <input
-                type="text"
-                class="ig-input"
-                bind:value={group.value}
+            <Combobox
+                {data}
+                bind:value={comboboxValue}
+                {placeholder}
+                {limit}
+                {displayAsUppercase}
                 disabled={!group.isEditing}
             />
         </div>

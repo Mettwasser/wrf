@@ -12,6 +12,7 @@
         placeholder: string;
         limit?: number;
         displayAsUppercase?: boolean;
+        disabled?: boolean;
     }
 
     let {
@@ -20,6 +21,7 @@
         placeholder,
         limit,
         displayAsUppercase = false,
+        disabled = false,
     }: Props = $props();
 
     let items = $state(data);
@@ -60,7 +62,6 @@
 </script>
 
 <Combobox
-    class="max-w-md"
     {placeholder}
     {collection}
     {onOpenChange}
@@ -71,6 +72,7 @@
 >
     <Combobox.Control>
         <Combobox.Input
+            {disabled}
             class={displayAsUppercase ? 'uppercase placeholder-shown:normal-case' : ''}
         />
         <Combobox.Trigger />
