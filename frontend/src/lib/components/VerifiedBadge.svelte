@@ -5,4 +5,4 @@
     let { user }: { user: User } = $props();
 </script>
 
-<BadgeCheck class="text-success-500! inline size-5 {user.verified ? '' : 'invisible'}" />
+<BadgeCheck class="text-success-500 inline size-6 {user.verified ? '' : 'invisible'}" />

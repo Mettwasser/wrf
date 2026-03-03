@@ -1,6 +1,6 @@
 <script lang="ts">
     import type { LobbyAndUser } from '$lib/types/lobby_and_user';
-    import { Check } from 'lucide-svelte';
+    import { Check, User as UserIcon } from 'lucide-svelte';
     import VerifiedBadge from './VerifiedBadge.svelte';
     import Tooltip from './Tooltip.svelte';
     import { getRelicImageUrl } from '$lib/utils/relic_image';
@@ -22,7 +22,7 @@
 >
     {#if ownedByMe}
         <p
-            class="bg-success-300-700 text-success-contrast-300 dark:text-surface-contrast-700 absolute -translate-y-8 rounded-lg p-1 text-xs"
+            class="bg-success-300-700 text-surface-contrast-700 absolute -translate-y-8 rounded-lg p-1 px-2 text-xs"
         >
             Your Lobby!
         </p>
@@ -34,17 +34,14 @@
                 <div class="flex gap-2">
                     <h3 class="h3">{lobbyAndUser.lobby.activity}</h3>
                 </div>
-                <span class="text-primary-500">{lobbyAndUser.lobby.refinement.tag}</span>
-            </div>
-            <div class="text-tertiary-300 flex items-center gap-2">
-                {lobbyAndUser.user.username}
-                <VerifiedBadge user={lobbyAndUser.user} />
-            </div>
-
-            <div>
-                <span class="uppercase">
-                    {lobbyAndUser.lobby.region.tag}
+                <span class="text-primary-600-400 text-lg">
+                    <strong>{lobbyAndUser.lobby.refinement.tag}</strong>
                 </span>
+            </div>
+            <hr class="hr border-surface-600-400" />
+            <div class="flex items-center gap-2 text-lg">
+                <strong>{lobbyAndUser.user.username}</strong>
+                <VerifiedBadge user={lobbyAndUser.user} />
             </div>
         </div>
         <div class="flex items-start text-center text-lg">
@@ -52,7 +49,20 @@
         </div>
     </div>
     <div class="flex flex-1 justify-between gap-4">
-        <span class="text-lg">{lobbyAndUser.lobby.amountPlayers}/{lobbyAndUser.lobby.space}</span>
+        <span class="flex gap-2 text-lg">
+            <div class="preset-outlined-surface-300-700 card flex items-center">
+                {#each Array(lobbyAndUser.lobby.space) as _, i (i)}
+                    {@const idx = i + 1}
+                    <UserIcon
+                        class={lobbyAndUser.lobby.amountPlayers >= idx
+                            ? 'text-success-500'
+                            : 'opacity-50'}
+                    />
+                {/each}
+            </div>
+            •
+            <span class="uppercase">{lobbyAndUser.lobby.region.tag}</span>
+        </span>
         {#if !ownedByMe}
             <button type="button" class="btn preset-filled-primary-200-800">Join</button>
         {:else}
