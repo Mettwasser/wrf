@@ -11,6 +11,7 @@ use spacetimedb::{
         distributions::Alphanumeric,
         Rng,
     },
+    Identity,
     ReducerContext,
     ScheduleAt,
     StdbRng,
@@ -21,15 +22,19 @@ use spacetimedb::{
 use crate::{
     model::{
         lobby,
-        lobby_ban,
         lobby_join,
         user,
         user_verification,
         Lobby,
+        LobbyJoin,
         User,
         UserVerification,
     },
     schedules::{
+        disconnect_timer::{
+            disconnect_timer,
+            DisconnectTimer,
+        },
         relic::{
             relic,
             relic_timer,
@@ -45,7 +50,10 @@ use crate::{
         RelicRefinement,
         RotationType,
     },
-    utils::MapUniqueViolation,
+    utils::{
+        lobby_cleanup,
+        MapUniqueViolation,
+    },
 };
 
 fn generate_random_code(rng: &StdbRng) -> String {
@@ -108,17 +116,23 @@ pub fn identity_connected(ctx: &ReducerContext) -> Result<(), String> {
         return Err("Client connected without JWT".to_string());
     };
 
+    ctx.db.disconnect_timer().user().delete(ctx.sender());
+
     log::info!("sub: {}, iss: {}", subject, issuer);
     Ok(())
 }
 
 #[spacetimedb::reducer(client_disconnected)]
 pub fn identity_disconnected(ctx: &ReducerContext) -> Result<(), String> {
-    let sender = ctx.sender();
-
-    ctx.db.lobby().host().delete(sender);
-    ctx.db.lobby_ban().host().delete(sender);
-    ctx.db.lobby_join().host().delete(sender);
+    if ctx.db.lobby_join().user().find(ctx.sender()).is_some() {
+        ctx.db.disconnect_timer().try_insert(DisconnectTimer {
+            scheduled_id: 0,
+            scheduled_at: ScheduleAt::Time(
+                ctx.timestamp + TimeDuration::from_duration(Duration::from_mins(3)),
+            ),
+            user: ctx.sender(),
+        })?;
+    }
 
     Ok(())
 }
@@ -203,7 +217,35 @@ pub fn create_or_update_lobby(
             lobby_size,
             amount_players: 1,
         })
-        .map_unique_violation(|_| "You already opened a lobby")?;
+        .map_unique_violation(|_| "You already have an open lobby")?;
+
+    ctx.db
+        .lobby_join()
+        .try_insert(LobbyJoin {
+            host: ctx.sender(),
+            user: ctx.sender(),
+        })
+        .map_unique_violation(|_| "You can't join while having an opened lobby")?;
+
+    Ok(())
+}
+
+#[spacetimedb::reducer]
+pub fn join_lobby(ctx: &ReducerContext, lobby_id: Identity) -> Result<(), String> {
+    ctx.db
+        .lobby_join()
+        .try_insert(LobbyJoin {
+            host: lobby_id,
+            user: ctx.sender(),
+        })
+        .map_unique_violation(|_| "You can't join multiple lobbies")?;
+
+    Ok(())
+}
+
+#[spacetimedb::reducer]
+pub fn leave_lobby(ctx: &ReducerContext) -> Result<(), String> {
+    lobby_cleanup(&ctx.db, ctx.sender());
 
     Ok(())
 }

@@ -10,6 +10,13 @@ import {
   type Infer as __Infer,
 } from "spacetimedb";
 
+export const DisconnectTimer = __t.object("DisconnectTimer", {
+  scheduledId: __t.u64(),
+  scheduledAt: __t.scheduleAt(),
+  user: __t.identity(),
+});
+export type DisconnectTimer = __Infer<typeof DisconnectTimer>;
+
 export const Lobby = __t.object("Lobby", {
   host: __t.identity(),
   created: __t.timestamp(),

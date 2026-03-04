@@ -1,8 +1,16 @@
 use std::fmt::Display;
 
 use spacetimedb::{
+    Identity,
+    Local,
     Table,
     TryInsertError,
+};
+
+use crate::model::{
+    lobby,
+    lobby_ban,
+    lobby_join,
 };
 
 pub trait MapUniqueViolation<T, F> {
@@ -34,4 +42,15 @@ where
     fn error_as_string(self) -> Result<T, String> {
         self.map_err(|err| err.to_string())
     }
+}
+
+pub fn lobby_cleanup(db: &Local, user_id: Identity) {
+    // Lobby HOST cleanup
+    db.lobby().host().delete(user_id);
+    db.lobby_ban().host().delete(user_id);
+    db.lobby_join().host().delete(user_id);
+
+    // Lobby join cleanup
+    db.lobby_ban().user().delete(user_id);
+    db.lobby_join().user().delete(user_id);
 }

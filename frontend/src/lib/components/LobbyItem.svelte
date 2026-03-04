@@ -5,6 +5,7 @@
     import { getRelicImageUrl } from '$lib/utils/relic_image';
     import { getRefinementTextColor } from '$lib/utils/refinement_color';
     import { RotationType } from '$lib/module_bindings/types';
+    import { goto } from '$app/navigation';
 
     interface Props {
         lobbyAndUser: LobbyAndUser;
@@ -20,10 +21,17 @@
     const refinementTextColor = $derived(getRefinementTextColor(lobbyAndUser.lobby.refinement));
 
     const is2A2B = $derived(lobbyAndUser.lobby.rotationType.tag === RotationType.TwoATwoB.tag);
+
+    const onclick = () => {
+        goto(`/app/lobby/${lobbyAndUser.lobby.host.toHexString()}`);
+    };
 </script>
 
+<!-- svelte-ignore a11y_click_events_have_key_events -->
+<!-- svelte-ignore a11y_no_static_element_interactions -->
 <div
     class="card bg-surface-200-800/40 shadow-surface-100/10 preset-outlined-surface-600-400 hover:bg-success-300-700/15 relative grid w-1/4 cursor-pointer grid-cols-3 gap-4 border-2! p-4 shadow-lg backdrop-blur-lg"
+    {onclick}
 >
     {#if ownedByMe}
         <p

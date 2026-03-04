@@ -10,8 +10,6 @@
     let token = $state<string | null>(null);
 
     $effect(() => {
-        console.log(clerkCtx.isLoaded);
-
         //  Wait for Clerk to finish initializing. Do nothing until then
         if (!clerkCtx.isLoaded) return;
 
@@ -57,7 +55,7 @@
 
             <Toast.Group {toaster}>
                 {#snippet children(toast)}
-                    <Toast {toast} class="text-white {getToastColors(toast.type)}">
+                    <Toast {toast} class="text-surface-50 {getToastColors(toast.type)}">
                         <Toast.Message>
                             <Toast.Title>{toast.title}</Toast.Title>
                             <Toast.Description>{toast.description}</Toast.Description>

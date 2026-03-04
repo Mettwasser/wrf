@@ -1,7 +1,7 @@
 import type { Component, SvelteComponent } from 'svelte';
 
-export interface AccountRoute {
-    Icon: typeof SvelteComponent;
+export interface NavbarRoute {
+    Icon: typeof SvelteComponent<any>;
     id: string;
     label: string;
     href: string;
