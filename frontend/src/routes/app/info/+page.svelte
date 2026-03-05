@@ -86,7 +86,7 @@
     });
 </script>
 
-<div class="flex flex-1 flex-col items-center justify-center gap-24">
+<div class="flex flex-1 flex-col items-center justify-center gap-24 p-4">
     <Section title="Username">
         <div class="flex flex-col gap-4">
             <EditableInput
@@ -186,7 +186,7 @@
             </div>
         {/if}
     </Section>
-    <hr class="hr w-1/3" />
+    <!-- <hr class="hr -my-16 w-1/3" /> -->
     <Section title="Preferences">
         <ComboboxInput
             label="Region"

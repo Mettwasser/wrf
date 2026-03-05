@@ -10,7 +10,7 @@
     };
 </script>
 
-<div class="input-group hover:preset-tonal grid-cols-[auto_1fr_auto]">
+<div class="input-group hover:preset-tonal md hidden grid-cols-[auto_1fr_auto] lg:flex">
     <div class="ig-cell">
         <Palette size={18} />
     </div>

@@ -49,8 +49,10 @@
         <div class="flex h-auto w-full flex-col">
             <Navbar />
 
-            <div class="flex flex-1 p-4">
-                {@render children()}
+            <div class="flex min-w-0 flex-1 overflow-y-auto p-4">
+                <div class="size-full">
+                    {@render children()}
+                </div>
             </div>
 
             <Toast.Group {toaster}>

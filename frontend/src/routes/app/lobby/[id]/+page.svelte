@@ -86,12 +86,12 @@
 </script>
 
 {#if lobby}
-    <div class="container mx-auto flex max-w-7xl flex-1 flex-col p-4 lg:p-8">
-        <div class="grid w-full grid-cols-1 gap-12 lg:grid-cols-4">
+    <div class="container mx-auto flex h-full max-w-7xl flex-1 flex-col justify-center p-4 lg:p-8">
+        <div class="grid w-full grid-cols-1 gap-16 lg:grid-cols-4 lg:gap-0">
             <!-- Lobby Info Card -->
-            <div class="flex flex-col lg:col-span-1">
+            <div class="z-10 flex flex-col lg:col-span-1 lg:translate-x-2">
                 <div
-                    class="card bg-surface-200-800/40 shadow-surface-100/10 preset-outlined-surface-600-400 flex flex-col p-8 shadow-xl backdrop-blur-lg"
+                    class="card bg-surface-200-800/40 shadow-surface-100/10 preset-outlined-surface-600-400 flex h-full flex-col p-8 shadow-xl backdrop-blur-lg lg:shadow-none"
                 >
                     <div class="flex flex-col items-center gap-6">
                         <img
@@ -112,9 +112,9 @@
                         <div class="flex w-full flex-col gap-4">
                             <div class="flex items-center gap-3">
                                 <div
-                                    class="bg-primary-500/20 flex h-10 w-10 items-center justify-center rounded-lg"
+                                    class="bg-primary-600-400/20 flex h-10 w-10 items-center justify-center rounded-lg"
                                 >
-                                    <MapPin class="text-primary-500" size={20} />
+                                    <MapPin class="text-primary-600-400" size={20} />
                                 </div>
                                 <div class="flex flex-col">
                                     <span class="text-xs font-bold uppercase opacity-50">
@@ -165,7 +165,7 @@
                             </button>
                         {:else}
                             <button
-                                class="btn preset-filled-primary-500 mt-4 w-full font-bold"
+                                class="btn preset-filled-primary-600-400 mt-4 w-full font-bold"
                                 onclick={joinLobby}
                             >
                                 {#if lobbyButtonLoading}
@@ -181,38 +181,43 @@
             </div>
 
             <!-- Players List -->
-            <div class="flex flex-col lg:col-span-3">
-                <div class="mb-8 flex items-center justify-between">
-                    <h3 class="h3 flex items-center gap-3 font-bold">
-                        <span
-                            class="text-surface-50 flex h-10 w-10 items-center justify-center rounded-full"
-                        >
-                            <UserIcon class="size-8" />
-                        </span>
-                        Lobby Members
-                    </h3>
-                    <div>
-                        <button
-                            class="btn preset-filled-surface-900-100 w-full"
-                            onclick={copyLobbyId}
-                            title="Copy to clipboard"
-                        >
-                            <Clipboard class="size-6" /> Copy Lobby ID
-                        </button>
+            <div
+                class="card bg-surface-100-900/40 preset-outlined-surface-500 flex flex-col gap-8 p-8 backdrop-blur-3xl lg:col-span-3"
+            >
+                <div class="flex flex-col gap-4">
+                    <div class="flex items-center justify-between">
+                        <h3 class="h3 flex items-center gap-3 font-bold">
+                            <span
+                                class="text-surface-50 flex h-10 w-10 items-center justify-center rounded-full"
+                            >
+                                <UserIcon class="size-8" />
+                            </span>
+                            Lobby Members
+                        </h3>
+                        <div>
+                            <button
+                                class="btn preset-filled-surface-900-100 w-full font-semibold"
+                                onclick={copyLobbyId}
+                                title="Copy to clipboard"
+                            >
+                                <Clipboard class="size-6" /> Copy Lobby ID
+                            </button>
+                        </div>
                     </div>
+                    <hr class="hr border-surface-50/50" />
                 </div>
 
-                <div class="flex flex-col gap-6">
+                <div class="flex h-full flex-col justify-evenly gap-6">
                     {#each participants as user (user.id.toHexString())}
                         {@const userIsHost = user.id.equals(lobbyHostId)}
                         {@const isMe = user.id.equals(myIdentity)}
                         <div
-                            class="card flex items-center justify-between p-5 shadow-md transition-all
+                            class="card bg-surface-300-700/30 flex flex-col items-center justify-between gap-4 p-5 shadow-md transition-all lg:flex-row
                         {userIsHost
-                                ? 'bg-primary-500/10 border-primary-500/30 border-2'
+                                ? 'border-primary-600-400/30 border-2'
                                 : isMe
-                                  ? 'bg-success-500/10 border-success-500/30 border-2'
-                                  : 'bg-surface-200-800/40 preset-outlined-surface-600-400'}"
+                                  ? 'border-success-600-400/30 border-2'
+                                  : 'border-surface-600-400/30 border-2'}"
                         >
                             <div class="flex items-center gap-5">
                                 <div class="relative">
@@ -223,7 +228,7 @@
                                     </div>
                                     {#if userIsHost}
                                         <div
-                                            class="bg-primary-500 absolute -top-1 -right-1 rounded-full p-1.5 shadow-lg"
+                                            class="bg-primary-600-400 absolute -top-1 -right-1 rounded-full p-1.5 shadow-lg"
                                         >
                                             <Crown size={14} class="text-surface-50" />
                                         </div>
@@ -234,10 +239,10 @@
                                     <div class="flex items-center gap-2">
                                         <span
                                             class="text-2xl font-bold {userIsHost
-                                                ? 'text-primary-500'
+                                                ? 'text-primary-300'
                                                 : isMe
-                                                  ? 'text-success-500'
-                                                  : ''}"
+                                                  ? 'text-success-300/75'
+                                                  : 'text-surface-100'}"
                                         >
                                             {user.username}
                                         </span>
@@ -246,15 +251,21 @@
                                     <div class="flex items-center gap-2">
                                         {#if userIsHost}
                                             <span
-                                                class="text-primary-500 text-xs font-black tracking-widest uppercase"
+                                                class="text-primary-300/50 text-xs font-bold tracking-widest uppercase"
                                             >
                                                 Lobby Host
+                                            </span>
+                                        {:else if isMe}
+                                            <span
+                                                class="text-success-300/60 text-xs font-bold tracking-widest uppercase opacity-50"
+                                            >
+                                                You
                                             </span>
                                         {:else}
                                             <span
                                                 class="text-xs font-bold tracking-widest uppercase opacity-50"
                                             >
-                                                {isMe ? 'You' : 'Member'}
+                                                Member
                                             </span>
                                         {/if}
                                     </div>
@@ -294,10 +305,10 @@
 
                     {#each Array(Math.max(0, lobby.lobbySize - participants.length)) as _}
                         <div
-                            class="border-surface-600-400/30 flex items-center gap-5 rounded-2xl border-2 border-dashed p-5 opacity-40"
+                            class="border-surface-600-400/50 card flex items-center gap-5 border-2 border-dashed p-5 opacity-50"
                         >
                             <div
-                                class="bg-surface-300-700/20 flex h-14 w-14 items-center justify-center rounded-full"
+                                class="bg-surface-300-700/50 flex h-14 w-14 items-center justify-center rounded-full"
                             >
                                 <UserIcon size={28} class="opacity-20" />
                             </div>
