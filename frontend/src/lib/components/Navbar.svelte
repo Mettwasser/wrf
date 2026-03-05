@@ -26,7 +26,7 @@
         <AppBar.Lead class="flex items-center">
             <a href="/app" class="h4 text-surface-50! flex size-full items-center gap-4">
                 <img src={logo} class="w-20 dark:invert" alt="wrf-logo" />
-                Warframe Relic Finder
+                <span class="hidden sm:block">Warframe Relic Finder</span>
             </a>
         </AppBar.Lead>
 

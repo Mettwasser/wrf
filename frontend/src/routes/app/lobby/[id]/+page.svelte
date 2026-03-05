@@ -86,7 +86,9 @@
 </script>
 
 {#if lobby}
-    <div class="container mx-auto flex h-full max-w-7xl flex-1 flex-col justify-center p-4 lg:p-8">
+    <div
+        class="container mx-auto flex min-h-full max-w-7xl flex-1 flex-col p-4 lg:justify-center lg:p-8"
+    >
         <div class="grid w-full grid-cols-1 gap-16 lg:grid-cols-4 lg:gap-0">
             <!-- Lobby Info Card -->
             <div class="z-10 flex flex-col lg:col-span-1 lg:translate-x-2">
@@ -182,10 +184,10 @@
 
             <!-- Players List -->
             <div
-                class="card bg-surface-100-900/40 preset-outlined-surface-500 flex flex-col gap-8 p-8 backdrop-blur-3xl lg:col-span-3"
+                class="card bg-surface-100-900/40 preset-outlined-surface-500 flex flex-col gap-8 p-4 backdrop-blur-3xl sm:p-8 lg:col-span-3"
             >
                 <div class="flex flex-col gap-4">
-                    <div class="flex items-center justify-between">
+                    <div class="flex items-center justify-between max-sm:flex-col max-sm:gap-4">
                         <h3 class="h3 flex items-center gap-3 font-bold">
                             <span
                                 class="text-surface-50 flex h-10 w-10 items-center justify-center rounded-full"
@@ -212,7 +214,7 @@
                         {@const userIsHost = user.id.equals(lobbyHostId)}
                         {@const isMe = user.id.equals(myIdentity)}
                         <div
-                            class="card bg-surface-300-700/30 flex flex-col items-center justify-between gap-4 p-5 shadow-md transition-all lg:flex-row
+                            class="card bg-surface-300-700/30 flex flex-col items-center justify-between gap-4 p-5 shadow-md transition-all sm:flex-row
                         {userIsHost
                                 ? 'border-primary-600-400/30 border-2'
                                 : isMe
@@ -220,7 +222,7 @@
                                   : 'border-surface-600-400/30 border-2'}"
                         >
                             <div class="flex items-center gap-5">
-                                <div class="relative">
+                                <div class="relative max-sm:hidden">
                                     <div
                                         class="bg-surface-300-700/50 flex h-14 w-14 items-center justify-center rounded-full shadow-inner"
                                     >
@@ -238,7 +240,7 @@
                                 <div class="flex flex-col">
                                     <div class="flex items-center gap-2">
                                         <span
-                                            class="text-2xl font-bold {userIsHost
+                                            class="text-2xl font-bold wrap-anywhere {userIsHost
                                                 ? 'text-primary-300'
                                                 : isMe
                                                   ? 'text-success-300/75'
