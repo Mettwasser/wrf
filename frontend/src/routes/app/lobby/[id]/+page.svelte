@@ -2,7 +2,7 @@
     import type { PageProps } from './$types';
     import { useReducer, useTable } from 'spacetimedb/svelte';
     import { reducers, tables } from '$lib/module_bindings';
-    import { Identity } from 'spacetimedb';
+    import { Identity, SenderError } from 'spacetimedb';
     import { goto } from '$app/navigation';
     import {
         Crown,
@@ -19,7 +19,7 @@
     } from 'lucide-svelte';
     import { getRelicImageUrl } from '$lib/utils/relic_image';
     import { getRefinementTextColor } from '$lib/utils/refinement_color';
-    import { RotationType } from '$lib/module_bindings/types';
+    import { RotationType, User } from '$lib/module_bindings/types';
     import VerifiedBadge from '$lib/components/VerifiedBadge.svelte';
     import { identity, toaster } from '$lib';
 
@@ -33,26 +33,42 @@
     );
     const lobby = $derived($lobbyTable[0] ?? null);
 
-    const [joinsTable] = useTable(tables.lobby_join.where((join) => join.host.eq(lobbyHostId)));
-
-    const [allUsers] = useTable(tables.user);
-
-    const participants = $derived(
-        $allUsers
-            .filter((u) => u.id.equals(lobbyHostId) || $joinsTable.some((j) => j.user.equals(u.id)))
-            .sort((a, b) => {
-                if (a.id.equals(lobbyHostId)) return -1;
-                if (b.id.equals(lobbyHostId)) return 1;
-                return a.username.localeCompare(b.username);
-            })
+    const [joinedUsers, joinedUsersReady] = useTable(
+        tables.user.leftSemijoin(tables.lobby_join, (user, join) => user.id.eq(join.user))
     );
 
+    function moveHostToTop(userList: User[]): User[] {
+        const hostIndex = userList.findIndex((u) => u.id.equals(lobbyHostId));
+
+        if (hostIndex > 0) {
+            const [host] = userList.splice(hostIndex, 1);
+            userList.unshift(host);
+        }
+        return userList;
+    }
+
+    let participants = $derived(moveHostToTop([...$joinedUsers]));
+
     const isHost = $derived(myIdentity.equals(lobbyHostId));
-    const isJoined = $derived($joinsTable.some((j) => j.user.equals(myIdentity)));
+    const isJoined = $derived($joinedUsers.some((user) => user.id.equals(myIdentity)));
 
     const relicUrl = $derived(lobby ? getRelicImageUrl(lobby.activity, lobby.refinement) : '');
     const refinementTextColor = $derived(lobby ? getRefinementTextColor(lobby.refinement) : '');
     const is2A2B = $derived(lobby?.rotationType.tag === RotationType.TwoATwoB.tag);
+
+    const withToasterError = async (fn: () => Promise<void>) => {
+        try {
+            await fn();
+        } catch (e) {
+            if (e instanceof SenderError) {
+                toaster.create({
+                    title: 'Error',
+                    description: e.message,
+                    type: 'error',
+                });
+            }
+        }
+    };
 
     let lobbyButtonLoading = $state(false);
 
@@ -66,7 +82,7 @@
     const joinLobbyReducer = useReducer(reducers.joinLobby);
     const joinLobby = async () => {
         lobbyButtonLoading = true;
-        await joinLobbyReducer({ lobbyId: lobbyHostId });
+        withToasterError(() => joinLobbyReducer({ lobbyId: lobbyHostId }));
         lobbyButtonLoading = false;
     };
 
@@ -78,6 +94,32 @@
         });
     };
 
+    let isKicking = $state(false);
+    const kickReducer = useReducer(reducers.kick);
+    const kick = async (user: User) => {
+        isKicking = true;
+        await withToasterError(() => kickReducer({ user: user.id }));
+        toaster.create({
+            title: 'Player Kicked',
+            description: `You kicked ${user.username} from your Lobby`,
+            type: 'info',
+        });
+        isKicking = false;
+    };
+
+    let isBanning = $state(false);
+    const banReducer = useReducer(reducers.ban);
+    const ban = async (user: User) => {
+        isBanning = true;
+        await withToasterError(() => banReducer({ user: user.id }));
+        toaster.create({
+            title: 'Player Banned',
+            description: `You banned ${user.username} from your Lobby`,
+            type: 'info',
+        });
+        isBanning = false;
+    };
+
     $effect(() => {
         if ($lobbyIsReady && lobby === null) {
             goto('/app');
@@ -85,7 +127,7 @@
     });
 </script>
 
-{#if lobby}
+{#if lobby && $joinedUsersReady}
     <div
         class="container mx-auto flex min-h-full max-w-7xl flex-1 flex-col p-4 lg:justify-center lg:p-8"
     >
@@ -167,7 +209,7 @@
                             </button>
                         {:else}
                             <button
-                                class="btn preset-filled-primary-600-400 mt-4 w-full font-bold"
+                                class="btn preset-filled-primary-300-700 mt-4 w-full font-bold"
                                 onclick={joinLobby}
                             >
                                 {#if lobbyButtonLoading}
@@ -210,7 +252,7 @@
                 </div>
 
                 <div class="flex h-full flex-col justify-evenly gap-6">
-                    {#each participants as user (user.id.toHexString())}
+                    {#each participants as user (user.id)}
                         {@const userIsHost = user.id.equals(lobbyHostId)}
                         {@const isMe = user.id.equals(myIdentity)}
                         <div
@@ -279,14 +321,24 @@
                                     <button
                                         class="btn-icon preset-filled-error-300-700"
                                         title="Kick Player"
+                                        onclick={() => kick(user)}
                                     >
-                                        <UserMinus />
+                                        {#if isKicking}
+                                            <LoaderCircle size={20} class="mr-2 animate-spin" />
+                                        {:else}
+                                            <UserMinus />
+                                        {/if}
                                     </button>
                                     <button
                                         class="btn-icon preset-filled-error-300-700"
                                         title="Ban Player"
+                                        onclick={() => ban(user)}
                                     >
-                                        <Gavel />
+                                        {#if isBanning}
+                                            <LoaderCircle size={20} class="mr-2 animate-spin" />
+                                        {:else}
+                                            <Gavel />
+                                        {/if}
                                     </button>
                                 {:else if userIsHost}
                                     <div

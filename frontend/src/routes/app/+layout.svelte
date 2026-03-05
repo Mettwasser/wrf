@@ -37,9 +37,9 @@
             case 'warning':
                 return 'preset-filled-warning-300-700';
             case 'info':
-                return 'preset-filled-surface-200-800';
-            default:
                 return 'preset-filled-primary-300-700';
+            default:
+                return 'preset-filled-surface-200-800';
         }
     };
 </script>
@@ -59,8 +59,10 @@
                 {#snippet children(toast)}
                     <Toast {toast} class="text-surface-50 {getToastColors(toast.type)}">
                         <Toast.Message>
-                            <Toast.Title>{toast.title}</Toast.Title>
-                            <Toast.Description>{toast.description}</Toast.Description>
+                            <Toast.Title class="brightness-100">{toast.title}</Toast.Title>
+                            <Toast.Description class="brightness-100">
+                                {toast.description}
+                            </Toast.Description>
                         </Toast.Message>
                     </Toast>
                 {/snippet}

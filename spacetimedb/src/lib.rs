@@ -7,42 +7,44 @@ pub mod views;
 use std::time::Duration;
 
 use spacetimedb::{
-    rand::{
-        distributions::Alphanumeric,
-        Rng,
-    },
     Identity,
     ReducerContext,
     ScheduleAt,
     StdbRng,
     Table,
     TimeDuration,
+    rand::{
+        Rng,
+        distributions::Alphanumeric,
+    },
 };
 
 use crate::{
     model::{
-        lobby,
-        lobby_join,
-        user,
-        user_verification,
         Lobby,
+        LobbyBan,
         LobbyJoin,
         User,
         UserVerification,
+        lobby,
+        lobby_ban,
+        lobby_join,
+        user,
+        user_verification,
     },
     schedules::{
         disconnect_timer::{
-            disconnect_timer,
             DisconnectTimer,
+            disconnect_timer,
         },
         relic::{
+            RelicTimer,
             relic,
             relic_timer,
-            RelicTimer,
         },
         verifier::{
-            verify_timer,
             VerifyTimer,
+            verify_timer,
         },
     },
     types::{
@@ -51,8 +53,9 @@ use crate::{
         RotationType,
     },
     utils::{
-        lobby_cleanup,
         MapUniqueViolation,
+        lobby_cleanup,
+        remove_player_from_lobby,
     },
 };
 
@@ -232,6 +235,24 @@ pub fn create_or_update_lobby(
 
 #[spacetimedb::reducer]
 pub fn join_lobby(ctx: &ReducerContext, lobby_id: Identity) -> Result<(), String> {
+    let Some(mut lobby) = ctx.db.lobby().host().find(lobby_id) else {
+        return Err("Lobby not found".to_owned());
+    };
+
+    let mut lobbies_user_is_banned_in = ctx.db.lobby_ban().user().filter(ctx.sender());
+
+    if lobbies_user_is_banned_in.any(|lobby| lobby.host == lobby_id) {
+        return Err("You are banned in this lobby".to_owned());
+    }
+
+    if lobby.amount_players == 4 {
+        return Err("Lobby is full".to_owned());
+    }
+
+    lobby.amount_players += 1;
+
+    ctx.db.lobby().host().update(lobby);
+
     ctx.db
         .lobby_join()
         .try_insert(LobbyJoin {
@@ -246,6 +267,28 @@ pub fn join_lobby(ctx: &ReducerContext, lobby_id: Identity) -> Result<(), String
 #[spacetimedb::reducer]
 pub fn leave_lobby(ctx: &ReducerContext) -> Result<(), String> {
     lobby_cleanup(&ctx.db, ctx.sender());
+
+    Ok(())
+}
+
+#[spacetimedb::reducer]
+pub fn kick(ctx: &ReducerContext, user: Identity) -> Result<(), String> {
+    remove_player_from_lobby(&ctx.db, user);
+
+    Ok(())
+}
+
+#[spacetimedb::reducer]
+pub fn ban(ctx: &ReducerContext, user: Identity) -> Result<(), String> {
+    ctx.db
+        .lobby_ban()
+        .try_insert(LobbyBan {
+            host: ctx.sender(),
+            user,
+        })
+        .ok();
+
+    remove_player_from_lobby(&ctx.db, user);
 
     Ok(())
 }

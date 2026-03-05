@@ -6,6 +6,7 @@
     import type { Lobby, User } from '$lib/module_bindings/types.js';
     import type { LobbyAndUser } from '$lib/types/lobby_and_user.js';
     import { useTable } from 'spacetimedb/svelte';
+    import { untrack } from 'svelte';
 
     let { data } = $props();
     let relics = [...data.relics];
@@ -14,29 +15,36 @@
     const [users] = useTable(
         tables.user.leftSemijoin(tables.lobby, (user, lobby) => lobby.host.eq(user.id))
     );
+    const [joinedLobby, joinedLobbyIsReady] = useTable(
+        tables.lobby_join.where((join) => join.user.eq(identity()))
+    );
 
     interface OptionalLobbyAndUser {
         user: User | undefined;
         lobby: Lobby;
     }
 
-    const myLobby: OptionalLobbyAndUser | undefined = $derived(
-        $lobbies
-            .filter((lobby) => lobby.host.equals(identity()))
-            .map((lobby) => {
-                return { lobby, user: $users.find((u) => u.id.equals(lobby.host)) };
-            })[0]
+    const allLobbiesWithUsers: OptionalLobbyAndUser[] = $derived(
+        $lobbies.map((lobby) => ({
+            lobby,
+            user: $users.find((u) => u.id.equals(lobby.host)),
+        }))
+    );
+
+    const myLobby: OptionalLobbyAndUser | undefined | null = $derived(
+        !$joinedLobbyIsReady
+            ? undefined
+            : $joinedLobby[0]
+              ? allLobbiesWithUsers.find((lu) => lu.lobby.host.equals($joinedLobby[0].host))
+              : null
     );
 
     const lobbiesWithUsers: OptionalLobbyAndUser[] = $derived(
-        $lobbies
-            .filter((lobby) => !lobby.host.equals(identity()))
-            .map((lobby) => {
-                return {
-                    lobby,
-                    user: $users.find((u) => u.id.equals(lobby.host)),
-                };
-            })
+        myLobby === undefined
+            ? []
+            : myLobby === null
+              ? allLobbiesWithUsers
+              : allLobbiesWithUsers.filter((lu) => !lu.lobby.host.equals(myLobby.lobby.host))
     );
 </script>
 
@@ -44,7 +52,7 @@
     <div class="flex w-2/3 flex-col">
         <div class="flex gap-4 max-sm:flex-col">
             <input type="text" class="input" placeholder="Search for a relic" />
-            <LobbyCreateButton {relics} hasLobbyOpen={myLobby !== undefined} />
+            <LobbyCreateButton {relics} hasLobbyOpen={myLobby !== undefined && myLobby !== null} />
         </div>
     </div>
     <ul class="flex w-full flex-col flex-wrap items-center justify-center gap-8 lg:flex-row">

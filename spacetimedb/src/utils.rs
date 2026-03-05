@@ -44,6 +44,16 @@ where
     }
 }
 
+pub fn remove_player_from_lobby(db: &Local, user_id: Identity) {
+    if let Some(lobby_id) = db.lobby_join().user().find(user_id).map(|lobby| lobby.host)
+        && let Some(mut lobby) = db.lobby().host().find(lobby_id)
+    {
+        lobby.amount_players -= 1;
+        db.lobby().host().update(lobby);
+        db.lobby_join().user().delete(user_id);
+    }
+}
+
 pub fn lobby_cleanup(db: &Local, user_id: Identity) {
     // Lobby HOST cleanup
     db.lobby().host().delete(user_id);
@@ -51,6 +61,5 @@ pub fn lobby_cleanup(db: &Local, user_id: Identity) {
     db.lobby_join().host().delete(user_id);
 
     // Lobby join cleanup
-    db.lobby_ban().user().delete(user_id);
-    db.lobby_join().user().delete(user_id);
+    remove_player_from_lobby(db, user_id);
 }

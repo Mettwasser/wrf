@@ -6,14 +6,18 @@
 import { type Infer as __Infer } from "spacetimedb";
 
 // Import all reducer arg schemas
+import BanReducer from "../ban_reducer";
 import CreateOrUpdateLobbyReducer from "../create_or_update_lobby_reducer";
 import JoinLobbyReducer from "../join_lobby_reducer";
+import KickReducer from "../kick_reducer";
 import LeaveLobbyReducer from "../leave_lobby_reducer";
 import SetUsernameReducer from "../set_username_reducer";
 import SetWarframeIdReducer from "../set_warframe_id_reducer";
 
+export type BanParams = __Infer<typeof BanReducer>;
 export type CreateOrUpdateLobbyParams = __Infer<typeof CreateOrUpdateLobbyReducer>;
 export type JoinLobbyParams = __Infer<typeof JoinLobbyReducer>;
+export type KickParams = __Infer<typeof KickReducer>;
 export type LeaveLobbyParams = __Infer<typeof LeaveLobbyReducer>;
 export type SetUsernameParams = __Infer<typeof SetUsernameReducer>;
 export type SetWarframeIdParams = __Infer<typeof SetWarframeIdReducer>;

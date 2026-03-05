@@ -12,6 +12,7 @@
     import { useReducer } from 'spacetimedb/svelte';
     import { reducers } from '$lib/module_bindings';
     import { LoaderCircle } from 'lucide-svelte';
+    import { SenderError } from 'spacetimedb';
 
     interface Props {
         relics: Relic[];
@@ -90,11 +91,13 @@
                 lobbySize,
             });
         } catch (e) {
-            toaster.create({
-                title: 'Error',
-                description: e,
-                type: 'error',
-            });
+            if (e instanceof SenderError) {
+                toaster.create({
+                    title: 'Error',
+                    description: e.message,
+                    type: 'error',
+                });
+            }
         } finally {
             isSubmitting = false;
         }
