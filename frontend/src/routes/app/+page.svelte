@@ -6,7 +6,6 @@
     import type { Lobby, User } from '$lib/module_bindings/types.js';
     import type { LobbyAndUser } from '$lib/types/lobby_and_user.js';
     import { useTable } from 'spacetimedb/svelte';
-    import { untrack } from 'svelte';
 
     let { data } = $props();
     let relics = [...data.relics];

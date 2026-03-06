@@ -93,16 +93,18 @@ export const User = __t.object("User", {
 });
 export type User = __Infer<typeof User>;
 
-export const UserVerification = __t.object("UserVerification", {
-  id: __t.identity(),
-  code: __t.string(),
-  warframeId: __t.option(__t.string()),
+export const UserWarframeId = __t.object("UserWarframeId", {
+  userId: __t.identity(),
+  warframeId: __t.string(),
 });
-export type UserVerification = __Infer<typeof UserVerification>;
+export type UserWarframeId = __Infer<typeof UserWarframeId>;
 
 export const VerifyTimer = __t.object("VerifyTimer", {
   scheduledId: __t.u64(),
   scheduledAt: __t.scheduleAt(),
+  userId: __t.identity(),
+  code: __t.string(),
+  attempts: __t.u8(),
 });
 export type VerifyTimer = __Infer<typeof VerifyTimer>;
 

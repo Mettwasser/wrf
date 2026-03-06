@@ -5,6 +5,7 @@
         type ComboboxRootProps,
         useListCollection,
     } from '@skeletonlabs/skeleton-svelte';
+    import { tick } from 'svelte';
 
     interface Props {
         data: { label: string; value: string }[];
@@ -37,9 +38,10 @@
         })
     );
 
-    const onOpenChange: ComboboxRootProps['onOpenChange'] = (details) => {
+    const onOpenChange: ComboboxRootProps['onOpenChange'] = async (details) => {
         items = data;
         if (!details.open) {
+            await tick();
             inputValue = value?.[0];
         }
     };
@@ -50,6 +52,7 @@
     };
 
     const onInputValueChange: ComboboxRootProps['onInputValueChange'] = (event) => {
+        inputValue = event.inputValue;
         const filtered = data.filter((item) =>
             item.value.toLowerCase().includes(event.inputValue.toLowerCase())
         );

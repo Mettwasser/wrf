@@ -22,12 +22,12 @@ pub struct User {
     pub is_admin: bool,
 }
 
-#[spacetimedb::table(accessor = user_verification)]
-pub struct UserVerification {
+#[spacetimedb::table(accessor = user_warframe_id)]
+pub struct UserWarframeId {
     #[primary_key]
-    pub id: Identity,
-    pub code: String,
-    pub warframe_id: Option<String>,
+    pub user_id: Identity,
+
+    pub warframe_id: String,
 }
 
 #[spacetimedb::table(accessor = lobby, public)]

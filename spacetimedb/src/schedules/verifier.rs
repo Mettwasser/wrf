@@ -1,5 +1,6 @@
 use std::time::Duration;
 
+use http::StatusCode;
 use serde::{
     Deserialize,
     Deserializer,
@@ -7,14 +8,14 @@ use serde::{
 use spacetimedb::{
     Identity,
     ProcedureContext,
+    ScheduleAt,
     Table,
-    TimeDuration,
 };
 
 use crate::{
     model::{
         user,
-        user_verification,
+        user_warframe_id,
     },
     utils::ErrorToString,
 };
@@ -50,84 +51,129 @@ struct LoadOutPreset {
     name: String,
 }
 
-struct VerificationAndUser {
-    pub id: Identity,
-    pub code: String,
-    pub warframe_id: String,
-    pub username: String,
-}
-
 #[spacetimedb::table(accessor = verify_timer, scheduled(verify))]
 pub struct VerifyTimer {
     #[primary_key]
     #[auto_inc]
     pub scheduled_id: u64,
     pub scheduled_at: spacetimedb::ScheduleAt,
+
+    #[index(btree)]
+    #[unique]
+    pub user_id: Identity,
+    pub code: String,
+    pub attempts: u8,
 }
 
-#[spacetimedb::procedure]
-pub fn verify(ctx: &mut ProcedureContext, _timer: VerifyTimer) -> Result<(), String> {
-    let verifications = ctx.with_tx(|ctx| {
-        ctx.db
-            .user()
-            .iter()
-            .filter(|u| !u.verified)
-            .filter_map(|u| {
-                let v = ctx.db.user_verification().id().find(u.id)?;
+fn retry_in(duration: Duration, ctx: &mut ProcedureContext, entry: VerifyTimer) {
+    // why ts needs to be impl Fn ;-;
+    ctx.with_tx(move |ctx| {
+        let code = entry.code.clone();
 
-                v.warframe_id.map(|warframe_id| VerificationAndUser {
-                    id: v.id,
-                    code: v.code.clone(), // Assuming String/Clone is needed
-                    warframe_id,
-                    username: u.username.clone(),
-                })
-            })
-            .collect::<Vec<_>>()
+        ctx.db.verify_timer().insert(VerifyTimer {
+            attempts: entry.attempts + 1,
+            code,
+            scheduled_at: ScheduleAt::Time(ctx.timestamp + duration),
+            ..entry
+        })
     });
+}
 
-    log::info!("Verifying {} players", verifications.len());
+const RETRY_LIMIT: u8 = 3;
+pub const RETRY_OFFSET_TIME: Duration = Duration::from_mins(10);
 
-    for verification in verifications {
-        ctx.sleep_until(ctx.timestamp + TimeDuration::from_duration(Duration::from_secs(3)));
-        let resp = match ctx
-            .http
-            .get(format!(
-                "https://api.warframe.com/cdn/getProfileViewingData.php?playerId={}",
-                verification.warframe_id
-            ))
-            .error_as_string()
-        {
-            Ok(resp) => resp.into_body().into_string_lossy(),
-            Err(e) => {
-                log::error!("{e}");
-                continue;
+fn limit_reached(entry: &VerifyTimer) -> bool {
+    entry.attempts >= RETRY_LIMIT
+}
+
+/// This is a weird one.
+#[spacetimedb::procedure]
+pub fn verify(ctx: &mut ProcedureContext, entry: VerifyTimer) -> Result<(), String> {
+    let Some(warframe_id) = ctx.with_tx(|ctx| {
+        ctx.db
+            .user_warframe_id()
+            .user_id()
+            .find(entry.user_id)
+            .map(|row| row.warframe_id)
+    }) else {
+        return Ok(());
+    };
+
+    let Some(user) = ctx.with_tx(|ctx| ctx.db.user().id().find(entry.user_id)) else {
+        return Ok(());
+    };
+
+    log::info!(
+        "Verifying {} players for the {}. time",
+        user.username,
+        entry.attempts + 1
+    );
+
+    let resp = match ctx
+        .http
+        .get(format!(
+            "https://api.warframe.com/cdn/getProfileViewingData.php?playerId={warframe_id}"
+        ))
+        .error_as_string()
+    {
+        Ok(resp) if resp.status() == StatusCode::OK => resp.into_body().into_string_lossy(),
+        Ok(_) => {
+            if !limit_reached(&entry) {
+                retry_in(RETRY_OFFSET_TIME, ctx, entry);
             }
-        };
 
-        let profile = match serde_json::from_str::<WarframeProfileRoot>(&resp) {
-            Ok(root) => {
-                if let Some(profile) = root.results.into_iter().next() {
-                    profile
-                } else {
-                    continue;
-                }
+            log::error!("Warframe User with ID {warframe_id} not found");
+            return Err(format!("Warframe User with ID {warframe_id} not found"));
+        }
+        Err(e) => {
+            if !limit_reached(&entry) {
+                retry_in(RETRY_OFFSET_TIME, ctx, entry);
             }
-            Err(e) => {
-                log::error!("{e}");
-                continue;
-            }
-        };
 
-        if profile.load_out_preset.name == verification.code
-            && profile.display_name == verification.username
-        {
-            ctx.with_tx(|ctx| {
-                if let Some(mut user) = ctx.db.user().id().find(verification.id) {
-                    user.verified = true;
-                    ctx.db.user().id().update(user);
-                }
-            });
-            log::info!("verified {}", verification.username);
+            log::error!("{e}");
+            return Err(e);
+        }
+    };
+
+    log::info!("Sent verify request for {}", user.username);
+
+    let profile = match serde_json::from_str::<WarframeProfileRoot>(&resp).error_as_string() {
+        Ok(root) => {
+            if let Some(profile) = root.results.into_iter().next() {
+                profile
+            } else {
+                // profile not found; do not retry
+                return Ok(());
+            }
+        }
+        Err(e) => {
+            // could be some weird issue with bytes not arriving correctly, idk
+            // retry
+            if !limit_reached(&entry) {
+                retry_in(RETRY_OFFSET_TIME, ctx, entry);
+            }
+
+            log::error!("{e}");
+            return Err(e);
+        }
+    };
+
+    log::info!("Deserialized payload for {}", user.username);
+
+    log::info!("doing final check for {}", user.username);
+    if profile.load_out_preset.name == entry.code && profile.display_name == user.username {
+        ctx.with_tx(|ctx| {
+            if let Some(mut user) = ctx.db.user().id().find(user.id) {
+                user.verified = true;
+                ctx.db.user().id().update(user);
+            }
+            ctx.db.user_warframe_id().user_id().delete(user.id);
+        });
+        log::info!("verified {}", user.username);
+    } else {
+        log::info!("verification failed for {}", user.username);
+        if !limit_reached(&entry) {
+            retry_in(RETRY_OFFSET_TIME, ctx, entry);
         }
     }
 

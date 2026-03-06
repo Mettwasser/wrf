@@ -11,9 +11,6 @@ import {
 } from "spacetimedb";
 
 export default __t.row({
-  scheduledId: __t.u64().name("scheduled_id"),
-  scheduledAt: __t.scheduleAt().name("scheduled_at"),
   userId: __t.identity().name("user_id"),
-  code: __t.string(),
-  attempts: __t.u8(),
+  warframeId: __t.string().name("warframe_id"),
 });

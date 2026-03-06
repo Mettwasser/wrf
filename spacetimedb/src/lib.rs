@@ -25,12 +25,12 @@ use crate::{
         LobbyBan,
         LobbyJoin,
         User,
-        UserVerification,
+        UserWarframeId,
         lobby,
         lobby_ban,
         lobby_join,
         user,
-        user_verification,
+        user_warframe_id,
     },
     schedules::{
         disconnect_timer::{
@@ -43,6 +43,7 @@ use crate::{
             relic_timer,
         },
         verifier::{
+            RETRY_OFFSET_TIME,
             VerifyTimer,
             verify_timer,
         },
@@ -53,6 +54,7 @@ use crate::{
         RotationType,
     },
     utils::{
+        ErrorToString,
         MapUniqueViolation,
         lobby_cleanup,
         remove_player_from_lobby,
@@ -69,17 +71,6 @@ fn generate_random_code(rng: &StdbRng) -> String {
 #[spacetimedb::reducer(init)]
 pub fn init(ctx: &ReducerContext) -> Result<(), String> {
     log::info!("Initializing...");
-
-    log::info!("Initializing Verifier");
-    ctx.db
-        .verify_timer()
-        .scheduled_id()
-        .try_insert_or_update(VerifyTimer {
-            scheduled_id: 1,
-            scheduled_at: ScheduleAt::Interval(TimeDuration::from_duration(Duration::from_mins(
-                10,
-            ))),
-        })?;
 
     log::info!("Initializing Relic fetcher");
     ctx.db
@@ -142,6 +133,8 @@ pub fn identity_disconnected(ctx: &ReducerContext) -> Result<(), String> {
 
 #[spacetimedb::reducer]
 pub fn set_username(ctx: &ReducerContext, name: String) -> Result<(), String> {
+    let existing_user = ctx.db.user().id().find(ctx.sender());
+
     ctx.db
         .user()
         .id()
@@ -149,39 +142,35 @@ pub fn set_username(ctx: &ReducerContext, name: String) -> Result<(), String> {
             id: ctx.sender(),
             username: name,
             verified: false,
-            is_admin: false,
+            is_admin: existing_user.map(|u| u.is_admin).unwrap_or(false),
         })
         .map_unique_violation(|_| "username already taken")?;
-
-    if ctx.db.user_verification().id().find(ctx.sender()).is_none() {
-        ctx.db.user_verification().insert(UserVerification {
-            id: ctx.sender(),
-            code: generate_random_code(ctx.rng()),
-            warframe_id: None,
-        });
-    }
 
     Ok(())
 }
 
 #[spacetimedb::reducer]
 pub fn set_warframe_id(ctx: &ReducerContext, id: String) -> Result<(), String> {
-    let existing = ctx.db.user_verification().id().find(ctx.sender());
-
-    let (code, id_to_set) = match existing {
-        Some(record) => (record.code, Some(id)),
-        None => (generate_random_code(ctx.rng()), Some(id)),
-    };
+    ctx.db
+        .user_warframe_id()
+        .user_id()
+        .try_insert_or_update(UserWarframeId {
+            user_id: ctx.sender(),
+            warframe_id: id,
+        })
+        .error_as_string()?;
 
     ctx.db
-        .user_verification()
-        .id()
-        .try_insert_or_update(UserVerification {
-            id: ctx.sender(),
-            code,
-            warframe_id: id_to_set,
+        .verify_timer()
+        .user_id()
+        .try_insert_or_update(VerifyTimer {
+            scheduled_id: 0,
+            scheduled_at: ScheduleAt::Time(ctx.timestamp + RETRY_OFFSET_TIME),
+            user_id: ctx.sender(),
+            code: generate_random_code(ctx.rng()),
+            attempts: 0,
         })
-        .map_err(|e| format!("Failed to update Warframe ID: {}", e))?;
+        .error_as_string()?;
 
     Ok(())
 }

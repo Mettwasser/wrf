@@ -48,8 +48,10 @@ import SetWarframeIdReducer from "./set_warframe_id_reducer";
 import LobbyRow from "./lobby_table";
 import LobbyJoinRow from "./lobby_join_table";
 import MeRow from "./me_table";
+import MyVerifyTimerRow from "./my_verify_timer_table";
 import UserRow from "./user_table";
 import VerificationRow from "./verification_table";
+import WarframeIdRow from "./warframe_id_table";
 
 /** Type-only namespace exports for generated type groups. */
 
@@ -102,6 +104,13 @@ const tablesSchema = __schema({
     constraints: [
     ],
   }, MeRow),
+  my_verify_timer: __table({
+    name: 'my_verify_timer',
+    indexes: [
+    ],
+    constraints: [
+    ],
+  }, MyVerifyTimerRow),
   verification: __table({
     name: 'verification',
     indexes: [
@@ -109,6 +118,13 @@ const tablesSchema = __schema({
     constraints: [
     ],
   }, VerificationRow),
+  warframe_id: __table({
+    name: 'warframe_id',
+    indexes: [
+    ],
+    constraints: [
+    ],
+  }, WarframeIdRow),
 });
 
 /** The schema information for all reducers in this module. This is defined the same way as the reducers would have been defined in the server, except the body of the reducer is omitted in code generation. */
