@@ -2,7 +2,6 @@
     import { identity, toaster } from '$lib';
     import LobbyCreateButton from '$lib/components/LobbyCreateButton.svelte';
     import LobbyItem from '$lib/components/LobbyItem.svelte';
-    import LobbyQuickMatchButton from '$lib/components/LobbyQuickMatchButton.svelte';
     import { tables } from '$lib/module_bindings/index.js';
     import type { Lobby, User } from '$lib/module_bindings/types.js';
     import type { LobbyAndUser } from '$lib/types/lobby_and_user.js';
@@ -68,10 +67,6 @@
                 bind:value={relicFilter}
             />
             <LobbyCreateButton {relics} hasLobbyOpen={myLobby !== undefined && myLobby !== null} />
-            <LobbyQuickMatchButton
-                {relics}
-                hasLobbyOpen={myLobby !== undefined && myLobby !== null}
-            />
         </div>
     </div>
     <ul class="flex w-full flex-col flex-wrap items-center justify-center gap-8 lg:flex-row">
