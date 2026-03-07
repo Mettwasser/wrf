@@ -26,7 +26,7 @@
 @import '@skeletonlabs/skeleton/themes/seafoam';
 
 @theme {
-    --breakpoint-xsm: 680px;
+    --breakpoint-xsm: 400px;
 
     --color-bronze: oklch(0.6 0.1 45);
     --color-bronze-light: oklch(0.8 0.08 50);

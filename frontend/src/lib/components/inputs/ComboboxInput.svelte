@@ -55,10 +55,10 @@
     {/if}
     <div class="flex gap-2">
         <div
-            class="input-group hover:preset-tonal w-full grid-cols-[auto_1fr] [&_input]:ring-0 [&_input]:focus:outline-none"
+            class="input-group hover:preset-tonal xsm:grid-cols-[auto_1fr] w-full [&_input]:ring-0 [&_input]:focus:outline-none"
         >
             {#if Icon}
-                <div class="ig-cell">
+                <div class="ig-cell max-xsm:hidden">
                     <Icon />
                 </div>
             {/if}

@@ -80,17 +80,25 @@
     };
 </script>
 
-<div class="flex min-h-full flex-1 flex-col items-center justify-center gap-16 p-4">
+<div
+    class="flex min-h-full flex-1 flex-col items-center justify-center gap-16 pb-4! xl:p-4 xl:pb-8"
+>
     <Section title="Username">
         <div class="flex flex-col gap-4">
             <EditableInput
+                label="Username"
                 group={username}
                 icon={UserIcon}
                 onSave={saveUsername}
                 onCancel={cancelUsername}
             />
 
-            <CopyInput icon={IdCard} value={identity.toHexString()} inputClass="text-xs" />
+            <CopyInput
+                label="User ID"
+                icon={IdCard}
+                value={identity.toHexString()}
+                inputClass="text-xs"
+            />
         </div>
     </Section>
 

@@ -44,7 +44,7 @@
 		"@types/cloudflare-turnstile": "^0.2.2",
 		"lucide-svelte": "^0.575.0",
 		"runed": "^0.37.1",
-		"spacetimedb": "^2.0.2",
+		"spacetimedb": "^2.0.3",
 		"svelte-clerk": "^0.20.5"
 	}
 }

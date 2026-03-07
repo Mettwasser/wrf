@@ -43,9 +43,9 @@
 {/snippet}
 
 <div class="flex flex-col gap-8">
-    <header class="flex items-center justify-between">
+    <header class="xsm:flex-row max-xsm:gap-4 flex flex-col items-center justify-between">
         <h2 class="h2">Filters</h2>
-        <button class="btn preset-tonal" onclick={clearFilters}>Clear All</button>
+        <button class="btn preset-tonal max-xsm:w-full" onclick={clearFilters}>Clear All</button>
     </header>
 
     <div class="flex flex-col gap-6">

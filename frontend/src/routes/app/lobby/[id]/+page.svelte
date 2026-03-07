@@ -2,7 +2,7 @@
     import type { PageProps } from './$types';
     import { useReducer, useTable } from 'spacetimedb/svelte';
     import { reducers, tables } from '$lib/module_bindings';
-    import { Identity, SenderError } from 'spacetimedb';
+    import { and, Identity, SenderError } from 'spacetimedb';
     import { goto } from '$app/navigation';
     import {
         Crown,
@@ -21,7 +21,8 @@
     import { getRefinementTextColor } from '$lib/utils/refinement_color';
     import { RotationType, User } from '$lib/module_bindings/types';
     import VerifiedBadge from '$lib/components/VerifiedBadge.svelte';
-    import { identity, toaster } from '$lib';
+    import { conn, identity, toaster } from '$lib';
+    import { onMount } from 'svelte';
 
     let { params }: PageProps = $props();
 
@@ -33,9 +34,24 @@
     );
     const lobby = $derived($lobbyTable[0] ?? null);
 
-    const [joinedUsers, joinedUsersReady] = useTable(
-        tables.user.leftSemijoin(tables.lobby_join, (user, join) => user.id.eq(join.user))
-    );
+    let joinedUsers: User[] = $state([]);
+    let joinedUsersReady = $state(false);
+
+    const [myBans, myBansAreReady] = useTable(tables.my_bans);
+
+    $effect(() => {
+        if (
+            $myBansAreReady &&
+            $myBans.map((row) => row.host).filter((host) => host.equals(lobbyHostId)).length > 0
+        ) {
+            toaster.create({
+                title: 'Banned',
+                description: 'You have been banned from the lobby.',
+                type: 'error',
+            });
+            goto('/app');
+        }
+    });
 
     function moveHostToTop(userList: User[]): User[] {
         const hostIndex = userList.findIndex((u) => u.id.equals(lobbyHostId));
@@ -47,10 +63,10 @@
         return userList;
     }
 
-    let participants = $derived(moveHostToTop([...$joinedUsers]));
+    let participants = $derived(moveHostToTop([...joinedUsers]));
 
     const isHost = $derived(myIdentity.equals(lobbyHostId));
-    const isJoined = $derived($joinedUsers.some((user) => user.id.equals(myIdentity)));
+    const isJoined = $derived(joinedUsers.some((user) => user.id.equals(myIdentity)));
 
     const relicUrl = $derived(lobby ? getRelicImageUrl(lobby.activity, lobby.refinement) : '');
     const refinementTextColor = $derived(lobby ? getRefinementTextColor(lobby.refinement) : '');
@@ -70,14 +86,45 @@
         }
     };
 
+    let isVoluntaryLeavingLobby = $state(false);
+    let wasJoined = $state(false);
+
     let lobbyButtonLoading = $state(false);
 
     const leaveLobbyReducer = useReducer(reducers.leaveLobby);
     const leaveLobby = async () => {
+        // A flag needed to display "you were kicked"
+        isVoluntaryLeavingLobby = true;
         lobbyButtonLoading = true;
         await leaveLobbyReducer();
         lobbyButtonLoading = false;
     };
+
+    $effect(() => {
+        if (isJoined) {
+            wasJoined = true;
+            isVoluntaryLeavingLobby = false;
+        }
+    });
+
+    $effect(() => {
+        const isBanned = $myBans.some((row) => row.host.equals(lobbyHostId));
+        if (
+            wasJoined &&
+            joinedUsersReady &&
+            !isJoined &&
+            !isVoluntaryLeavingLobby &&
+            lobby !== null &&
+            !isBanned
+        ) {
+            toaster.create({
+                title: 'Kicked',
+                description: 'You have been kicked from the lobby.',
+                type: 'error',
+            });
+            goto('/app');
+        }
+    });
 
     const joinLobbyReducer = useReducer(reducers.joinLobby);
     const joinLobby = async () => {
@@ -125,9 +172,44 @@
             goto('/app');
         }
     });
+
+    onMount(() => {
+        const handle = conn()
+            .subscriptionBuilder()
+            .onApplied((ctx) => {
+                joinedUsersReady = true;
+
+                ctx.db.user.onInsert((ctx, row) => {
+                    joinedUsers = [...joinedUsers, row];
+                });
+
+                ctx.db.user.onUpdate((ctx, oldRow, newRow) => {
+                    const index = joinedUsers.findIndex((u) => u.id.equals(newRow.id));
+                    if (index !== -1) {
+                        joinedUsers[index] = newRow;
+
+                        // Trigger reactivity
+                        joinedUsers = joinedUsers;
+                    }
+                });
+
+                ctx.db.user.onDelete((ctx, row) => {
+                    joinedUsers = joinedUsers.filter((u) => !u.id.equals(row.id));
+                });
+            })
+            .onError((ctx) => console.error(ctx))
+            .subscribe(
+                `SELECT u.* FROM user u JOIN lobby_join lj ON u.id = lj.user WHERE lj.host = 0x${lobbyHostId.toHexString()}`
+            );
+
+        return () => {
+            handle.unsubscribe();
+            console.log('unsubscribed from user with lobby joins.');
+        };
+    });
 </script>
 
-{#if lobby && $joinedUsersReady}
+{#if lobby && joinedUsersReady}
     <div
         class="container mx-auto flex min-h-full max-w-7xl flex-1 flex-col p-4 lg:justify-center lg:p-8"
     >
@@ -185,7 +267,7 @@
 
                         {#if isHost}
                             <button
-                                class="btn preset-filled-tertiary-200-800 mt-4 w-full font-bold"
+                                class="btn preset-filled-error-200-800 mt-4 w-full font-bold"
                                 onclick={leaveLobby}
                             >
                                 {#if lobbyButtonLoading}
@@ -197,7 +279,7 @@
                             </button>
                         {:else if isJoined}
                             <button
-                                class="btn preset-filled-tertiary-200-800 mt-4 w-full font-bold"
+                                class="btn preset-filled-error-200-800 mt-4 w-full font-bold"
                                 onclick={leaveLobby}
                             >
                                 {#if lobbyButtonLoading}
@@ -274,7 +356,10 @@
                                         <div
                                             class="bg-primary-600-400 absolute -top-1 -right-1 rounded-full p-1.5 shadow-lg"
                                         >
-                                            <Crown size={14} class="text-surface-50" />
+                                            <Crown
+                                                size={14}
+                                                class="text-surface-contrast-600-400"
+                                            />
                                         </div>
                                     {/if}
                                 </div>

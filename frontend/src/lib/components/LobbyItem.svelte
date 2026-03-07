@@ -30,7 +30,8 @@
 <!-- svelte-ignore a11y_click_events_have_key_events -->
 <!-- svelte-ignore a11y_no_static_element_interactions -->
 <div
-    class="card bg-surface-200-800/40 shadow-surface-100/10 preset-outlined-surface-600-400 hover:bg-success-300-700/15 relative grid w-1/4 cursor-pointer grid-cols-3 gap-4 border-2! p-4 shadow-lg backdrop-blur-lg"
+    class="card bg-surface-200-800/40 shadow-surface-100/10 preset-outlined-surface-600-400 hover:bg-success-300-700/15 xsm:w-[80%] xsm max-xsm:w-full relative grid cursor-pointer grid-cols-3 gap-4 border-2! p-4
+    shadow-lg backdrop-blur-lg max-[500px]:flex max-[500px]:justify-center sm:w-[65%] md:w-[55%] lg:w-[40%] xl:w-[30%] 2xl:w-1/4"
     {onclick}
 >
     {#if ownedByMe}
@@ -43,7 +44,7 @@
 
     <div class="col-span-1 flex flex-col justify-between gap-4 text-[okl]">
         <div class="flex flex-col gap-1">
-            <h3 class="h3 leading-tight">{lobbyAndUser.lobby.activity}</h3>
+            <h3 class="h3 leading-tight text-nowrap">{lobbyAndUser.lobby.activity}</h3>
             <span class="{refinementTextColor} text-lg">
                 <strong>{lobbyAndUser.lobby.refinement.tag}</strong>
             </span>
@@ -84,7 +85,7 @@
         </div>
     </div>
 
-    <div class="col-span-2 flex items-center justify-center p-2">
+    <div class="col-span-2 flex items-center justify-center p-2 max-[500px]:hidden">
         <img
             src={relicUrl}
             alt="Relic"

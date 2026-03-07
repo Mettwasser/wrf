@@ -19,7 +19,7 @@
     </Dialog.Trigger>
     <Portal>
         <Dialog.Backdrop class="bg-surface-50-950/50 fixed inset-0 z-50" />
-        <Dialog.Positioner class="fixed inset-0 z-50 flex items-center justify-center">
+        <Dialog.Positioner class="fixed inset-0 z-50 flex items-center justify-center px-2">
             <Dialog.Content class="card bg-surface-100-900 w-lg space-y-4 p-8 shadow-xl ">
                 <LobbyModal title="Create a Lobby" {relics} bind:open={showModal} />
             </Dialog.Content>

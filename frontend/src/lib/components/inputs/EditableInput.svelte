@@ -20,9 +20,9 @@
         <span class="label-text">{label}</span>
     {/if}
     <div class="flex gap-2">
-        <div class="input-group hover:preset-tonal w-full grid-cols-[auto_1fr]">
+        <div class="input-group hover:preset-tonal xsm:grid-cols-[auto_1fr] w-full">
             {#if Icon}
-                <div class="ig-cell">
+                <div class="ig-cell max-xsm:hidden">
                     <Icon />
                 </div>
             {/if}

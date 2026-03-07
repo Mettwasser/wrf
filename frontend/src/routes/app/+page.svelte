@@ -1,33 +1,37 @@
 <script lang="ts">
-    import { identity, toaster } from '$lib';
+    import { identity } from '$lib';
     import LobbyCreateButton from '$lib/components/LobbyCreateButton.svelte';
     import LobbyItem from '$lib/components/LobbyItem.svelte';
     import { tables } from '$lib/module_bindings/index.js';
     import type { Lobby, User } from '$lib/module_bindings/types.js';
-    import { Region, RelicRefinement, RotationType } from '$lib/module_bindings/types.js';
+    import { Region, RelicRefinement } from '$lib/module_bindings/types.js';
     import type { LobbyAndUser } from '$lib/types/lobby_and_user.js';
     import { useTable } from 'spacetimedb/svelte';
     import { Dialog, Portal } from '@skeletonlabs/skeleton-svelte';
     import FilterModal from '$lib/components/modals/FilterModal.svelte';
-    import { Funnel, Search } from 'lucide-svelte';
+    import { Funnel, LoaderCircle, Search } from 'lucide-svelte';
+    import { Debounced } from 'runed';
 
     let { data } = $props();
     let relics = [...data.relics];
 
-    const [lobbies] = useTable(tables.lobby);
-    const [users] = useTable(
+    const [lobbies, lobbiesAreReady] = useTable(tables.lobby);
+    const [users, usersAreReady] = useTable(
         tables.user.leftSemijoin(tables.lobby, (user, lobby) => lobby.host.eq(user.id))
     );
     const [joinedLobby, joinedLobbyIsReady] = useTable(
         tables.lobby_join.where((join) => join.user.eq(identity()))
     );
+    const [myBans, myBansAreReady] = useTable(tables.my_bans);
 
     interface OptionalLobbyAndUser {
         user: User | undefined;
         lobby: Lobby;
     }
 
-    let relicFilter = $state('');
+    let searchInput = $state('');
+    let relicFilter = new Debounced(() => searchInput, 300);
+
     let eraFilter = $state<string[]>([]);
     let refinementFilter = $state<RelicRefinement['tag'][]>([]);
     let regionFilter = $state<Region['tag'][]>([]);
@@ -38,8 +42,8 @@
         $lobbies
             .filter((lobby) => {
                 const matchesRelic =
-                    relicFilter === '' ||
-                    lobby.activity.toLowerCase().includes(relicFilter.toLowerCase());
+                    relicFilter.current === '' ||
+                    lobby.activity.toLowerCase().includes(relicFilter.current.toLowerCase());
                 const matchesEra =
                     eraFilter.length === 0 ||
                     eraFilter.some((era) =>
@@ -61,7 +65,8 @@
                     matchesEra &&
                     matchesRefinement &&
                     matchesRegion &&
-                    matchesRotation
+                    matchesRotation &&
+                    !$myBans.find((ban) => ban.host.equals(lobby.host))
                 );
             })
             .map((lobby) => ({
@@ -95,11 +100,11 @@
 </script>
 
 <div class="mt-8 flex flex-1 flex-col items-center gap-16">
-    <div class="flex w-2/5">
-        <div class="flex w-full gap-4 max-sm:flex-col">
-            <div class="input-group w-full grid-cols-[auto_1fr_auto]">
+    <div class="xsm:w-4/5 flex w-full flex-col px-2 sm:w-3/5 lg:w-2/5">
+        <div class="lg flex w-full flex-col gap-4 xl:flex-row">
+            <div class="input-group w-full sm:grid-cols-[auto_1fr_auto]">
                 <div
-                    class="ig-cell preset-outlined-surface-400-600 bg-surface-300-700/20 border-r-0"
+                    class="ig-cell preset-outlined-surface-400-600 bg-surface-300-700/20 hidden border-r-0 sm:flex"
                 >
                     <Search />
                 </div>
@@ -107,7 +112,7 @@
                     type="text"
                     class="ig-input preset-outlined-surface-400-600 bg-surface-300-700/20 w-full"
                     placeholder="Search for a relic"
-                    bind:value={relicFilter}
+                    bind:value={searchInput}
                 />
             </div>
 
@@ -127,7 +132,9 @@
                 </Dialog.Trigger>
                 <Portal>
                     <Dialog.Backdrop class="bg-surface-50-950/50 fixed inset-0 z-50" />
-                    <Dialog.Positioner class="fixed inset-0 z-50 flex items-center justify-center">
+                    <Dialog.Positioner
+                        class="fixed inset-0 z-50 flex items-center justify-center px-2"
+                    >
                         <Dialog.Content
                             class="card bg-surface-100-900 w-lg space-y-4 p-8 shadow-xl "
                         >
@@ -147,15 +154,19 @@
         </div>
     </div>
     <ul class="flex w-full flex-col flex-wrap items-center justify-center gap-8 lg:flex-row">
-        {#if myLobby && myLobby.user}
-            {@const myLobbyAndUser = myLobby as LobbyAndUser}
-            <LobbyItem lobbyAndUser={myLobbyAndUser} ownedByMe />
-        {/if}
-        {#each lobbiesWithUsers as item}
-            {#if item.user}
-                {@const lobbyAndUser = item as LobbyAndUser}
-                <LobbyItem {lobbyAndUser} />
+        {#if $myBansAreReady && $lobbiesAreReady && $usersAreReady && $joinedLobbyIsReady}
+            {#if myLobby && myLobby.user}
+                {@const myLobbyAndUser = myLobby as LobbyAndUser}
+                <LobbyItem lobbyAndUser={myLobbyAndUser} ownedByMe />
             {/if}
-        {/each}
+            {#each lobbiesWithUsers as item}
+                {#if item.user}
+                    {@const lobbyAndUser = item as LobbyAndUser}
+                    <LobbyItem {lobbyAndUser} />
+                {/if}
+            {/each}
+        {:else}
+            <LoaderCircle class="size-6 animate-spin" />
+        {/if}
     </ul>
 </div>
