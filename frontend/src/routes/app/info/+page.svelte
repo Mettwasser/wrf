@@ -106,6 +106,14 @@
             </div>
         {:else if $warframeIdIsReady && $verifyTimerIsReady}
             <div class="flex w-full flex-col gap-4">
+                <EditableInput
+                    label="Warframe User ID"
+                    group={warframeId}
+                    icon={Gamepad2}
+                    onSave={saveWarframeId}
+                    onCancel={cancelWarframeId}
+                />
+
                 <CopyInput
                     label="Code"
                     icon={Hash}
@@ -114,14 +122,6 @@
                         : $warframeIdIsReady
                           ? 'Enter Warframe User ID first...'
                           : 'Loading...'}
-                />
-
-                <EditableInput
-                    label="Warframe User ID"
-                    group={warframeId}
-                    icon={Gamepad2}
-                    onSave={saveWarframeId}
-                    onCancel={cancelWarframeId}
                 />
 
                 {#if verifyTimer}

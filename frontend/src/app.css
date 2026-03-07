@@ -79,4 +79,10 @@ a {
 .checkbox:active,
 .checkbox:focus-visible {
     box-shadow: none;
+    outline: none;
+}
+
+input[type='radio']:focus {
+    outline: none;
+    box-shadow: none;
 }

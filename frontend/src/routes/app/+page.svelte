@@ -4,8 +4,12 @@
     import LobbyItem from '$lib/components/LobbyItem.svelte';
     import { tables } from '$lib/module_bindings/index.js';
     import type { Lobby, User } from '$lib/module_bindings/types.js';
+    import { Region, RelicRefinement, RotationType } from '$lib/module_bindings/types.js';
     import type { LobbyAndUser } from '$lib/types/lobby_and_user.js';
     import { useTable } from 'spacetimedb/svelte';
+    import { Dialog, Portal } from '@skeletonlabs/skeleton-svelte';
+    import FilterModal from '$lib/components/modals/FilterModal.svelte';
+    import { Funnel, Search } from 'lucide-svelte';
 
     let { data } = $props();
     let relics = [...data.relics];
@@ -24,14 +28,40 @@
     }
 
     let relicFilter = $state('');
+    let eraFilter = $state<string[]>([]);
+    let refinementFilter = $state<RelicRefinement['tag'][]>([]);
+    let regionFilter = $state<Region['tag'][]>([]);
+    let only2A2B: boolean | undefined = $state(undefined);
+    let showFilterModal = $state(false);
 
     const allLobbiesWithUsers: OptionalLobbyAndUser[] = $derived(
         $lobbies
             .filter((lobby) => {
-                console.log('Lobby', lobby.activity.toLowerCase());
-                return (
+                const matchesRelic =
                     relicFilter === '' ||
-                    lobby.activity.toLowerCase().includes(relicFilter.toLowerCase())
+                    lobby.activity.toLowerCase().includes(relicFilter.toLowerCase());
+                const matchesEra =
+                    eraFilter.length === 0 ||
+                    eraFilter.some((era) =>
+                        lobby.activity.toLowerCase().startsWith(era.toLowerCase())
+                    );
+                const matchesRefinement =
+                    refinementFilter.length === 0 ||
+                    refinementFilter.includes(lobby.refinement.tag as any);
+                const matchesRegion =
+                    regionFilter.length === 0 || regionFilter.includes(lobby.region.tag as any);
+
+                const matchesRotation =
+                    only2A2B === undefined ||
+                    (only2A2B && lobby.rotationType.tag === 'TwoATwoB') ||
+                    (!only2A2B && lobby.rotationType.tag === 'FourA');
+
+                return (
+                    matchesRelic &&
+                    matchesEra &&
+                    matchesRefinement &&
+                    matchesRegion &&
+                    matchesRotation
                 );
             })
             .map((lobby) => ({
@@ -55,17 +85,64 @@
               ? allLobbiesWithUsers
               : allLobbiesWithUsers.filter((lu) => !lu.lobby.host.equals(myLobby.lobby.host))
     );
+
+    let activeFilterCount = $derived(
+        (eraFilter.length > 0 ? 1 : 0) +
+            (refinementFilter.length > 0 ? 1 : 0) +
+            (regionFilter.length > 0 ? 1 : 0) +
+            (only2A2B !== undefined ? 1 : 0)
+    );
 </script>
 
 <div class="mt-8 flex flex-1 flex-col items-center gap-16">
-    <div class="flex w-2/3">
+    <div class="flex w-2/5">
         <div class="flex w-full gap-4 max-sm:flex-col">
-            <input
-                type="text"
-                class="input w-full"
-                placeholder="Search for a relic"
-                bind:value={relicFilter}
-            />
+            <div class="input-group w-full grid-cols-[auto_1fr_auto]">
+                <div
+                    class="ig-cell preset-outlined-surface-400-600 bg-surface-300-700/20 border-r-0"
+                >
+                    <Search />
+                </div>
+                <input
+                    type="text"
+                    class="ig-input preset-outlined-surface-400-600 bg-surface-300-700/20 w-full"
+                    placeholder="Search for a relic"
+                    bind:value={relicFilter}
+                />
+            </div>
+
+            <Dialog open={showFilterModal} onOpenChange={(e) => (showFilterModal = e.open)}>
+                <Dialog.Trigger
+                    class="btn preset-outlined-surface-400-600 bg-surface-300-700/20 relative h-full"
+                >
+                    <Funnel class="mr-2 size-4" />
+                    Filters
+                    {#if activeFilterCount > 0}
+                        <span
+                            class="badge-icon preset-filled-primary-300-700 absolute -top-3 -right-3 size-4"
+                        >
+                            {activeFilterCount}
+                        </span>
+                    {/if}
+                </Dialog.Trigger>
+                <Portal>
+                    <Dialog.Backdrop class="bg-surface-50-950/50 fixed inset-0 z-50" />
+                    <Dialog.Positioner class="fixed inset-0 z-50 flex items-center justify-center">
+                        <Dialog.Content
+                            class="card bg-surface-100-900 w-lg space-y-4 p-8 shadow-xl "
+                        >
+                            <FilterModal
+                                bind:open={showFilterModal}
+                                bind:eraFilter
+                                bind:refinementFilter
+                                bind:regionFilter
+                                bind:only2A2B
+                            />
+                        </Dialog.Content>
+                    </Dialog.Positioner>
+                </Portal>
+            </Dialog>
+
             <LobbyCreateButton {relics} hasLobbyOpen={myLobby !== undefined && myLobby !== null} />
         </div>
     </div>
