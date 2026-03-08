@@ -5,4 +5,5 @@ export interface NavbarRoute {
     id: string;
     label: string;
     href: string;
+    openInNewTab?: boolean;
 }
