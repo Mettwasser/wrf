@@ -238,10 +238,6 @@ pub fn join_lobby(ctx: &ReducerContext, lobby_id: Identity) -> Result<(), String
         return Err("Lobby is full".to_owned());
     }
 
-    lobby.amount_players += 1;
-
-    ctx.db.lobby().host().update(lobby);
-
     ctx.db
         .lobby_join()
         .try_insert(LobbyJoin {
@@ -249,6 +245,10 @@ pub fn join_lobby(ctx: &ReducerContext, lobby_id: Identity) -> Result<(), String
             user: ctx.sender(),
         })
         .map_unique_violation(|_| "You can't join multiple lobbies")?;
+
+    lobby.amount_players += 1;
+
+    ctx.db.lobby().host().update(lobby);
 
     Ok(())
 }
