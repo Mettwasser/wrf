@@ -6,7 +6,7 @@ WRF is a real-time matchmaking tool for Warframe Relic runs. It aims to helps pl
 
 ### Real-time
 
-Lobbies Create or join lobbies for specific activities. State changes like players joining or leaving are pushed to all clients immediately
+Players can create or join lobbies for relics. State changes like players joining or leaving are pushed to all clients immediately
 
 ### Identity Verification
 
