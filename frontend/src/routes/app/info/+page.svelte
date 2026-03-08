@@ -15,7 +15,7 @@
     import { Region, VerifyTimer, User, UserWarframeId } from '$lib/module_bindings/types';
     import { Accordion } from '@skeletonlabs/skeleton-svelte';
     import { slide } from 'svelte/transition';
-    import { identity as getIdentity, makeToComboboxData, preferredRegion } from '$lib';
+    import { identity as getIdentity, makeToComboboxData, preferredRegion, toaster } from '$lib';
     import { EditableInput, CopyInput } from '$lib/components';
     import ComboboxInput from '$lib/components/inputs/ComboboxInput.svelte';
     import Countdown from '$lib/components/Countdown.svelte';
@@ -41,8 +41,17 @@
 
     const saveUsername = () =>
         username
-            .withSaving(() => setUsername({ name: username.value }))
-            .catch(console.error)
+            .withSaving(async () => {
+                if (username.value.trim()) await setUsername({ name: username.value });
+            })
+            .catch((e) => {
+                toaster.create({
+                    title: 'Error',
+                    description: e.message,
+                    type: 'error',
+                });
+                username.value = initialUsername;
+            })
             .finally(username.toggleEditing);
 
     const cancelUsername = () => {

@@ -22,7 +22,7 @@
     import { RotationType, User } from '$lib/module_bindings/types';
     import VerifiedBadge from '$lib/components/VerifiedBadge.svelte';
     import { conn, identity, toaster } from '$lib';
-    import { onMount } from 'svelte';
+    import { onMount, type ComponentType, type Component } from 'svelte';
 
     let { params }: PageProps = $props();
 
@@ -209,6 +209,32 @@
     });
 </script>
 
+{#snippet actionButton(
+    title: string,
+    actionFn: (u: User) => void,
+    isLoading: boolean,
+    IconComponent: Component<any> | ComponentType<any>,
+    user: User
+)}
+    <button
+        class="btn-icon preset-filled-error-300-700 max-xsm:w-full"
+        {title}
+        onclick={() => actionFn(user)}
+    >
+        {#if isLoading}
+            <LoaderCircle size={20} class="mr-2 animate-spin" />
+        {:else}
+            <IconComponent />
+        {/if}
+    </button>
+{/snippet}
+
+{#snippet statusBadge(label: string, colorPreset: string)}
+    <div class="badge {colorPreset} px-3 py-1 text-xs font-black uppercase">
+        {label}
+    </div>
+{/snippet}
+
 {#if lobby && joinedUsersReady}
     <div
         class="container mx-auto flex min-h-full max-w-7xl flex-1 flex-col p-4 lg:justify-center lg:p-8"
@@ -338,7 +364,7 @@
                         {@const userIsHost = user.id.equals(lobbyHostId)}
                         {@const isMe = user.id.equals(myIdentity)}
                         <div
-                            class="card bg-surface-300-700/30 flex flex-col items-center justify-between gap-4 p-5 shadow-md transition-all sm:flex-row
+                            class="card bg-surface-300-700/30 flex flex-col justify-between gap-4 p-5 shadow-md transition-all sm:flex-row sm:items-center
                             {userIsHost
                                 ? 'border-primary-600-400/30 border-2'
                                 : isMe
@@ -401,42 +427,31 @@
                                 </div>
                             </div>
 
-                            <div class="flex items-center gap-2">
+                            <div
+                                class={[
+                                    'flex items-center gap-2',
+                                    !(isHost && !userIsHost) && 'max-sm:hidden',
+                                ]}
+                            >
                                 {#if isHost && !userIsHost}
-                                    <button
-                                        class="btn-icon preset-filled-error-300-700"
-                                        title="Kick Player"
-                                        onclick={() => kick(user)}
-                                    >
-                                        {#if isKicking}
-                                            <LoaderCircle size={20} class="mr-2 animate-spin" />
-                                        {:else}
-                                            <UserMinus />
-                                        {/if}
-                                    </button>
-                                    <button
-                                        class="btn-icon preset-filled-error-300-700"
-                                        title="Ban Player"
-                                        onclick={() => ban(user)}
-                                    >
-                                        {#if isBanning}
-                                            <LoaderCircle size={20} class="mr-2 animate-spin" />
-                                        {:else}
-                                            <Gavel />
-                                        {/if}
-                                    </button>
+                                    {@render actionButton(
+                                        'Kick Player',
+                                        kick,
+                                        isKicking,
+                                        UserMinus,
+                                        user
+                                    )}
+                                    {@render actionButton(
+                                        'Ban Player',
+                                        ban,
+                                        isBanning,
+                                        Gavel,
+                                        user
+                                    )}
                                 {:else if userIsHost}
-                                    <div
-                                        class="badge preset-filled-primary-500 hidden px-3 py-1 text-xs font-black uppercase sm:block"
-                                    >
-                                        Leader
-                                    </div>
+                                    {@render statusBadge('Leader', 'preset-filled-primary-500')}
                                 {:else if isMe}
-                                    <div
-                                        class="badge preset-filled-success-500 hidden px-3 py-1 text-xs font-black uppercase sm:block"
-                                    >
-                                        You
-                                    </div>
+                                    {@render statusBadge('You', 'preset-filled-success-500')}
                                 {/if}
                             </div>
                         </div>
