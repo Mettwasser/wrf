@@ -45,6 +45,6 @@
 		"lucide-svelte": "^0.575.0",
 		"runed": "^0.37.1",
 		"spacetimedb": "^2.0.3",
-		"svelte-clerk": "^0.20.5"
+		"svelte-clerk": "^1.0.1"
 	}
 }
