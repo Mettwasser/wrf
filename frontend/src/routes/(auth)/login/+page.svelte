@@ -1,17 +1,13 @@
 <script lang="ts">
-    import { goto } from '$app/navigation';
     import { dark } from '@clerk/themes';
-    import { SignedIn, SignedOut, SignIn, SignOutButton, useClerkContext } from 'svelte-clerk';
-
-    const clerkCtx = useClerkContext();
-
-    $effect(() => {
-        if (clerkCtx.session) goto('/app/next_steps');
-    });
+    import { SignedIn, SignedOut, SignIn, SignOutButton } from 'svelte-clerk';
 </script>
 
 <SignedOut>
-    <SignIn appearance={{ captcha: { theme: 'dark' }, theme: dark }} routing="virtual" />
+    <SignIn
+        appearance={{ captcha: { theme: 'dark' }, theme: dark }}
+        forceRedirectUrl="/app/next_steps"
+    />
 </SignedOut>
 <SignedIn>
     <div class="flex flex-col items-center gap-4">

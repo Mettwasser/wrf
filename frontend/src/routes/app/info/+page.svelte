@@ -32,8 +32,6 @@
 
     let [verifyTimerTable, verifyTimerIsReady] = useTable(tables.my_verify_timer);
     let verifyTimer: VerifyTimer | null = $derived($verifyTimerTable[0] ?? null);
-    $inspect($verifyTimerTable).with((type, val) => console.log('table: ', val));
-    $inspect(verifyTimer).with((type, val) => console.log('derived: ', val));
 
     const initialUsername = $derived(me?.username ?? '');
 

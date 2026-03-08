@@ -50,7 +50,7 @@
                     <User size={28} />
                 </Popover.Trigger>
                 <Popover.Positioner>
-                    <Popover.Content class="card bg-surface-200-800 w-80 p-2">
+                    <Popover.Content class="card bg-surface-200-800 xsm:w-80 w-72 p-2">
                         <div class="flex flex-col gap-2">
                             {#each accountNavbarRoutes as { href, Icon, id, label }}
                                 <a

@@ -113,25 +113,31 @@
         </header>
 
         <div>
-            <span class="label-text">Relic</span>
-            <div class="flex gap-4">
-                <FormGroup errorId={relicEraEmptyId} {errorCollection}>
-                    <Combobox
-                        data={makeToComboboxData(['Lith', 'Meso', 'Neo', 'Axi'])}
-                        limit={5}
-                        bind:value={relicEra}
-                        placeholder="Era..."
-                    />
-                </FormGroup>
+            <span class="label-text max-[500px]:hidden">Relic</span>
+            <div class="flex gap-4 max-[500px]:flex-col">
+                <span class="label-text min-[500px]:hidden">Relic</span>
+                <div>
+                    <FormGroup errorId={relicEraEmptyId} {errorCollection}>
+                        <Combobox
+                            data={makeToComboboxData(['Lith', 'Meso', 'Neo', 'Axi'])}
+                            limit={5}
+                            bind:value={relicEra}
+                            placeholder="Era..."
+                        />
+                    </FormGroup>
+                </div>
 
-                <FormGroup errorId={relicCategoryEmptyId} {errorCollection}>
-                    <Combobox
-                        data={validRelicCategories}
-                        limit={5}
-                        bind:value={relicCategory}
-                        placeholder="Category..."
-                    />
-                </FormGroup>
+                <div>
+                    <span class="label-text min-[500px]:hidden">Era</span>
+                    <FormGroup errorId={relicCategoryEmptyId} {errorCollection}>
+                        <Combobox
+                            data={validRelicCategories}
+                            limit={5}
+                            bind:value={relicCategory}
+                            placeholder="Category..."
+                        />
+                    </FormGroup>
+                </div>
             </div>
         </div>
 

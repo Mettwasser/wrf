@@ -339,7 +339,7 @@
                         {@const isMe = user.id.equals(myIdentity)}
                         <div
                             class="card bg-surface-300-700/30 flex flex-col items-center justify-between gap-4 p-5 shadow-md transition-all sm:flex-row
-                        {userIsHost
+                            {userIsHost
                                 ? 'border-primary-600-400/30 border-2'
                                 : isMe
                                   ? 'border-success-600-400/30 border-2'
