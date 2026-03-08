@@ -1,0 +1,13 @@
+node_modules
+.svelte-kit
+build
+.env
+.env.*
+!.env.production
+.git
+.vscode
+.prettierrc
+.prettierignore
+eslint.config.js
+README.md
+tsconfig.json
