@@ -44,18 +44,6 @@
     ];
 </script>
 
-<svelte:head>
-    <style>
-        /* Global overflow prevention for this page */
-        html,
-        body {
-            overflow-x: hidden;
-            width: 100%;
-            position: relative;
-        }
-    </style>
-</svelte:head>
-
 <div class="bg-surface-950 text-surface-50 relative min-h-screen w-full">
     <!-- BG Elements -->
     <div class="pointer-events-none fixed inset-0 z-0 overflow-hidden select-none">
