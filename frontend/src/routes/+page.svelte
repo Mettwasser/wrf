@@ -262,10 +262,3 @@
         </footer>
     </div>
 </div>
-
-<style>
-    :global(body) {
-        background-color: #0a0a0a;
-        height: auto !important;
-    }
-</style>

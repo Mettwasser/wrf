@@ -13,7 +13,7 @@
 </script>
 
 <ClerkProvider {publishableKey}>
-    <div class="flex h-full flex-1">
+    <div class="flex min-h-full flex-1">
         {@render children()}
     </div>
 </ClerkProvider>
