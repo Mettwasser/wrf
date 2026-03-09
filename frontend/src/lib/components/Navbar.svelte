@@ -6,7 +6,7 @@
     import logo from '$lib/assets/wrf-logo.png';
     import type { NavbarRoute } from '$lib/types/account_routes';
     import { SiDiscord } from '@icons-pack/svelte-simple-icons';
-    import { SignOutButton } from 'svelte-clerk';
+    import { SignOutButton, UserAvatar } from 'svelte-clerk';
 
     const links: NavbarRoute[] = [
         { label: 'Home', href: '/app', Icon: House, id: '0' },
@@ -57,8 +57,8 @@
             <ThemeButtons />
 
             <Popover positioning={{ placement: 'bottom-end' }}>
-                <Popover.Trigger class="hover:preset-tonal cursor-pointer rounded-full p-2">
-                    <User size={28} />
+                <Popover.Trigger class="hover:preset-tonal mx-1 cursor-pointer rounded-full p-1">
+                    <UserAvatar />
                 </Popover.Trigger>
                 <Popover.Positioner>
                     <Popover.Content class="card bg-surface-200-800 xsm:w-80 w-72 p-2">
@@ -101,3 +101,10 @@
         </AppBar.Trail>
     </AppBar.Toolbar>
 </AppBar>
+
+<style>
+    :global(.cl-avatarBox) {
+        height: 2.25rem;
+        width: 2.25rem;
+    }
+</style>

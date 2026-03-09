@@ -92,7 +92,7 @@
 <div
     class="flex min-h-full flex-1 flex-col items-center justify-center gap-16 pb-4! xl:p-4 xl:pb-8"
 >
-    <Section title="Warframe Username">
+    <Section title="User Details">
         <div class="flex flex-col gap-4">
             <EditableInput
                 label="Warframe Username"
