@@ -3,7 +3,7 @@
         <h1 class="h1">Welcome to WRF!</h1>
         <h2 class="h2 mt-4">Well, what now?</h2>
         <p>
-            First, head over to the <a href="/app/info">Info Page</a>
+            First, head over to the <a href="/app/info" class="text-tertiary-500">Info Page</a>
             and enter your in-game username.
             <br />
             You can also verify your name there (after entering your username).

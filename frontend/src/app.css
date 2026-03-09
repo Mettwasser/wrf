@@ -47,11 +47,8 @@ body {
 }
 
 body {
-    @apply bg-surface-100;
-}
-
-body {
-    background-image: radial-gradient(
+    background-image:
+        radial-gradient(
             at 50% 0%,
             color-mix(in srgb, var(--color-secondary-500), transparent 82%) 0px,
             transparent 75%
@@ -67,8 +64,8 @@ body {
     @apply bg-surface-950;
 }
 
-a {
-    @apply text-tertiary-500;
+.a {
+    @apply text-tertiary-500 hover:text-tertiary-200;
 }
 
 *:focus-within {
