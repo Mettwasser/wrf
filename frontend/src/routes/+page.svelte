@@ -150,6 +150,7 @@
                             <span class="text-error-500 font-black">profit dies</span>
                         </h2>
                         <p class="text-surface-400 text-sm sm:text-lg">
+                            We've all been there: <br />
                             Spending 30 minutes spamming
                             <code class="code">H [Lith N13 Relic] rad 1/4</code>
                             only to have the party disband after one run.
