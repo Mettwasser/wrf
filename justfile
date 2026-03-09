@@ -14,6 +14,9 @@ sql *args:
 publish *args:
     spacetime publish -y -s "127.0.0.1:3000" {{ args }}
 
+logs *args:
+    spacetime publish --follow -s "127.0.0.1:3000" {{ args }}
+
 ##################################
 #              Prod              #
 ##################################

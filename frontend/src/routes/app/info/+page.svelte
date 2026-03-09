@@ -20,7 +20,9 @@
     import ComboboxInput from '$lib/components/inputs/ComboboxInput.svelte';
     import Countdown from '$lib/components/Countdown.svelte';
     import { Timestamp } from 'spacetimedb';
+    import { useClerkContext } from 'svelte-clerk';
 
+    let clerkCtx = useClerkContext();
     const identity = getIdentity();
 
     // subscriptions
@@ -90,10 +92,10 @@
 <div
     class="flex min-h-full flex-1 flex-col items-center justify-center gap-16 pb-4! xl:p-4 xl:pb-8"
 >
-    <Section title="Username">
+    <Section title="Warframe Username">
         <div class="flex flex-col gap-4">
             <EditableInput
-                label="Username"
+                label="Warframe Username"
                 group={username}
                 icon={UserIcon}
                 onSave={saveUsername}
@@ -104,6 +106,13 @@
                 label="User ID"
                 icon={IdCard}
                 value={identity.toHexString()}
+                inputClass="text-xs"
+            />
+
+            <CopyInput
+                label="Clerk User ID"
+                icon={IdCard}
+                value={clerkCtx.auth.userId ?? ''}
                 inputClass="text-xs"
             />
         </div>
@@ -202,8 +211,8 @@
                                             </li>
                                             <li>
                                                 Copy your unique <strong>Code</strong>
-                                                from the field above, open Warframe, and change your
-                                                current loadout name to this exact code.
+                                                from the field above, open Warframe, and change your current
+                                                loadout name to this exact code.
                                             </li>
                                             <li>
                                                 Wait. The system tries to verify your username after

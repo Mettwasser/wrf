@@ -42,7 +42,7 @@
 {#if isConnected}
     {@render children()}
 {:else}
-    <div class="flex size-full items-center justify-center">
-        <h1 class="h1">Connecting to database...</h1>
+    <div class="flex flex-1 items-center justify-center">
+        <h1 class="h1 text-center">Connecting to database...</h1>
     </div>
 {/if}

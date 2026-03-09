@@ -70,7 +70,7 @@
         </div>
     </SpacetimeProvider>
 {:else}
-    <div class="flex size-full items-center justify-center">
+    <div class="flex flex-1 items-center justify-center">
         <h1 class="h1">Authenticating...</h1>
     </div>
 {/if}

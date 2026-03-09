@@ -103,16 +103,16 @@ pub fn identity_connected(ctx: &ReducerContext) -> Result<(), String> {
     log::info!("New connection");
     let auth_ctx = ctx.sender_auth();
 
-    let Some((subject, issuer)) = auth_ctx
+    let Some((subject, identity)) = auth_ctx
         .jwt()
-        .map(|claims| (claims.subject(), claims.issuer()))
+        .map(|claims| (claims.subject(), claims.identity()))
     else {
         return Err("Client connected without JWT".to_string());
     };
 
     ctx.db.disconnect_timer().user().delete(ctx.sender());
 
-    log::info!("sub: {}, iss: {}", subject, issuer);
+    log::info!("subject: {subject}, identity: {identity}");
     Ok(())
 }
 
@@ -134,6 +134,8 @@ pub fn identity_disconnected(ctx: &ReducerContext) -> Result<(), String> {
 #[spacetimedb::reducer]
 pub fn set_username(ctx: &ReducerContext, name: String) -> Result<(), String> {
     let existing_user = ctx.db.user().id().find(ctx.sender());
+
+    log::info!("{} is trying to set their username to {name}", ctx.sender());
 
     ctx.db
         .user()
