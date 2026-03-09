@@ -1,10 +1,8 @@
 <script lang="ts">
-    import { fade, fly, slide } from 'svelte/transition';
+    import { fly } from 'svelte/transition';
     import { cubicOut } from 'svelte/easing';
     import {
         Zap,
-        Users,
-        Target,
         ShieldCheck,
         ArrowRight,
         Sparkles,
@@ -15,11 +13,9 @@
     import meme from '$lib/assets/meme.jpg';
     import logo from '$lib/assets/wrf-logo.png';
     import { SiDiscord } from '@icons-pack/svelte-simple-icons';
+    import { IsMounted } from 'runed';
 
-    let mounted = $state(false);
-    $effect(() => {
-        mounted = true;
-    });
+    const isMounted = new IsMounted();
 
     const features = [
         {
@@ -62,7 +58,7 @@
     <div class="relative z-10 w-full overflow-x-hidden">
         <!-- Hero Section -->
         <header class="flex flex-col items-center px-4 pt-16 pb-12 text-center sm:pt-32 sm:pb-20">
-            {#if mounted}
+            {#if isMounted.current}
                 <div
                     in:fly={{ y: -20, duration: 800, easing: cubicOut }}
                     class="mb-4 flex items-center gap-3 sm:mb-6 sm:gap-4"
