@@ -2,11 +2,11 @@
     import { AppBar, Popover } from '@skeletonlabs/skeleton-svelte';
     import ThemeButtons from './ThemeButtons.svelte';
     import { House, Info, LogOut, User } from 'lucide-svelte';
-    import { SignOutButton } from 'svelte-clerk';
     import { page } from '$app/state';
     import logo from '$lib/assets/wrf-logo.png';
     import type { NavbarRoute } from '$lib/types/account_routes';
     import { SiDiscord } from '@icons-pack/svelte-simple-icons';
+    import { SignOutButton } from 'svelte-clerk';
 
     const links: NavbarRoute[] = [
         { label: 'Home', href: '/app', Icon: House, id: '0' },
@@ -76,7 +76,7 @@
                                     {label}
                                 </a>
                             {/each}
-                            <SignOutButton asChild>
+                            <SignOutButton asChild redirectUrl="/login">
                                 {#snippet children({ signOut }: { signOut: any })}
                                     <button
                                         onclick={signOut}
