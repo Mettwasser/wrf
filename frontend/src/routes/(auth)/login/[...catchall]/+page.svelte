@@ -4,7 +4,7 @@
 </script>
 
 <Show when="signed-out">
-    <SignIn forceRedirectUrl="/app/next_steps" appearance={{ theme: dark }} />
+    <SignIn forceRedirectUrl="/app/onboarding" appearance={{ theme: dark }} />
 </Show>
 <Show when="signed-in">
     <div class="flex flex-col items-center justify-center gap-4">

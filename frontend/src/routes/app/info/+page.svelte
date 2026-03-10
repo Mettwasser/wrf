@@ -121,7 +121,7 @@
     <Section title="Verification">
         {#if !me}
             <div class="flex items-center gap-2">
-                <span class="font-bold">Please enter a username first.</span>
+                <span class="font-bold">Please enter your warframe username first.</span>
             </div>
         {:else if me.verified}
             <div class="flex items-center gap-2">
