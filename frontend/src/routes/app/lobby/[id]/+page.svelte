@@ -21,8 +21,8 @@
     import { getRefinementTextColor } from '$lib/utils/refinement_color';
     import { RotationType, User } from '$lib/module_bindings/types';
     import VerifiedBadge from '$lib/components/VerifiedBadge.svelte';
-    import { conn, identity, toaster } from '$lib';
-    import { onMount, type ComponentType, type Component } from 'svelte';
+    import { identity, toaster } from '$lib';
+    import { type ComponentType, type Component } from 'svelte';
 
     let { params }: PageProps = $props();
 
@@ -34,24 +34,13 @@
     );
     const lobby = $derived($lobbyTable[0] ?? null);
 
-    let joinedUsers: User[] = $state([]);
-    let joinedUsersReady = $state(false);
-
     const [myBans, myBansAreReady] = useTable(tables.my_bans);
 
-    $effect(() => {
-        if (
-            $myBansAreReady &&
-            $myBans.map((row) => row.host).filter((host) => host.equals(lobbyHostId)).length > 0
-        ) {
-            toaster.create({
-                title: 'Banned',
-                description: 'You have been banned from the lobby.',
-                type: 'error',
-            });
-            goto('/app');
-        }
-    });
+    const [joinedUsers, joinedUsersReady] = useTable(
+        tables.lobby_join
+            .where((join) => join.host.eq(lobbyHostId))
+            .rightSemijoin(tables.user, (join, user) => user.id.eq(join.user))
+    );
 
     function moveHostToTop(userList: User[]): User[] {
         const hostIndex = userList.findIndex((u) => u.id.equals(lobbyHostId));
@@ -63,10 +52,10 @@
         return userList;
     }
 
-    let participants = $derived(moveHostToTop([...joinedUsers]));
+    let participants = $derived(moveHostToTop([...$joinedUsers]));
 
     const isHost = $derived(myIdentity.equals(lobbyHostId));
-    const isJoined = $derived(joinedUsers.some((user) => user.id.equals(myIdentity)));
+    const isJoined = $derived($joinedUsers.some((user) => user.id.equals(myIdentity)));
 
     const relicUrl = $derived(lobby ? getRelicImageUrl(lobby.activity, lobby.refinement) : '');
     const refinementTextColor = $derived(lobby ? getRefinementTextColor(lobby.refinement) : '');
@@ -114,14 +103,21 @@
             joinedUsersReady &&
             !isJoined &&
             !isVoluntaryLeavingLobby &&
-            lobby !== null &&
-            !isBanned
+            lobby !== null
         ) {
-            toaster.create({
-                title: 'Kicked',
-                description: 'You have been kicked from the lobby.',
-                type: 'error',
-            });
+            if (isBanned) {
+                toaster.create({
+                    title: 'Banned',
+                    description: 'You have been banned from the lobby.',
+                    type: 'error',
+                });
+            } else {
+                toaster.create({
+                    title: 'Kicked',
+                    description: 'You have been kicked from the lobby.',
+                    type: 'error',
+                });
+            }
             goto('/app');
         }
     });
@@ -171,41 +167,6 @@
         if ($lobbyIsReady && lobby === null) {
             goto('/app');
         }
-    });
-
-    onMount(() => {
-        const handle = conn()
-            .subscriptionBuilder()
-            .onApplied((ctx) => {
-                joinedUsersReady = true;
-
-                ctx.db.user.onInsert((ctx, row) => {
-                    joinedUsers = [...joinedUsers, row];
-                });
-
-                ctx.db.user.onUpdate((ctx, oldRow, newRow) => {
-                    const index = joinedUsers.findIndex((u) => u.id.equals(newRow.id));
-                    if (index !== -1) {
-                        joinedUsers[index] = newRow;
-
-                        // Trigger reactivity
-                        joinedUsers = joinedUsers;
-                    }
-                });
-
-                ctx.db.user.onDelete((ctx, row) => {
-                    joinedUsers = joinedUsers.filter((u) => !u.id.equals(row.id));
-                });
-            })
-            .onError((ctx) => console.error(ctx))
-            .subscribe(
-                `SELECT u.* FROM user u JOIN lobby_join lj ON u.id = lj.user WHERE lj.host = 0x${lobbyHostId.toHexString()}`
-            );
-
-        return () => {
-            handle.unsubscribe();
-            console.log('unsubscribed from user with lobby joins.');
-        };
     });
 </script>
 

@@ -83,6 +83,7 @@
     {value}
     {inputValue}
     {multiple}
+    {disabled}
 >
     <Combobox.Control>
         <Combobox.Input
