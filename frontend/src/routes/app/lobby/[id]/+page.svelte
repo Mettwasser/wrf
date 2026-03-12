@@ -16,6 +16,7 @@
         Clipboard,
         LoaderCircle,
         LogOut,
+        ArrowLeft,
     } from 'lucide-svelte';
     import { getRelicImageUrl } from '$lib/utils/relic_image';
     import { getRefinementTextColor } from '$lib/utils/refinement_color';
@@ -34,7 +35,7 @@
     );
     const lobby = $derived($lobbyTable[0] ?? null);
 
-    const [myBans, myBansAreReady] = useTable(tables.my_bans);
+    const [myBans] = useTable(tables.my_bans);
 
     const [joinedUsers, joinedUsersReady] = useTable(
         tables.lobby_join
@@ -196,15 +197,24 @@
     </div>
 {/snippet}
 
-{#if lobby && joinedUsersReady}
-    <div
-        class="container mx-auto flex min-h-full max-w-7xl flex-1 flex-col p-4 lg:justify-center lg:p-8"
-    >
+<div
+    class="container mx-auto flex min-h-full max-w-7xl flex-1 flex-col gap-4 p-4 lg:justify-center lg:p-8"
+>
+    <div class="bg-surface-100-900/50 preset-outlined-surface-500 card flex p-3">
+        <button
+            class="btn preset-filled-primary-300-700 max-xsm:w-full"
+            onclick={() => window.history.back()}
+        >
+            <span><ArrowLeft /></span>
+            Go Back
+        </button>
+    </div>
+    {#if lobby && joinedUsersReady}
         <div class="grid w-full grid-cols-1 gap-16 lg:grid-cols-4 lg:gap-0">
             <!-- Lobby Info Card -->
-            <div class="z-10 flex flex-col lg:col-span-1 lg:translate-x-2">
+            <div class="z-10 flex flex-col lg:col-span-1">
                 <div
-                    class="card bg-surface-200-800/40 shadow-surface-100/10 preset-outlined-surface-600-400 flex h-full flex-col p-8 shadow-xl backdrop-blur-lg lg:shadow-none"
+                    class="card bg-surface-200-800/40 shadow-surface-100/10 preset-outlined-surface-600-400 flex h-full flex-col p-8 shadow-xl backdrop-blur-lg lg:rounded-tr-none lg:rounded-br-none lg:shadow-none"
                 >
                     <div class="flex flex-col items-center gap-6">
                         <img
@@ -295,7 +305,7 @@
 
             <!-- Players List -->
             <div
-                class="card bg-surface-100-900/40 preset-outlined-surface-500 flex flex-col gap-8 p-4 backdrop-blur-3xl sm:p-8 lg:col-span-3"
+                class="card bg-surface-100-900/40 preset-outlined-surface-500 flex flex-col gap-8 p-4 backdrop-blur-3xl sm:p-8 lg:col-span-3 lg:rounded-tl-none lg:rounded-bl-none lg:border-l-0"
             >
                 <div class="flex flex-col gap-4">
                     <div class="flex items-center justify-between max-sm:flex-col max-sm:gap-4">
@@ -440,5 +450,5 @@
                 </div>
             </div>
         </div>
-    </div>
-{/if}
+    {/if}
+</div>

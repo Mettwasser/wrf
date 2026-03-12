@@ -89,6 +89,7 @@
         <img
             src={relicUrl}
             alt="Relic"
+            draggable="false"
             class="h-40 w-full object-contain object-right drop-shadow-md"
         />
     </div>
