@@ -10,13 +10,13 @@
 
     const links: NavbarRoute[] = [
         { label: 'Home', href: '/app', Icon: House, id: '0' },
-        {
-            label: 'Discord',
-            href: 'https://discord.gg/VANqqkv8pp',
-            Icon: SiDiscord,
-            id: '1',
-            openInNewTab: true,
-        },
+        // {
+        //     label: 'Discord',
+        //     href: 'https://discord.gg/VANqqkv8pp',
+        //     Icon: SiDiscord,
+        //     id: '1',
+        //     openInNewTab: true,
+        // },
     ];
 
     const accountNavbarRoutes: NavbarRoute[] = [

@@ -283,3 +283,15 @@ pub fn ban(ctx: &ReducerContext, user: Identity) -> Result<(), String> {
 
     Ok(())
 }
+
+#[spacetimedb::reducer]
+pub fn delete_my_account(ctx: &ReducerContext) -> Result<(), String> {
+    log::info!("User {} is deleting their account", ctx.sender());
+
+    if ctx.db.user().id().delete(ctx.sender()) {
+        ctx.db.user_warframe_id().user_id().delete(ctx.sender());
+        ctx.db.verify_timer().user_id().delete(ctx.sender());
+    }
+
+    Ok(())
+}

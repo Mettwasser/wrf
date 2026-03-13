@@ -5,6 +5,9 @@
     import SpacetimeProvider from '$lib/components/SpacetimeProvider.svelte';
     import Navbar from '$lib/components/Navbar.svelte';
     import { toaster } from '$lib';
+    import { SiDiscord } from '@icons-pack/svelte-simple-icons';
+    import { Lock } from 'lucide-svelte';
+    import Footer from '$lib/components/Footer.svelte';
 
     const clerkCtx = useClerkContext();
     let token = $state<string | null>(null);
@@ -67,6 +70,8 @@
                     </Toast>
                 {/snippet}
             </Toast.Group>
+
+            <Footer />
         </div>
     </SpacetimeProvider>
 {:else}

@@ -99,6 +99,10 @@
     );
 </script>
 
+<svelte:head>
+    <title>Lobby Browser</title>
+</svelte:head>
+
 <div class="mt-8 flex flex-1 flex-col items-center gap-16">
     <div class="xsm:w-4/5 flex w-full flex-col px-2 sm:w-3/5 lg:w-2/5">
         <div class="lg flex w-full flex-col gap-4 xl:flex-row">

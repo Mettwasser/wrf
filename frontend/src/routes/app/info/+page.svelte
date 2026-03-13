@@ -1,19 +1,22 @@
 <script lang="ts">
     import {
+        ArrowRight,
         BadgeCheck,
         ChevronDownIcon,
         Gamepad2,
         Globe,
         Hash,
         IdCard,
+        LoaderCircle,
         User as UserIcon,
+        XIcon,
     } from 'lucide-svelte';
     import Section from './Section.svelte';
     import { useReducer, useTable } from 'spacetimedb/svelte';
     import { reducers, tables } from '$lib/module_bindings';
     import { group } from '$lib/utils/group.svelte';
     import { Region, VerifyTimer, User, UserWarframeId } from '$lib/module_bindings/types';
-    import { Accordion } from '@skeletonlabs/skeleton-svelte';
+    import { Accordion, Dialog, Portal } from '@skeletonlabs/skeleton-svelte';
     import { slide } from 'svelte/transition';
     import { identity as getIdentity, makeToComboboxData, preferredRegion, toaster } from '$lib';
     import { EditableInput, CopyInput } from '$lib/components';
@@ -87,10 +90,26 @@
         region.value = preferredRegion.current;
         region.toggleEditing();
     };
+
+    let deleteAccountDialogOpen = $state(false);
+    let isAccountDeleting = $state(false);
+
+    const deleteAccountReducer = useReducer(reducers.deleteMyAccount);
+
+    const deleteAccount = async () => {
+        isAccountDeleting = true;
+        await deleteAccountReducer();
+        isAccountDeleting = false;
+        deleteAccountDialogOpen = false;
+    };
 </script>
 
+<svelte:head>
+    <title>Account Info</title>
+</svelte:head>
+
 <div
-    class="flex min-h-full flex-1 flex-col items-center justify-center gap-16 pb-4! xl:p-4 xl:pb-8"
+    class="mb-8 flex min-h-full flex-1 flex-col items-center justify-center gap-16 pb-4! xl:p-4 xl:pb-8"
 >
     <Section title="User Details">
         <div class="flex flex-col gap-4">
@@ -109,12 +128,23 @@
                 inputClass="text-xs"
             />
 
-            <CopyInput
-                label="Clerk User ID"
-                icon={IdCard}
-                value={clerkCtx.auth.userId ?? ''}
-                inputClass="text-xs"
-            />
+            <div class="flex flex-col gap-4">
+                <CopyInput
+                    label="Clerk User ID"
+                    icon={IdCard}
+                    value={clerkCtx.auth.userId ?? ''}
+                    inputClass="text-xs"
+                />
+                <div class="flex w-full justify-end">
+                    <a
+                        href="/app/info/clerk"
+                        class="btn btn-sm preset-filled-surface-900-100 flex items-center gap-2"
+                    >
+                        <span>View Clerk Details</span>
+                        <ArrowRight />
+                    </a>
+                </div>
+            </div>
         </div>
     </Section>
 
@@ -241,5 +271,51 @@
             onSave={onRegionSave}
             onCancel={onRegionCancel}
         />
+    </Section>
+
+    <Section title="Danger Zone">
+        <Dialog
+            open={deleteAccountDialogOpen}
+            onOpenChange={(e) => (deleteAccountDialogOpen = e.open)}
+        >
+            <Dialog.Trigger
+                class="btn preset-filled-error-300-700 h-full self-start"
+                disabled={me === null}
+            >
+                Delete Account
+            </Dialog.Trigger>
+            <Portal>
+                <Dialog.Backdrop class="bg-surface-50-950/50 fixed inset-0 z-50" />
+                <Dialog.Positioner class="fixed inset-0 z-50 flex items-center justify-center px-2">
+                    <Dialog.Content class="card bg-surface-100-900 w-lg space-y-4 p-8 shadow-xl ">
+                        <header class="flex items-center justify-between">
+                            <Dialog.Title class="text-lg font-bold">Account Deletion</Dialog.Title>
+                            <Dialog.CloseTrigger class="btn-icon hover:preset-tonal">
+                                <XIcon class="size-4" />
+                            </Dialog.CloseTrigger>
+                        </header>
+                        <Dialog.Description>
+                            Are you sure you want to delete your account?
+                        </Dialog.Description>
+                        <footer class="flex justify-end gap-2">
+                            <Dialog.CloseTrigger class="btn preset-tonal">
+                                Cancel
+                            </Dialog.CloseTrigger>
+                            <button
+                                type="button"
+                                class="btn preset-filled-error-300-700"
+                                onclick={deleteAccount}
+                            >
+                                {#if isAccountDeleting}
+                                    <LoaderCircle class="animate-spin" />
+                                {:else}
+                                    Yes
+                                {/if}
+                            </button>
+                        </footer>
+                    </Dialog.Content>
+                </Dialog.Positioner>
+            </Portal>
+        </Dialog>
     </Section>
 </div>

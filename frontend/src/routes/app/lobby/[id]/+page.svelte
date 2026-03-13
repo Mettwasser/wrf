@@ -171,6 +171,10 @@
     });
 </script>
 
+<svelte:head>
+    <title>{participants[0].username}'s Lobby</title>
+</svelte:head>
+
 {#snippet actionButton(
     title: string,
     actionFn: (u: User) => void,

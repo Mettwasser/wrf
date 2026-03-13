@@ -22,6 +22,10 @@
     });
 </script>
 
+<svelte:head>
+    <title>Onboarding</title>
+</svelte:head>
+
 {#if !$meIsReady}
     <LoaderCircle class="size-6 animate-spin" />
 {:else if show}

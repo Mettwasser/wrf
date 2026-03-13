@@ -83,3 +83,7 @@ input[type='radio']:focus {
     outline: none;
     box-shadow: none;
 }
+
+[data-scope='dialog'][data-part='content'] {
+    @apply translate-y-25 opacity-0 transition transition-discrete data-[state=open]:translate-y-0 data-[state=open]:opacity-100 starting:data-[state=open]:translate-y-25 starting:data-[state=open]:opacity-0;
+}

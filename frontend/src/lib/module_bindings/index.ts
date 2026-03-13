@@ -36,6 +36,7 @@ import {
 // Import all reducer arg schemas
 import BanReducer from "./ban_reducer";
 import CreateOrUpdateLobbyReducer from "./create_or_update_lobby_reducer";
+import DeleteMyAccountReducer from "./delete_my_account_reducer";
 import JoinLobbyReducer from "./join_lobby_reducer";
 import KickReducer from "./kick_reducer";
 import LeaveLobbyReducer from "./leave_lobby_reducer";
@@ -139,6 +140,7 @@ const tablesSchema = __schema({
 const reducersSchema = __reducers(
   __reducerSchema("ban", BanReducer),
   __reducerSchema("create_or_update_lobby", CreateOrUpdateLobbyReducer),
+  __reducerSchema("delete_my_account", DeleteMyAccountReducer),
   __reducerSchema("join_lobby", JoinLobbyReducer),
   __reducerSchema("kick", KickReducer),
   __reducerSchema("leave_lobby", LeaveLobbyReducer),
