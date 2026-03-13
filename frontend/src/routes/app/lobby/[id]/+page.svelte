@@ -202,7 +202,7 @@
 {/snippet}
 
 <div
-    class="container mx-auto flex min-h-full max-w-7xl flex-1 flex-col gap-4 p-4 lg:justify-center lg:p-8"
+    class="container mx-auto flex min-h-full max-w-7xl flex-1 flex-col gap-4 p-4 lg:justify-center lg:p-6"
 >
     <div class="bg-surface-100-900/50 preset-outlined-surface-500 card flex p-3">
         <button
