@@ -14,6 +14,7 @@
     import logo from '$lib/assets/wrf-logo.png';
     import { SiDiscord } from '@icons-pack/svelte-simple-icons';
     import { IsMounted } from 'runed';
+    import Footer from '$lib/components/Footer.svelte';
 
     const isMounted = new IsMounted();
 
@@ -241,20 +242,6 @@
             </div>
         </section>
 
-        <!-- Footer -->
-        <footer class="border-surface-800 text-surface-500 border-t py-8 text-center sm:py-12">
-            <p class="px-4 text-[10px] sm:text-base">
-                © 2026 Warframe Relic Finder. Not affiliated with Digital Extremes.
-            </p>
-            <div class="mt-4 flex justify-center gap-6">
-                <a
-                    href="https://discord.gg/VANqqkv8pp"
-                    target="_blank"
-                    class="text-surface-100 flex gap-2"
-                >
-                    <SiDiscord /> Discord
-                </a>
-            </div>
-        </footer>
+        <Footer />
     </div>
 </div>
