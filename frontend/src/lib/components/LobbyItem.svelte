@@ -31,7 +31,8 @@
 <!-- svelte-ignore a11y_no_static_element_interactions -->
 <div
     class="card bg-surface-200-800/40 shadow-surface-100/10 preset-outlined-surface-600-400 hover:bg-success-300-700/15 xsm:w-[80%] xsm max-xsm:w-full relative grid cursor-pointer grid-cols-3 gap-4 border-2! p-4
-    shadow-lg backdrop-blur-lg max-[500px]:flex max-[500px]:justify-center sm:w-[65%] md:w-[55%] lg:w-[40%] xl:w-[30%] 2xl:w-1/4"
+    shadow-lg backdrop-blur-lg max-[500px]:flex max-[500px]:justify-center sm:w-[65%] md:w-[55%] lg:w-[40%] xl:w-[30%] 2xl:w-1/4
+    {lobbyAndUser.lobby.amountPlayers >= 4 ? 'opacity-75' : ''}"
     {onclick}
 >
     {#if ownedByMe}
@@ -66,7 +67,8 @@
                             class="{lobbyAndUser.lobby.lobbySize < idx ? 'invisible' : ''} 
                                 {lobbyAndUser.lobby.amountPlayers >= idx
                                 ? 'text-success-500'
-                                : 'opacity-50'}"
+                                : 'opacity-50'}
+                                "
                         />
                     {/each}
                 </div>

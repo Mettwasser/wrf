@@ -17,6 +17,8 @@
         LoaderCircle,
         LogOut,
         ArrowLeft,
+        Minus,
+        Plus,
     } from 'lucide-svelte';
     import { getRelicImageUrl } from '$lib/utils/relic_image';
     import { getRefinementTextColor } from '$lib/utils/refinement_color';
@@ -164,6 +166,24 @@
         isBanning = false;
     };
 
+    let isAddingDummy = $state(false);
+    const addDummyReducer = useReducer(reducers.addDummy);
+    const addDummy = async () => {
+        isAddingDummy = true;
+        await addDummyReducer();
+        isAddingDummy = false;
+    };
+
+    let isRemovingDummy = $state(false);
+    const removeDummyReducer = useReducer(reducers.removeDummy);
+    const removeDummy = async () => {
+        isRemovingDummy = true;
+        await removeDummyReducer();
+        isRemovingDummy = false;
+    };
+
+    $inspect($lobbyIsReady);
+    $inspect(lobby);
     $effect(() => {
         if ($lobbyIsReady && lobby === null) {
             goto('/app');
@@ -172,7 +192,9 @@
 </script>
 
 <svelte:head>
-    <title>{participants[0].username}'s Lobby</title>
+    {#if participants[0]}
+        <title>{participants[0].username}'s Lobby</title>
+    {/if}
 </svelte:head>
 
 {#snippet actionButton(
@@ -294,6 +316,7 @@
                             <button
                                 class="btn preset-filled-primary-300-700 mt-4 w-full font-bold"
                                 onclick={joinLobby}
+                                disabled={lobby.amountPlayers >= 4}
                             >
                                 {#if lobbyButtonLoading}
                                     <LoaderCircle size={20} class="mr-2 animate-spin" />
@@ -432,23 +455,77 @@
                         </div>
                     {/each}
 
-                    {#each Array(Math.max(0, lobby.lobbySize - participants.length)) as _}
+                    <!-- Dummies -->
+                    {#each Array(lobby.dummies) as _}
                         <div
-                            class="border-surface-600-400/50 card flex items-center gap-5 border-2 border-dashed p-5 opacity-50"
+                            class="border-surface-600-400/50 card flex justify-between gap-5 border-2 p-5 opacity-75 max-md:flex-col md:items-center"
                         >
-                            <div
-                                class="bg-surface-300-700/50 flex h-14 w-14 items-center justify-center rounded-full"
-                            >
-                                <UserIcon size={28} class="opacity-20" />
+                            <div class="flex gap-5">
+                                <div
+                                    class="bg-surface-300-700/50 flex h-14 w-14 items-center justify-center rounded-full max-md:hidden"
+                                >
+                                    <UserIcon size={28} class="opacity-75" />
+                                </div>
+                                <div class="flex flex-col gap-1">
+                                    <span class="text-lg font-bold tracking-wide italic">
+                                        Dummy
+                                    </span>
+                                    <span class="text-xs tracking-widest uppercase">
+                                        Player from an external source
+                                    </span>
+                                </div>
                             </div>
-                            <div class="flex flex-col gap-1">
-                                <span class="text-lg font-bold tracking-wide italic">
-                                    Open Slot
-                                </span>
-                                <span class="text-xs tracking-widest uppercase">
-                                    Waiting for player...
-                                </span>
+
+                            {#if isHost}
+                                <button
+                                    class="btn md:btn-icon preset-filled-error-300-700 max-md:w-full"
+                                    title="Remove Dummy"
+                                    onclick={removeDummy}
+                                    disabled={isRemovingDummy}
+                                >
+                                    {#if isRemovingDummy}
+                                        <LoaderCircle size={20} class="mr-2 animate-spin" />
+                                    {:else}
+                                        <Minus />
+                                    {/if}
+                                </button>
+                            {/if}
+                        </div>
+                    {/each}
+
+                    {#each Array(Math.max(0, lobby.lobbySize - participants.length - lobby.dummies)) as _}
+                        <div
+                            class="border-surface-600-400/50 card flex justify-between gap-5 border-2 border-dashed p-5 opacity-50 max-md:flex-col md:items-center"
+                        >
+                            <div class="flex gap-5">
+                                <div
+                                    class="bg-surface-300-700/50 flex h-14 w-14 items-center justify-center rounded-full max-md:hidden"
+                                >
+                                    <UserIcon size={28} class="opacity-20" />
+                                </div>
+                                <div class="flex flex-col gap-1">
+                                    <span class="text-lg font-bold tracking-wide italic">
+                                        Open Slot
+                                    </span>
+                                    <span class="text-xs tracking-widest uppercase">
+                                        Waiting for player...
+                                    </span>
+                                </div>
                             </div>
+                            {#if isHost}
+                                <button
+                                    class="btn md:btn-icon preset-filled-success-300-700 max-md:w-full"
+                                    title="Add Dummy"
+                                    onclick={addDummy}
+                                    disabled={isAddingDummy}
+                                >
+                                    {#if isAddingDummy}
+                                        <LoaderCircle size={20} class="mr-2 animate-spin" />
+                                    {:else}
+                                        <Plus />
+                                    {/if}
+                                </button>
+                            {/if}
                         </div>
                     {/each}
                 </div>

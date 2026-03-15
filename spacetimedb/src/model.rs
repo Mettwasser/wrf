@@ -48,6 +48,9 @@ pub struct Lobby {
     pub rotation_type: RotationType,
 
     pub amount_players: u8,
+
+    #[default(0)]
+    pub dummies: u8,
 }
 
 #[spacetimedb::table(accessor = lobby_join, public)]

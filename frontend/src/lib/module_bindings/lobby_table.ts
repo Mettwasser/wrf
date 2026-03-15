@@ -31,4 +31,5 @@ export default __t.row({
     return RotationType.name("rotation_type");
   },
   amountPlayers: __t.u8().name("amount_players"),
+  dummies: __t.u8(),
 });

@@ -7,7 +7,7 @@
     <p class="text-sm sm:text-sm">
         © 2026 Warframe Relic Finder. Not affiliated with Digital Extremes.
     </p>
-    <div class="flex justify-center gap-6">
+    <div class="flex flex-wrap justify-center gap-6">
         <a
             href="https://discord.gg/VANqqkv8pp"
             target="_blank"

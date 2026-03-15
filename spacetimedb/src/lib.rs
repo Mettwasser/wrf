@@ -210,6 +210,7 @@ pub fn create_or_update_lobby(
             rotation_type,
             lobby_size,
             amount_players: 1,
+            dummies: 0,
         })
         .map_unique_violation(|_| "You already have an open lobby")?;
 
@@ -291,6 +292,37 @@ pub fn delete_my_account(ctx: &ReducerContext) -> Result<(), String> {
     if ctx.db.user().id().delete(ctx.sender()) {
         ctx.db.user_warframe_id().user_id().delete(ctx.sender());
         ctx.db.verify_timer().user_id().delete(ctx.sender());
+    }
+
+    Ok(())
+}
+
+#[spacetimedb::reducer]
+pub fn add_dummy(ctx: &ReducerContext) -> Result<(), String> {
+    if let Some(mut lobby) = ctx.db.lobby().host().find(ctx.sender())
+        && lobby.dummies < 3
+        && lobby.amount_players < 4
+    {
+        log::info!("User {} is adding a dummy", ctx.sender());
+        lobby.dummies += 1;
+        lobby.amount_players += 1;
+        ctx.db.lobby().host().update(lobby);
+    }
+
+    Ok(())
+}
+
+#[spacetimedb::reducer]
+pub fn remove_dummy(ctx: &ReducerContext) -> Result<(), String> {
+    if let Some(mut lobby) = ctx.db.lobby().host().find(ctx.sender())
+        && lobby.dummies > 0
+        // 1 because of the host themself
+        && lobby.amount_players > 1
+    {
+        log::info!("User {} is removing a dummy", ctx.sender());
+        lobby.dummies -= 1;
+        lobby.amount_players -= 1;
+        ctx.db.lobby().host().update(lobby);
     }
 
     Ok(())

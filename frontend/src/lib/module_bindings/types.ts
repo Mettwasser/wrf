@@ -32,6 +32,7 @@ export const Lobby = __t.object("Lobby", {
     return RotationType;
   },
   amountPlayers: __t.u8(),
+  dummies: __t.u8(),
 });
 export type Lobby = __Infer<typeof Lobby>;
 
