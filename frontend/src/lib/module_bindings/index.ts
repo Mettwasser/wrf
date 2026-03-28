@@ -54,6 +54,7 @@ import MeRow from "./me_table";
 import MyBansRow from "./my_bans_table";
 import MyVerifyTimerRow from "./my_verify_timer_table";
 import UserRow from "./user_table";
+import UserV2Row from "./user_v_2_table";
 import VerificationRow from "./verification_table";
 import WarframeIdRow from "./warframe_id_table";
 
@@ -101,6 +102,21 @@ const tablesSchema = __schema({
       { name: 'user_username_key', constraint: 'unique', columns: ['username'] },
     ],
   }, UserRow),
+  user_v2: __table({
+    name: 'user_v_2',
+    indexes: [
+      { name: 'id', algorithm: 'btree', columns: [
+        'id',
+      ] },
+      { name: 'username', algorithm: 'btree', columns: [
+        'username',
+      ] },
+    ],
+    constraints: [
+      { name: 'user_v_2_id_key', constraint: 'unique', columns: ['id'] },
+      { name: 'user_v_2_username_key', constraint: 'unique', columns: ['username'] },
+    ],
+  }, UserV2Row),
   me: __table({
     name: 'me',
     indexes: [

@@ -48,6 +48,19 @@ export const LobbyJoin = __t.object("LobbyJoin", {
 });
 export type LobbyJoin = __Infer<typeof LobbyJoin>;
 
+export const Permissions = __t.object("Permissions", {
+  bits: __t.u64(),
+});
+export type Permissions = __Infer<typeof Permissions>;
+
+export const Perms = __t.object("Perms", {
+  userId: __t.identity(),
+  get permissions() {
+    return Permissions;
+  },
+});
+export type Perms = __Infer<typeof Perms>;
+
 // The tagged union or sum type for the algebraic type `Region`.
 export const Region = __t.enum("Region", {
   As: __t.unit(),
@@ -93,6 +106,20 @@ export const User = __t.object("User", {
   isAdmin: __t.bool(),
 });
 export type User = __Infer<typeof User>;
+
+export const UserFlags = __t.object("UserFlags", {
+  bits: __t.u8(),
+});
+export type UserFlags = __Infer<typeof UserFlags>;
+
+export const UserV2 = __t.object("UserV2", {
+  id: __t.identity(),
+  username: __t.string(),
+  get flags() {
+    return UserFlags;
+  },
+});
+export type UserV2 = __Infer<typeof UserV2>;
 
 export const UserWarframeId = __t.object("UserWarframeId", {
   userId: __t.identity(),

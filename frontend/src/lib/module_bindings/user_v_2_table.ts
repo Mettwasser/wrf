@@ -15,7 +15,7 @@ import {
 
 
 export default __t.row({
-  id: __t.identity(),
+  id: __t.identity().primaryKey(),
   username: __t.string(),
   get flags() {
     return UserFlags;

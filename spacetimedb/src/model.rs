@@ -1,39 +1,53 @@
+#![allow(clippy::pedantic, deprecated)]
+
 use spacetimedb::{
     Identity,
     Timestamp,
 };
 
-use crate::types::{
-    Region,
-    RelicRefinement,
-    RotationType,
+use crate::{
+    permissions::Permissions,
+    types::{
+        Region,
+        RelicRefinement,
+        RotationType,
+    },
+    user_flags::UserFlags,
 };
+
+#[spacetimedb::table(accessor = user_id)]
+pub struct UserId {
+    #[primary_key]
+    pub identity: Identity,
+
+    #[unique]
+    #[auto_inc]
+    pub id: u32,
+}
 
 #[spacetimedb::table(accessor = user, public)]
 pub struct User {
     #[primary_key]
-    pub id: Identity,
+    pub id: u32,
 
     #[unique]
-    pub username: String,
-
-    pub verified: bool,
-
-    pub is_admin: bool,
+    pub name: String,
 }
 
-#[spacetimedb::table(accessor = user_warframe_id)]
-pub struct UserWarframeId {
+#[spacetimedb::table(accessor = user_details, public)]
+pub struct UserDetails {
     #[primary_key]
-    pub user_id: Identity,
+    pub user_id: u32,
 
-    pub warframe_id: String,
+    pub flags: UserFlags,
+
+    pub permissions: Permissions,
 }
 
 #[spacetimedb::table(accessor = lobby, public)]
 pub struct Lobby {
     #[primary_key]
-    pub host: Identity,
+    pub lobby_id: u32,
 
     pub created: Timestamp,
 
@@ -49,24 +63,29 @@ pub struct Lobby {
 
     pub amount_players: u8,
 
-    #[default(0)]
     pub dummies: u8,
 }
 
 #[spacetimedb::table(accessor = lobby_join, public)]
 pub struct LobbyJoin {
     #[primary_key]
-    pub user: Identity,
+    pub user_id: u32,
 
     #[index(btree)]
-    pub host: Identity,
+    pub lobby_id: u32,
 }
 
 #[spacetimedb::table(accessor = lobby_ban)]
 pub struct LobbyBan {
     #[index(btree)]
-    pub host: Identity,
+    pub lobby_id: u32,
 
     #[index(btree)]
-    pub user: Identity,
+    pub user_id: u32,
+}
+
+#[spacetimedb::table(accessor = allowlist)]
+pub struct AllowList {
+    #[primary_key]
+    pub id: Identity,
 }
