@@ -11,13 +11,16 @@ import {
 } from "spacetimedb";
 import {
   UserFlags,
+  Permissions,
 } from "./types";
 
 
 export default __t.row({
-  id: __t.identity().primaryKey(),
-  username: __t.string(),
+  userId: __t.u32().primaryKey().name("user_id"),
   get flags() {
     return UserFlags;
+  },
+  get permissions() {
+    return Permissions;
   },
 });

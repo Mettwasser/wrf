@@ -34,6 +34,7 @@ pub struct User {
     pub name: String,
 }
 
+#[derive(Clone, Copy)]
 #[spacetimedb::table(accessor = user_details, public)]
 pub struct UserDetails {
     #[primary_key]
@@ -42,6 +43,16 @@ pub struct UserDetails {
     pub flags: UserFlags,
 
     pub permissions: Permissions,
+}
+
+impl UserDetails {
+    pub fn with_default(user_id: u32) -> Self {
+        Self {
+            user_id,
+            flags: UserFlags::default(),
+            permissions: Permissions::default(),
+        }
+    }
 }
 
 #[spacetimedb::table(accessor = lobby, public)]

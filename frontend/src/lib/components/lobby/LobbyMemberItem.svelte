@@ -1,10 +1,11 @@
 <script lang="ts">
     import { User as UserIcon, Crown, LoaderCircle, UserMinus, Gavel } from 'lucide-svelte';
-    import { type User } from '$lib/module_bindings/types';
+    import { UserDetails, UserFlags, type User } from '$lib/module_bindings/types';
     import VerifiedBadge from '$lib/components/VerifiedBadge.svelte';
+    import type { FullUser } from '$lib/types/full_user';
 
     interface Props {
-        user: User;
+        user: FullUser;
         userIsHost: boolean;
         isMe: boolean;
         isHost: boolean;
@@ -14,16 +15,7 @@
         onBan: (user: User) => void;
     }
 
-    let {
-        user,
-        userIsHost,
-        isMe,
-        isHost,
-        isKicking,
-        isBanning,
-        onKick,
-        onBan,
-    }: Props = $props();
+    let { user, userIsHost, isMe, isHost, isKicking, isBanning, onKick, onBan }: Props = $props();
 </script>
 
 <div
@@ -42,7 +34,9 @@
                 <UserIcon size={28} class="opacity-80" />
             </div>
             {#if userIsHost}
-                <div class="bg-primary-600-400 absolute -top-1 -right-1 rounded-full p-1.5 shadow-lg">
+                <div
+                    class="bg-primary-600-400 absolute -top-1 -right-1 rounded-full p-1.5 shadow-lg"
+                >
                     <Crown size={14} class="text-surface-contrast-600-400" />
                 </div>
             {/if}
@@ -57,9 +51,9 @@
                           ? 'text-success-300/75'
                           : 'text-surface-100'}"
                 >
-                    {user.username}
+                    {user.name}
                 </span>
-                <VerifiedBadge {user} />
+                <VerifiedBadge flags={{ bits: user.flags }} />
             </div>
             <div class="flex items-center gap-2">
                 {#if userIsHost}

@@ -9,7 +9,7 @@ use spacetimedb::{
 };
 
 use crate::{
-    error::USER_NOT_CREATED,
+    error::Error,
     model::{
         allowlist,
         lobby,
@@ -73,7 +73,7 @@ fn has_perms(
         if db.allowlist().id().find(identity).is_some() {
             return Ok(true);
         }
-        return Err(USER_NOT_CREATED.to_owned());
+        return Err(Error::UserNotCreated.into());
     };
 
     let has_permission = db
@@ -89,7 +89,7 @@ pub trait UserCtx: Sized {
     fn user_id(self) -> Option<u32>;
 
     fn user_id_or_err(self) -> Result<u32, String> {
-        self.user_id().ok_or_else(|| USER_NOT_CREATED.to_owned())
+        self.user_id().ok_or_else(|| Error::UserNotCreated.into())
     }
 }
 
@@ -111,7 +111,7 @@ impl PermissionsCtx for &ReducerContext {
     fn require_permissions(self, permissions_to_check: Permissions) -> Result<(), String> {
         has_perms(self.sender(), permissions_to_check, &self.db)?
             .then_some(())
-            .ok_or_else(|| "Insufficient permissions".to_owned())
+            .ok_or_else(|| Error::InsufficientPermissions.into())
     }
 }
 
@@ -130,7 +130,7 @@ impl PermissionsCtx for &mut ProcedureContext {
         self.with_tx(|ctx| {
             has_perms(sender, permissions_to_check, &ctx.db)?
                 .then_some(())
-                .ok_or_else(|| "Insufficient permissions".to_owned())
+                .ok_or_else(|| Error::InsufficientPermissions.into())
         })
     }
 }

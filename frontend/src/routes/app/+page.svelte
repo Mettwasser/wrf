@@ -1,9 +1,9 @@
 <script lang="ts">
-    import { identity } from '$lib';
+    import { me as getMe } from '$lib';
     import LobbyCreateButton from '$lib/components/LobbyCreateButton.svelte';
     import LobbyItem from '$lib/components/LobbyItem.svelte';
     import { tables } from '$lib/module_bindings/index.js';
-    import type { Lobby, User } from '$lib/module_bindings/types.js';
+    import type { Lobby } from '$lib/module_bindings/types.js';
     import { Region, RelicRefinement } from '$lib/module_bindings/types.js';
     import type { LobbyAndUser } from '$lib/types/lobby_and_user.js';
     import { useTable } from 'spacetimedb/svelte';
@@ -11,21 +11,33 @@
     import FilterModal from '$lib/components/modals/FilterModal.svelte';
     import { Funnel, LoaderCircle, Search } from 'lucide-svelte';
     import { Debounced } from 'runed';
+    import type { FullUser } from '$lib/types/full_user.js';
+    import SpacetimeProvider from '$lib/components/SpacetimeProvider.svelte';
 
     let { data } = $props();
-    let relics = [...data.relics];
+
+    let relics = $derived(data.relics);
+
+    let me = getMe();
+    const myId = me.current?.user.id || 0;
 
     const [lobbies, lobbiesAreReady] = useTable(tables.lobby);
     const [users, usersAreReady] = useTable(
-        tables.user.leftSemijoin(tables.lobby, (user, lobby) => lobby.host.eq(user.id))
+        tables.user.leftSemijoin(tables.lobby, (user, lobby) => lobby.lobbyId.eq(user.id))
     );
     const [joinedLobby, joinedLobbyIsReady] = useTable(
-        tables.lobby_join.where((join) => join.user.eq(identity()))
+        tables.lobby_join.where((join) => join.userId.eq(myId))
     );
+    const [userDetails, userDetailsAreReady] = useTable(
+        tables.user_details.leftSemijoin(tables.lobby, (details, lobby) =>
+            details.userId.eq(lobby.lobbyId)
+        )
+    );
+
     const [myBans, myBansAreReady] = useTable(tables.my_bans);
 
     interface OptionalLobbyAndUser {
-        user: User | undefined;
+        user: FullUser | undefined;
         lobby: Lobby;
     }
 
@@ -51,9 +63,9 @@
                     );
                 const matchesRefinement =
                     refinementFilter.length === 0 ||
-                    refinementFilter.includes(lobby.refinement.tag as any);
+                    refinementFilter.includes(lobby.refinement.tag);
                 const matchesRegion =
-                    regionFilter.length === 0 || regionFilter.includes(lobby.region.tag as any);
+                    regionFilter.length === 0 || regionFilter.includes(lobby.region.tag);
 
                 const matchesRotation =
                     only2A2B === undefined ||
@@ -66,20 +78,29 @@
                     matchesRefinement &&
                     matchesRegion &&
                     matchesRotation &&
-                    !$myBans.find((ban) => ban.host.equals(lobby.host))
+                    !$myBans.find((ban) => ban.lobbyId === lobby.lobbyId)
                 );
             })
-            .map((lobby) => ({
-                lobby,
-                user: $users.find((u) => u.id.equals(lobby.host)),
-            }))
+            .map((lobby) => {
+                let user = $users.find((u) => u.id === lobby.lobbyId)!;
+                let details = $userDetails.find((d) => d.userId === lobby.lobbyId)!;
+                return {
+                    lobby,
+                    user: {
+                        id: user.id,
+                        flags: details.flags.bits,
+                        name: user.name,
+                        permissions: details.permissions.bits,
+                    },
+                };
+            })
     );
 
     const myLobby: OptionalLobbyAndUser | undefined | null = $derived(
-        !$joinedLobbyIsReady
+        !($joinedLobbyIsReady && $userDetailsAreReady)
             ? undefined
             : $joinedLobby[0]
-              ? allLobbiesWithUsers.find((lu) => lu.lobby.host.equals($joinedLobby[0].host))
+              ? allLobbiesWithUsers.find((lu) => lu.lobby.lobbyId === $joinedLobby[0].lobbyId)
               : null
     );
 
@@ -88,7 +109,7 @@
             ? []
             : myLobby === null
               ? allLobbiesWithUsers
-              : allLobbiesWithUsers.filter((lu) => !lu.lobby.host.equals(myLobby.lobby.host))
+              : allLobbiesWithUsers.filter((lu) => lu.lobby.lobbyId !== myLobby.lobby.lobbyId)
     );
 
     let activeFilterCount = $derived(

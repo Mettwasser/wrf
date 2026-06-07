@@ -12,6 +12,7 @@ use spacetimedb::{
 };
 
 use crate::{
+    error::Error,
     model::{
         user,
         user_details,
@@ -112,15 +113,16 @@ pub fn verify(ctx: &mut ProcedureContext, entry: VerifyTimer) -> Result<(), Stri
             }
 
             log::error!("Warframe User with ID {wf_id} not found");
-            return Err(format!("Warframe User with ID {wf_id} not found"));
+            return Err(Error::WarframeUserNotFound(wf_id).into());
         }
         Err(e) => {
             if !limit_reached(&entry) {
                 retry_in(RETRY_OFFSET_TIME, ctx, entry);
             }
 
-            log::error!("{e}");
-            return Err(e.to_string());
+            let err = e.to_string();
+            log::error!("{err}");
+            return Err(Error::Other(err).into());
         }
     };
 
@@ -142,8 +144,9 @@ pub fn verify(ctx: &mut ProcedureContext, entry: VerifyTimer) -> Result<(), Stri
                 retry_in(RETRY_OFFSET_TIME, ctx, entry);
             }
 
-            log::error!("{e}");
-            return Err(e.to_string());
+            let err = e.to_string();
+            log::error!("{err}");
+            return Err(Error::Other(err).into());
         }
     };
 

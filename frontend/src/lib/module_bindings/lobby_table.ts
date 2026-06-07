@@ -17,7 +17,7 @@ import {
 
 
 export default __t.row({
-  host: __t.identity().primaryKey(),
+  lobbyId: __t.u32().primaryKey().name("lobby_id"),
   created: __t.timestamp(),
   lobbySize: __t.u8().name("lobby_size"),
   get region() {

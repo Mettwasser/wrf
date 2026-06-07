@@ -13,7 +13,8 @@ import {
 export default __t.row({
   scheduledId: __t.u64().name("scheduled_id"),
   scheduledAt: __t.scheduleAt().name("scheduled_at"),
-  userId: __t.identity().name("user_id"),
+  userId: __t.u32().name("user_id"),
+  warframeId: __t.string().name("warframe_id"),
   code: __t.string(),
   attempts: __t.u8(),
 });

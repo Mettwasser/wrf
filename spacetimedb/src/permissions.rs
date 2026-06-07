@@ -7,6 +7,8 @@ pub enum Permissions {
     CREATE_LOBBY,
     JOIN_LOBBY,
 
+    SET_USERNAME,
+
     MANAGE_USER_FLAGS,
 
     MANAGE_MODERATOR,
@@ -17,7 +19,9 @@ pub enum Permissions {
 mod roles {
     use crate::permissions::Permissions;
 
-    pub const USER_ROLE: Permissions = Permissions::CREATE_LOBBY.or(Permissions::JOIN_LOBBY);
+    pub const USER_ROLE: Permissions = Permissions::CREATE_LOBBY
+        .or(Permissions::JOIN_LOBBY)
+        .or(Permissions::SET_USERNAME);
 
     pub const MOD_ROLE: Permissions = USER_ROLE.or(Permissions::MANAGE_USER_FLAGS);
 
@@ -35,8 +39,7 @@ impl Permissions {
     #[must_use]
     pub fn can_promote(&self, target_role: Role) -> bool {
         match target_role {
-            Role::User => true, // Reverting to User is always allowed
-            Role::Moderator => self.contains(Self::MANAGE_MODERATOR),
+            Role::User | Role::Moderator => self.contains(Self::MANAGE_MODERATOR),
             Role::Admin => self.contains(Self::MANAGE_ADMIN),
             Role::Owner => false, // No one can promote to Owner via this system
         }

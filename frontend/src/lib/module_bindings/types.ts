@@ -10,15 +10,20 @@ import {
   type Infer as __Infer,
 } from "spacetimedb";
 
+export const AllowList = __t.object("AllowList", {
+  id: __t.identity(),
+});
+export type AllowList = __Infer<typeof AllowList>;
+
 export const DisconnectTimer = __t.object("DisconnectTimer", {
   scheduledId: __t.u64(),
   scheduledAt: __t.scheduleAt(),
-  user: __t.identity(),
+  userId: __t.u32(),
 });
 export type DisconnectTimer = __Infer<typeof DisconnectTimer>;
 
 export const Lobby = __t.object("Lobby", {
-  host: __t.identity(),
+  lobbyId: __t.u32(),
   created: __t.timestamp(),
   lobbySize: __t.u8(),
   get region() {
@@ -37,29 +42,38 @@ export const Lobby = __t.object("Lobby", {
 export type Lobby = __Infer<typeof Lobby>;
 
 export const LobbyBan = __t.object("LobbyBan", {
-  host: __t.identity(),
-  user: __t.identity(),
+  lobbyId: __t.u32(),
+  userId: __t.u32(),
 });
 export type LobbyBan = __Infer<typeof LobbyBan>;
 
 export const LobbyJoin = __t.object("LobbyJoin", {
-  user: __t.identity(),
-  host: __t.identity(),
+  userId: __t.u32(),
+  lobbyId: __t.u32(),
 });
 export type LobbyJoin = __Infer<typeof LobbyJoin>;
 
-export const Permissions = __t.object("Permissions", {
-  bits: __t.u64(),
-});
-export type Permissions = __Infer<typeof Permissions>;
-
-export const Perms = __t.object("Perms", {
-  userId: __t.identity(),
-  get permissions() {
-    return Permissions;
+export const Me = __t.object("Me", {
+  get user() {
+    return User;
+  },
+  get details() {
+    return UserDetails;
   },
 });
-export type Perms = __Infer<typeof Perms>;
+export type Me = __Infer<typeof Me>;
+
+export const OldUser = __t.object("OldUser", {
+  id: __t.identity(),
+  username: __t.string(),
+  verified: __t.bool(),
+});
+export type OldUser = __Infer<typeof OldUser>;
+
+export const Permissions = __t.object("Permissions", {
+  bits: __t.u128(),
+});
+export type Permissions = __Infer<typeof Permissions>;
 
 // The tagged union or sum type for the algebraic type `Region`.
 export const Region = __t.enum("Region", {
@@ -100,37 +114,38 @@ export const RotationType = __t.enum("RotationType", {
 export type RotationType = __Infer<typeof RotationType>;
 
 export const User = __t.object("User", {
-  id: __t.identity(),
-  username: __t.string(),
-  verified: __t.bool(),
-  isAdmin: __t.bool(),
+  id: __t.u32(),
+  name: __t.string(),
 });
 export type User = __Infer<typeof User>;
 
-export const UserFlags = __t.object("UserFlags", {
-  bits: __t.u8(),
-});
-export type UserFlags = __Infer<typeof UserFlags>;
-
-export const UserV2 = __t.object("UserV2", {
-  id: __t.identity(),
-  username: __t.string(),
+export const UserDetails = __t.object("UserDetails", {
+  userId: __t.u32(),
   get flags() {
     return UserFlags;
   },
+  get permissions() {
+    return Permissions;
+  },
 });
-export type UserV2 = __Infer<typeof UserV2>;
+export type UserDetails = __Infer<typeof UserDetails>;
 
-export const UserWarframeId = __t.object("UserWarframeId", {
-  userId: __t.identity(),
-  warframeId: __t.string(),
+export const UserFlags = __t.object("UserFlags", {
+  bits: __t.u64(),
 });
-export type UserWarframeId = __Infer<typeof UserWarframeId>;
+export type UserFlags = __Infer<typeof UserFlags>;
+
+export const UserId = __t.object("UserId", {
+  identity: __t.identity(),
+  id: __t.u32(),
+});
+export type UserId = __Infer<typeof UserId>;
 
 export const VerifyTimer = __t.object("VerifyTimer", {
   scheduledId: __t.u64(),
   scheduledAt: __t.scheduleAt(),
-  userId: __t.identity(),
+  userId: __t.u32(),
+  warframeId: __t.string(),
   code: __t.string(),
   attempts: __t.u8(),
 });

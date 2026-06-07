@@ -8,13 +8,14 @@
         text: Snippet | string;
         placement?: Placement | undefined;
         options?: Omit<TooltipRootProps, 'positioning'>;
+        class?: string;
     }
 
-    let { children, text, placement, options }: Props = $props();
+    let { children, text, placement, options, class: className = '' }: Props = $props();
 </script>
 
 <Tooltip positioning={{ placement: placement }} {...options}>
-    <Tooltip.Trigger onclick={(e) => e.preventDefault()}>
+    <Tooltip.Trigger class={className} onclick={(e) => e.preventDefault()}>
         {@render children()}
     </Tooltip.Trigger>
     <Portal>

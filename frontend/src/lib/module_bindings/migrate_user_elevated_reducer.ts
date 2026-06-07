@@ -10,7 +10,12 @@ import {
   type Infer as __Infer,
 } from "spacetimedb";
 
-export default __t.row({
-  userId: __t.identity().name("user_id"),
-  warframeId: __t.string().name("warframe_id"),
-});
+import {
+  OldUser,
+} from "./types";
+
+export default {
+  get user() {
+    return OldUser;
+  },
+};

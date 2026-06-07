@@ -23,7 +23,7 @@
     const is2A2B = $derived(lobbyAndUser.lobby.rotationType.tag === RotationType.TwoATwoB.tag);
 
     const onclick = () => {
-        goto(`/app/lobby/${lobbyAndUser.lobby.host.toHexString()}`);
+        goto(`/app/lobby/${lobbyAndUser.lobby.lobbyId}`);
     };
 </script>
 
@@ -55,8 +55,8 @@
 
         <div class="flex flex-col items-start gap-2">
             <div class="flex items-center gap-2 text-lg">
-                <strong>{lobbyAndUser.user.username}</strong>
-                <VerifiedBadge user={lobbyAndUser.user} />
+                <strong>{lobbyAndUser.user.name}</strong>
+                <VerifiedBadge flags={{ bits: lobbyAndUser.user.flags }} />
             </div>
             <div class="flex gap-2">
                 <div class="card preset-outlined-surface-300-700 flex w-fit items-center p-1">

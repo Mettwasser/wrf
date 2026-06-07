@@ -2,38 +2,48 @@
     import type { PageProps } from './$types';
     import { useReducer, useTable } from 'spacetimedb/svelte';
     import { reducers, tables } from '$lib/module_bindings';
-    import { Identity, SenderError } from 'spacetimedb';
+    import { SenderError } from 'spacetimedb';
     import { goto } from '$app/navigation';
     import { User as UserIcon, Clipboard, ArrowLeft } from 'lucide-svelte';
     import { getRelicImageUrl } from '$lib/utils/relic_image';
     import { getRefinementTextColor } from '$lib/utils/refinement_color';
     import { User } from '$lib/module_bindings/types';
-    import { identity, toaster } from '$lib';
+    import { toaster, me as getMe } from '$lib';
     import LobbyInfoCard from '$lib/components/lobby/LobbyInfoCard.svelte';
     import LobbyMemberItem from '$lib/components/lobby/LobbyMemberItem.svelte';
     import LobbyDummyItem from '$lib/components/lobby/LobbyDummyItem.svelte';
     import LobbyOpenSlot from '$lib/components/lobby/LobbyOpenSlot.svelte';
+    import type { FullUser } from '$lib/types/full_user';
 
     let { params }: PageProps = $props();
 
-    const lobbyHostId = Identity.fromString(params.id);
-    const myIdentity = identity();
+    const lobbyHostId = Number(params.id);
 
     const [lobbyTable, lobbyIsReady] = useTable(
-        tables.lobby.where((lobby) => lobby.host.eq(lobbyHostId))
+        tables.lobby.where((lobby) => lobby.lobbyId.eq(lobbyHostId))
     );
     const lobby = $derived($lobbyTable[0] ?? null);
 
     const [myBans] = useTable(tables.my_bans);
 
+    let me = getMe();
+
     const [joinedUsers, joinedUsersReady] = useTable(
         tables.lobby_join
-            .where((join) => join.host.eq(lobbyHostId))
-            .rightSemijoin(tables.user, (join, user) => user.id.eq(join.user))
+            .where((join) => join.lobbyId.eq(lobbyHostId))
+            .rightSemijoin(tables.user, (join, user) => user.id.eq(join.userId))
     );
 
-    function moveHostToTop(userList: User[]): User[] {
-        const hostIndex = userList.findIndex((u) => u.id.equals(lobbyHostId));
+    const [joinedUserDetails, joinedUserDetailsReady] = useTable(
+        tables.lobby_join
+            .where((join) => join.lobbyId.eq(lobbyHostId))
+            .rightSemijoin(tables.user_details, (join, userDetail) =>
+                userDetail.userId.eq(join.userId)
+            )
+    );
+
+    function moveHostToTop(userList: FullUser[]): FullUser[] {
+        const hostIndex = userList.findIndex((u) => u.id === lobbyHostId);
 
         if (hostIndex > 0) {
             const [host] = userList.splice(hostIndex, 1);
@@ -42,10 +52,23 @@
         return userList;
     }
 
-    let participants = $derived(moveHostToTop([...$joinedUsers]));
+    let participants: FullUser[] = $derived(
+        moveHostToTop(
+            $joinedUsers.map((user) => {
+                const details = $joinedUserDetails.find((d) => d.userId === user.id)!;
 
-    const isHost = $derived(myIdentity.equals(lobbyHostId));
-    const isJoined = $derived($joinedUsers.some((user) => user.id.equals(myIdentity)));
+                return {
+                    id: user.id,
+                    name: user.name,
+                    flags: details.flags.bits,
+                    permissions: details.permissions.bits,
+                };
+            })
+        )
+    );
+
+    const isHost = $derived(me.current?.user.id === lobbyHostId);
+    const isJoined = $derived($joinedUsers.some((user) => user.id === me.current?.user.id));
 
     const relicUrl = $derived(lobby ? getRelicImageUrl(lobby.activity, lobby.refinement) : '');
     const refinementTextColor = $derived(lobby ? getRefinementTextColor(lobby.refinement) : '');
@@ -86,7 +109,7 @@
     });
 
     $effect(() => {
-        const isBanned = $myBans.some((row) => row.host.equals(lobbyHostId));
+        const isBanned = $myBans.some((row) => row.lobbyId === lobbyHostId);
         if (
             wasJoined &&
             joinedUsersReady &&
@@ -119,7 +142,7 @@
     };
 
     const copyLobbyId = () => {
-        navigator.clipboard.writeText(lobbyHostId.toHexString());
+        navigator.clipboard.writeText(lobbyHostId.toString());
         toaster.create({
             title: 'Copied!',
             type: 'success',
@@ -133,7 +156,7 @@
         await withToasterError(() => kickReducer({ user: user.id }));
         toaster.create({
             title: 'Player Kicked',
-            description: `You kicked ${user.username} from your Lobby`,
+            description: `You kicked ${user.name} from your Lobby`,
             type: 'info',
         });
         isKicking = false;
@@ -146,7 +169,7 @@
         await withToasterError(() => banReducer({ user: user.id }));
         toaster.create({
             title: 'Player Banned',
-            description: `You banned ${user.username} from your Lobby`,
+            description: `You banned ${user.name} from your Lobby`,
             type: 'info',
         });
         isBanning = false;
@@ -177,7 +200,7 @@
 
 <svelte:head>
     {#if participants[0]}
-        <title>{participants[0].username}'s Lobby</title>
+        <title>{participants[0].name}'s Lobby</title>
     {/if}
 </svelte:head>
 
@@ -194,7 +217,7 @@
         </button>
     </div>
 
-    {#if lobby && joinedUsersReady}
+    {#if lobby && $joinedUsersReady && $joinedUserDetailsReady}
         <div class="grid w-full grid-cols-1 gap-16 lg:grid-cols-4 lg:gap-0">
             <LobbyInfoCard
                 {lobby}
@@ -238,8 +261,8 @@
                     {#each participants as user (user.id)}
                         <LobbyMemberItem
                             {user}
-                            userIsHost={user.id.equals(lobbyHostId)}
-                            isMe={user.id.equals(myIdentity)}
+                            userIsHost={user.id === lobbyHostId}
+                            isMe={user.id === me.current?.user.id}
                             {isHost}
                             {isKicking}
                             {isBanning}

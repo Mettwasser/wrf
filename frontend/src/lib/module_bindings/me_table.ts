@@ -10,14 +10,16 @@ import {
   type Infer as __Infer,
 } from "spacetimedb";
 import {
-  UserFlags,
+  User,
+  UserDetails,
 } from "./types";
 
 
 export default __t.row({
-  id: __t.identity(),
-  username: __t.string(),
-  get flags() {
-    return UserFlags;
+  get user() {
+    return User;
+  },
+  get details() {
+    return UserDetails;
   },
 });

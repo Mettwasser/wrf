@@ -15,16 +15,16 @@
     import { useReducer, useTable } from 'spacetimedb/svelte';
     import { reducers, tables } from '$lib/module_bindings';
     import { group } from '$lib/utils/group.svelte';
-    import {
-        Region,
-        VerifyTimer,
-        UserWarframeId,
-        UserV2,
-        Permissions,
-    } from '$lib/module_bindings/types';
+    import { Region, VerifyTimer, Permissions, User, Me } from '$lib/module_bindings/types';
     import { Accordion, Dialog, Portal } from '@skeletonlabs/skeleton-svelte';
     import { slide } from 'svelte/transition';
-    import { identity as getIdentity, makeToComboboxData, preferredRegion, toaster } from '$lib';
+    import {
+        identity as getIdentity,
+        makeToComboboxData,
+        me as getMe,
+        preferredRegion,
+        toaster,
+    } from '$lib';
     import { EditableInput, CopyInput } from '$lib/components';
     import ComboboxInput from '$lib/components/inputs/ComboboxInput.svelte';
     import Countdown from '$lib/components/Countdown.svelte';
@@ -33,19 +33,14 @@
     import { Bitmask, UserFlags } from '$lib/utils/bitmask';
 
     let clerkCtx = useClerkContext();
-    const identity = getIdentity();
+    let identity = getIdentity();
 
-    // subscriptions
-    const [meTable] = useTable(tables.me);
-    let me: UserV2 | null = $derived($meTable[0] ?? null);
-
-    let [warframeIdTable, warframeIdIsReady] = useTable(tables.warframe_id);
-    let fetchedWarframeId: UserWarframeId | null = $derived($warframeIdTable[0] ?? null);
+    let me = getMe();
 
     let [verifyTimerTable, verifyTimerIsReady] = useTable(tables.my_verify_timer);
     let verifyTimer: VerifyTimer | null = $derived($verifyTimerTable[0] ?? null);
 
-    const initialUsername = $derived(me?.username ?? '');
+    const initialUsername = $derived(me.current?.user.name ?? '');
 
     // username edit
     let username = group(() => initialUsername);
@@ -63,6 +58,7 @@
                     type: 'error',
                 });
                 username.value = initialUsername;
+                username.isSaving = false;
             })
             .finally(username.toggleEditing);
 
@@ -73,13 +69,16 @@
 
     const setWarframeId = useReducer(reducers.setWarframeId);
 
-    const initialWarframeId = $derived(fetchedWarframeId?.warframeId ?? '');
+    const initialWarframeId = $derived(verifyTimer?.warframeId ?? '');
     let warframeId = group(() => initialWarframeId);
 
     const saveWarframeId = () =>
         warframeId
-            .withSaving(() => setWarframeId({ id: warframeId.value }))
-            .catch(console.error)
+            .withSaving(() => setWarframeId({ warframeId: warframeId.value }))
+            .catch((e) => {
+                warframeId.isSaving = false;
+                console.error(e);
+            })
             .finally(warframeId.toggleEditing);
 
     const cancelWarframeId = () => {
@@ -156,16 +155,16 @@
     </Section>
 
     <Section title="Verification">
-        {#if !me}
+        {#if !me.current}
             <div class="flex items-center gap-2">
                 <span class="font-bold">Please enter your warframe username first.</span>
             </div>
-        {:else if Bitmask.has(me.flags.bits, UserFlags.Verified)}
+        {:else if Bitmask.has(me.current.details.flags.bits, UserFlags.Verified)}
             <div class="flex items-center gap-2">
                 <BadgeCheck class="text-success-500 size-10" />
                 <span class="text-success-500 text-2xl font-bold">Verified</span>
             </div>
-        {:else if $warframeIdIsReady && $verifyTimerIsReady}
+        {:else if $verifyTimerIsReady}
             <div class="flex w-full flex-col gap-4">
                 <EditableInput
                     label="Warframe User ID"
@@ -178,11 +177,7 @@
                 <CopyInput
                     label="Code"
                     icon={Hash}
-                    value={verifyTimer?.code
-                        ? verifyTimer.code
-                        : $warframeIdIsReady
-                          ? 'Enter Warframe User ID first...'
-                          : 'Loading...'}
+                    value={verifyTimer?.code ? verifyTimer.code : 'Enter Warframe User ID first...'}
                 />
 
                 {#if verifyTimer}

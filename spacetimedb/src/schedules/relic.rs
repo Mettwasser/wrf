@@ -6,6 +6,8 @@ use spacetimedb::{
     Table,
 };
 
+use crate::error::Error;
+
 #[derive(Debug, Deserialize)]
 pub struct ExportRelic {
     pub category: String,
@@ -34,8 +36,9 @@ pub fn refresh(ctx: &mut ProcedureContext, _timer: RelicTimer) -> Result<(), Str
     {
         Ok(resp) => resp.into_body().into_string_lossy(),
         Err(e) => {
-            log::error!("{e}");
-            return Err(e.to_string())
+            let err = e.to_string();
+            log::error!("{err}");
+            return Err(Error::Other(err).into());
         }
     };
 
@@ -46,8 +49,9 @@ pub fn refresh(ctx: &mut ProcedureContext, _timer: RelicTimer) -> Result<(), Str
             .collect::<Vec<_>>(),
 
         Err(e) => {
-            log::error!("{e}");
-            return Err(e.to_string());
+            let err = e.to_string();
+            log::error!("{err}");
+            return Err(Error::Other(err).into());
         }
     };
 

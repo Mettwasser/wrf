@@ -11,5 +11,5 @@ import {
 } from "spacetimedb";
 
 export default {
-  lobbyId: __t.identity(),
+  lobbyId: __t.u32(),
 };

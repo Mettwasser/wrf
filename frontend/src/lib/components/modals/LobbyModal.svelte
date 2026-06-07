@@ -94,7 +94,7 @@
             if (e instanceof SenderError) {
                 toaster.create({
                     title: 'Error',
-                    description: e.message,
+                    description: `${e.message}. Have you already created a user?`,
                     type: 'error',
                 });
             }

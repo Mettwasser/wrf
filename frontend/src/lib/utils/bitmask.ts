@@ -14,7 +14,10 @@ export enum Permissions {
 }
 
 export const Bitmask = {
-    has: (userPerms: number, required: number): boolean => {
-        return (userPerms & required) === required;
+    has: (userPerms: number | bigint, required: number | bigint): boolean => {
+        const perms = BigInt(userPerms);
+        const req = BigInt(required);
+
+        return (perms & req) === req;
     },
 };

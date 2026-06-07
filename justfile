@@ -3,6 +3,7 @@
 ##################################
 
 generate:
+    spacetime generate --lang rust --out-dir migration_runner/src/module_bindings --module-path spacetimedb --include-private
     spacetime generate --lang typescript --out-dir frontend/src/lib/module_bindings --module-path spacetimedb
 
 dev *args:

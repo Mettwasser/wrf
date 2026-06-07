@@ -11,5 +11,5 @@ import {
 } from "spacetimedb";
 
 export default {
-  id: __t.string(),
+  warframeId: __t.string(),
 };

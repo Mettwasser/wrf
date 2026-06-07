@@ -1,8 +1,13 @@
 <script lang="ts">
-    import type { User } from '$lib/module_bindings/types';
+    import { UserFlags } from '$lib/module_bindings/types';
+    import { Bitmask, UserFlags as UserFlagsEnum } from '$lib/utils/bitmask';
     import { BadgeCheck } from 'lucide-svelte';
 
-    let { user }: { user: User } = $props();
+    let { flags }: { flags: UserFlags } = $props();
 </script>
 
-<BadgeCheck class="text-success-500 inline size-6 {user.verified ? '' : 'invisible'}" />
+<BadgeCheck
+    class="text-success-500 inline size-6 {Bitmask.has(flags.bits, UserFlagsEnum.Verified)
+        ? ''
+        : 'invisible'}"
+/>

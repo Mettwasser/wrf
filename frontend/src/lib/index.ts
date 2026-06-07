@@ -5,7 +5,7 @@ import type { Identity } from 'spacetimedb';
 
 import { createToaster } from '@skeletonlabs/skeleton-svelte';
 import type { ComboboxData } from './types/combobox_data';
-import type { Region } from './module_bindings/types';
+import type { Me, Region } from './module_bindings/types';
 
 export const theme = new PersistedState<string>('theme', 'cerberus');
 // @ts-ignore
@@ -30,6 +30,11 @@ export function conn(): DbConnection {
 export function identity(): Identity {
     // @ts-ignore
     return getContext('ident').current;
+}
+
+export function me(): { current: Me | null } {
+    // @ts-ignore
+    return getContext('me');
 }
 
 export const useId = (() => {

@@ -11,6 +11,6 @@ import {
 } from "spacetimedb";
 
 export default __t.row({
-  user: __t.identity().primaryKey(),
-  host: __t.identity(),
+  userId: __t.u32().primaryKey().name("user_id"),
+  lobbyId: __t.u32().name("lobby_id"),
 });

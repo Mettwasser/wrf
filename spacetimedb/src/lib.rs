@@ -13,6 +13,7 @@ use spacetimedb::{
     Identity,
     ReducerContext,
     ScheduleAt,
+    SpacetimeType,
     StdbRng,
     Table,
     TimeDuration,
@@ -23,12 +24,15 @@ use spacetimedb::{
 };
 
 use crate::{
+    error::Error,
     model::{
+        AllowList,
         Lobby,
         LobbyBan,
         LobbyJoin,
         User,
         UserDetails,
+        UserId,
         allowlist,
         lobby,
         lobby_ban,
@@ -76,6 +80,8 @@ fn generate_random_code(rng: &StdbRng) -> String {
         .collect()
 }
 
+/// # Panics
+/// Never, as
 #[spacetimedb::reducer(init)]
 pub fn init(ctx: &ReducerContext) -> Result<(), String> {
     log::info!("Initializing...");
@@ -85,7 +91,7 @@ pub fn init(ctx: &ReducerContext) -> Result<(), String> {
         .relic_timer()
         .scheduled_id()
         .try_insert_or_update(RelicTimer {
-            scheduled_id: 1,
+            scheduled_id: 0,
             scheduled_at: ScheduleAt::Interval(TimeDuration::from_duration(Duration::from_hours(
                 72,
             ))),
@@ -95,11 +101,16 @@ pub fn init(ctx: &ReducerContext) -> Result<(), String> {
         .relic_timer()
         .scheduled_id()
         .try_insert_or_update(RelicTimer {
-            scheduled_id: 2,
+            scheduled_id: 0,
             scheduled_at: ScheduleAt::Time(
                 ctx.timestamp + TimeDuration::from_duration(Duration::from_secs(30)),
             ),
         })?;
+
+    ctx.db.allowlist().insert(AllowList {
+        id: Identity::from_hex("c200559e7f4e204caf92afd416b1f1f883ed23983ea5a7de21b6c7a17a2af88b")
+            .unwrap(),
+    });
 
     log::info!("Initialization done!");
 
@@ -115,11 +126,16 @@ pub fn identity_connected(ctx: &ReducerContext) -> Result<(), String> {
         .jwt()
         .map(|claims| (claims.subject(), claims.identity()))
     else {
-        return Err("Client connected without JWT".to_string());
+        return Err(Error::MissingJwt.into());
     };
 
     if let Some(id) = ctx.user_id() {
         ctx.db.disconnect_timer().user_id().delete(id);
+    } else {
+        ctx.db.user_id().insert(UserId {
+            identity: ctx.sender(),
+            id: 0,
+        });
     }
 
     log::info!("subject: {subject}, identity: {identity}");
@@ -148,14 +164,37 @@ pub fn identity_disconnected(ctx: &ReducerContext) -> Result<(), String> {
 pub fn set_username(ctx: &ReducerContext, name: String) -> Result<(), String> {
     log::info!("{} is trying to set their username to {name}", ctx.sender());
 
+    if !(4..=24).contains(&name.len())
+        || !name
+            .chars()
+            .all(|c| c.is_alphanumeric() || ['.', ',', '-', '_'].contains(&c))
+    {
+        log::error!("{name} does not meet the requirements");
+        return Err(Error::InvalidUsername.into());
+    }
+
+    let user_id = ctx.user_id().unwrap_or(0);
+
     ctx.db
         .user()
         .id()
-        .try_insert_or_update(User {
-            id: ctx.user_id().unwrap_or(0),
-            name,
-        })
-        .map_unique_violation(|_| "username already taken")?;
+        .try_insert_or_update(User { id: user_id, name })
+        .map_unique_violation(|_| Error::UsernameTaken)?;
+
+    let existing_details = ctx.db.user_details().user_id().find(user_id);
+
+    ctx.db
+        .user_details()
+        .user_id()
+        .try_insert_or_update(UserDetails {
+            user_id,
+            flags: existing_details.map_or(UserFlags::default(), |details| details.flags)
+                & !UserFlags::Verified,
+            permissions: existing_details
+                .map_or(Permissions::default(), |details| details.permissions),
+        })?;
+
+    log::info!("{} successfully set their username", ctx.sender());
 
     Ok(())
 }
@@ -191,15 +230,15 @@ pub fn create_or_update_lobby(
     ctx.require_permissions(Permissions::CREATE_LOBBY)?;
 
     let Some(user_id) = ctx.user_id() else {
-        return Err(error::USER_NOT_CREATED.to_owned());
+        return Err(Error::UserNotCreated.into());
     };
 
     if ctx.db.relic().relic().find(&activity).is_none() {
-        return Err(error::INVALID_RELIC.to_owned());
+        return Err(Error::InvalidRelic.into());
     }
 
     if !(2..=4).contains(&lobby_size) {
-        return Err(error::INVALID_LOBBY_SIZE.to_owned());
+        return Err(Error::InvalidLobbySize.into());
     }
 
     ctx.db
@@ -216,7 +255,7 @@ pub fn create_or_update_lobby(
             amount_players: 1,
             dummies: 0,
         })
-        .map_unique_violation(|_| error::LOBBY_ALREADY_OPENED)?;
+        .map_unique_violation(|_| Error::LobbyAlreadyOpened)?;
 
     ctx.db
         .lobby_join()
@@ -224,7 +263,7 @@ pub fn create_or_update_lobby(
             lobby_id: user_id,
             user_id,
         })
-        .map_unique_violation(|_| error::CANT_JOIN)?;
+        .map_unique_violation(|_| Error::CantJoinWhileHosting)?;
 
     Ok(())
 }
@@ -234,27 +273,27 @@ pub fn join_lobby(ctx: &ReducerContext, lobby_id: u32) -> Result<(), String> {
     ctx.require_permissions(Permissions::JOIN_LOBBY)?;
 
     let Some(user_id) = ctx.user_id() else {
-        return Err(error::USER_NOT_CREATED.to_owned());
+        return Err(Error::UserNotCreated.into());
     };
 
     let Some(mut lobby) = ctx.db.lobby().lobby_id().find(lobby_id) else {
-        return Err("Lobby not found".to_owned());
+        return Err(Error::LobbyNotFound.into());
     };
 
     let mut lobbies_user_is_banned_in = ctx.db.lobby_ban().user_id().filter(user_id);
 
     if lobbies_user_is_banned_in.any(|lobby_ban| lobby_ban.lobby_id == lobby_id) {
-        return Err("You are banned in this lobby".to_owned());
+        return Err(Error::BannedFromLobby.into());
     }
 
     if lobby.amount_players == 4 {
-        return Err("Lobby is full".to_owned());
+        return Err(Error::LobbyFull.into());
     }
 
     ctx.db
         .lobby_join()
         .try_insert(LobbyJoin { lobby_id, user_id })
-        .map_unique_violation(|_| "You can't join multiple lobbies")?;
+        .map_unique_violation(|_| Error::JoinMultipleLobbies)?;
 
     lobby.amount_players += 1;
 
@@ -348,18 +387,17 @@ pub fn remove_dummy(ctx: &ReducerContext) -> Result<(), String> {
     Ok(())
 }
 
-// #[spacetimedb::reducer]
-// pub fn edit_user_flags(
-//     ctx: &ReducerContext,
-//     target: Identity,
-//     flags: UserFlags,
-// ) -> Result<(), String> {
-//     ctx.require_permissions(Permissions::MANAGE_USER_FLAGS)?;
+#[spacetimedb::reducer]
+pub fn edit_user_flags(ctx: &ReducerContext, target: u32, flags: UserFlags) -> Result<(), String> {
+    ctx.require_permissions(Permissions::MANAGE_USER_FLAGS)?;
 
-//     ctx.db.user_permissions().user_id().find(target)
+    if let Some(mut details) = ctx.db.user_details().user_id().find(target) {
+        details.flags = flags;
+        ctx.db.user_details().user_id().update(details);
+    }
 
-//     Ok(())
-// }
+    Ok(())
+}
 
 #[spacetimedb::reducer]
 pub fn kickstart_perms(ctx: &ReducerContext, target: Identity) -> Result<(), String> {
@@ -377,6 +415,42 @@ pub fn kickstart_perms(ctx: &ReducerContext, target: Identity) -> Result<(), Str
                 flags: UserFlags::Verified,
             })?;
     }
+
+    Ok(())
+}
+
+#[derive(Debug, SpacetimeType)]
+pub struct OldUser {
+    id: Identity,
+    username: String,
+    verified: bool,
+}
+
+#[spacetimedb::reducer]
+pub fn migrate_user_elevated(ctx: &ReducerContext, user: OldUser) -> Result<(), String> {
+    if ctx.db.allowlist().id().find(ctx.sender()).is_none() {
+        return Ok(());
+    }
+
+    let OldUser {
+        id: identity,
+        username: name,
+        verified,
+    } = user;
+
+    let id = ctx.db.user_id().try_insert(UserId { id: 0, identity })?.id;
+
+    ctx.db.user().try_insert(User { id, name })?;
+
+    let mut details = UserDetails::with_default(id);
+
+    if verified {
+        details.flags |= UserFlags::Verified;
+    } else {
+        details.flags &= !UserFlags::Verified;
+    }
+
+    ctx.db.user_details().try_insert(details)?;
 
     Ok(())
 }
